@@ -1,0 +1,120 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Оценки — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Оценки</h1>
+{% if user.role == 'teacher' %}
+    <p>
+        <a href="{% url 'frontend-grade-create' %}" class="btn">Добавить оценку</a>
+    </p>
+{% endif %}
+<p class="page-subtitle">
+    {% if user.role == 'teacher' %}
+        Список всех оценок учеников.
+    {% else %}
+        Ваши оценки по предметам.
+    {% endif %}
+</p>
+
+<div class="card">
+    <form method="get" class="form-inline">
+        <div>
+            <label for="subject">Фильтр по предмету</label>
+            <select name="subject" id="subject">
+                <option value="">Все предметы</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject.id }}"
+                        {% if request.GET.subject == subject.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ subject.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn">Применить</button>
+        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">Сбросить</a>
+    </form>
+
+    {% if grades %}
+        <table>
+            <thead>
+                <tr>
+                    {% if user.role == 'teacher' %}
+                        <th>Ученик</th>
+                    {% endif %}
+                    <th>Предмет</th>
+                    {% if user.role == 'admin' %}
+                        <th>Преподаватель</th>
+                    {% endif %}
+                    <th>Оценка</th>
+                    <th>Пояснение</th>
+                    <th>Дата</th>
+                    {% if user.role == 'teacher' %}
+                        <th>Действия</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in grades %}
+                    <tr>
+                        {% if user.role == 'teacher' %}
+                            <td>{{ grade.student.username }}</td>
+                        {% endif %}
+
+                        <td>{{ grade.subject.name }}</td>
+
+                            {% if user.role == 'admin' %}
+                                <td>
+                                    {% if grade.teacher %}
+                                        {{ grade.teacher.username }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+
+                        <td>
+                            {% if grade.value >= 5 %}
+                                <span class="badge badge-green">{{ grade.value }}</span>
+                            {% elif grade.value == 4 %}
+                                <span class="badge badge-blue">{{ grade.value }}</span>
+                            {% elif grade.value == 3 %}
+                                <span class="badge badge-yellow">{{ grade.value }}</span>
+                            {% else %}
+                                <span class="badge badge-red">{{ grade.value }}</span>
+                            {% endif %}
+                        </td>
+
+                    <td>
+                        {% if grade.comment %}
+                            {{ grade.comment }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+
+                        <td>{{ grade.date }}</td>
+                        {% if user.role == 'teacher' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-grade-edit' grade.id %}" class="btn btn-small">
+                                        Изменить
+                                    </a>
+
+                                    <a href="{% url 'frontend-grade-delete' grade.id %}" class="btn btn-danger btn-small">
+                                        Удалить
+                                    </a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Оценки не найдены.</div>
+    {% endif %}
+</div>
+{% endblock %}

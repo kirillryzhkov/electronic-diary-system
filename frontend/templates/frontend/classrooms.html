@@ -1,0 +1,49 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Кабинеты — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Кабинеты</h1>
+<p class="page-subtitle">Список учебных кабинетов.</p>
+
+{% if user.role == 'admin' %}
+    <p>
+        <a href="{% url 'frontend-classroom-create' %}" class="btn">Добавить кабинет</a>
+    </p>
+{% endif %}
+
+<div class="card">
+    {% if classrooms %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Кабинет</th>
+                    <th>Описание</th>
+                    {% if user.role == 'admin' %}
+                        <th>Действия</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for classroom in classrooms %}
+                    <tr>
+                        <td>{{ classroom.number }}</td>
+                        <td>{{ classroom.description|default:"—" }}</td>
+
+                        {% if user.role == 'admin' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-classroom-edit' classroom.id %}" class="btn btn-small">Изменить</a>
+                                    <a href="{% url 'frontend-classroom-delete' classroom.id %}" class="btn btn-danger btn-small">Удалить</a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Кабинетов пока нет.</div>
+    {% endif %}
+</div>
+{% endblock %}

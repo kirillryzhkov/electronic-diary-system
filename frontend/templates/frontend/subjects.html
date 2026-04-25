@@ -1,0 +1,39 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Предметы — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Предметы</h1>
+<p class="page-subtitle">Список учебных предметов в системе.</p>
+
+<div class="card">
+    {% if subjects %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.id }}</td>
+                        <td>{{ subject.name }}</td>
+                        <td>
+                            {% if subject.description %}
+                                {{ subject.description }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Предметов пока нет.</div>
+    {% endif %}
+</div>
+{% endblock %}

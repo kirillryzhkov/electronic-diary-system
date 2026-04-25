@@ -1,0 +1,21 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Удалить группу — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Удалить группу</h1>
+
+<div class="card" style="max-width: 650px;">
+    <p>Вы действительно хотите удалить группу <b>{{ object.name }}</b>?</p>
+
+    <div class="error-box">
+        Внимание: у студентов этой группы поле группы может быть очищено.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'frontend-groups' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

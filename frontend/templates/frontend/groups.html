@@ -1,0 +1,51 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Группы — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Учебные группы</h1>
+<p class="page-subtitle">Список учебных групп.</p>
+
+{% if user.role == 'admin' %}
+    <p>
+        <a href="{% url 'frontend-group-create' %}" class="btn">Добавить группу</a>
+    </p>
+{% endif %}
+
+<div class="card">
+    {% if groups %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Группа</th>
+                    <th>Куратор</th>
+                    <th>Описание</th>
+                    {% if user.role == 'admin' %}
+                        <th>Действия</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                    <tr>
+                        <td>{{ group.name }}</td>
+                        <td>{{ group.curator|default:"—" }}</td>
+                        <td>{{ group.description|default:"—" }}</td>
+
+                        {% if user.role == 'admin' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-group-edit' group.id %}" class="btn btn-small">Изменить</a>
+                                    <a href="{% url 'frontend-group-delete' group.id %}" class="btn btn-danger btn-small">Удалить</a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Групп пока нет.</div>
+    {% endif %}
+</div>
+{% endblock %}

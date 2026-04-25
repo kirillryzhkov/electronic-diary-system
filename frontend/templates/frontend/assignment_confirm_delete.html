@@ -1,0 +1,18 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+<h1 class="page-title">Удалить назначение</h1>
+
+<div class="card" style="max-width: 650px;">
+    <p>
+        Удалить назначение:
+        <b>{{ object.teacher.username }} — {{ object.subject.name }} — {{ object.group.name }}</b>?
+    </p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Удалить</button>
+        <a href="{% url 'frontend-assignments' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

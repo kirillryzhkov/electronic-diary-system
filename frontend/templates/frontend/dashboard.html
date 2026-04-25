@@ -1,0 +1,82 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Кабинет — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Личный кабинет</h1>
+
+<p class="page-subtitle">
+    Вы вошли как:
+    {% if user.role == 'teacher' %}
+        <span class="badge badge-blue">Учитель</span>
+    {% else %}
+        <span class="badge badge-green">Ученик</span>
+    {% endif %}
+</p>
+
+<div class="grid">
+    <div class="stat-card">
+        <div class="stat-title">Количество оценок</div>
+        <div class="stat-value">{{ grades_count }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Количество предметов</div>
+        <div class="stat-value">{{ subjects_count }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">
+            {% if user.role == 'teacher' %}
+                Средний балл по системе
+            {% else %}
+                Мой средний балл
+            {% endif %}
+        </div>
+        <div class="stat-value">{{ average }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Последние оценки</h2>
+
+    {% if recent_grades %}
+        <table>
+            <thead>
+                <tr>
+                    {% if user.role == 'teacher' %}
+                        <th>Ученик</th>
+                    {% endif %}
+                    <th>Предмет</th>
+                    <th>Оценка</th>
+                    <th>Дата</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in recent_grades %}
+                    <tr>
+                        {% if user.role == 'teacher' %}
+                            <td>{{ grade.student.username }}</td>
+                        {% endif %}
+                        <td>{{ grade.subject.name }}</td>
+                        <td>
+                            {% if grade.value >= 5 %}
+                                <span class="badge badge-green">{{ grade.value }}</span>
+                            {% elif grade.value == 4 %}
+                                <span class="badge badge-blue">{{ grade.value }}</span>
+                            {% elif grade.value == 3 %}
+                                <span class="badge badge-yellow">{{ grade.value }}</span>
+                            {% else %}
+                                <span class="badge badge-red">{{ grade.value }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ grade.date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Оценок пока нет.</div>
+    {% endif %}
+</div>
+{% endblock %}

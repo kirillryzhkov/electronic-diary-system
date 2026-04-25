@@ -1,0 +1,39 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Статистика — Электронный дневник{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Статистика по предметам</h1>
+<p class="page-subtitle">Доступно только пользователю с ролью учителя.</p>
+
+<div class="card">
+    {% if subjects %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Предмет</th>
+                    <th>Количество оценок</th>
+                    <th>Средний балл</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in subjects %}
+                    <tr>
+                        <td>{{ subject.name }}</td>
+                        <td>{{ subject.total_grades }}</td>
+                        <td>
+                            {% if subject.average %}
+                                {{ subject.average|floatformat:2 }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Статистика пока недоступна.</div>
+    {% endif %}
+</div>
+{% endblock %}

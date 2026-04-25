@@ -1,0 +1,17 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if object %}Редактировать назначение{% else %}Добавить назначение{% endif %}
+</h1>
+
+<div class="card" style="max-width: 650px;">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn">Сохранить</button>
+        <a href="{% url 'frontend-assignments' %}" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+{% endblock %}
