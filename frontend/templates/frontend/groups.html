@@ -1,14 +1,20 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Группы — Электронный дневник{% endblock %}
+{% block title %}{% trans "Группы" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Учебные группы</h1>
-<p class="page-subtitle">Список учебных групп.</p>
+<h1 class="page-title">{% trans "Учебные группы" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Список учебных групп в системе." %}
+</p>
 
 {% if user.role == 'admin' %}
     <p>
-        <a href="{% url 'frontend-group-create' %}" class="btn">Добавить группу</a>
+        <a href="{% url 'frontend-group-create' %}" class="btn">
+            {% trans "Добавить группу" %}
+        </a>
     </p>
 {% endif %}
 
@@ -17,26 +23,47 @@
         <table>
             <thead>
                 <tr>
-                    <th>Группа</th>
-                    <th>Куратор</th>
-                    <th>Описание</th>
+                    <th>{% trans "Группа" %}</th>
+                    <th>{% trans "Куратор" %}</th>
+                    <th>{% trans "Описание" %}</th>
+
                     {% if user.role == 'admin' %}
-                        <th>Действия</th>
+                        <th>{% trans "Действия" %}</th>
                     {% endif %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for group in groups %}
                     <tr>
                         <td>{{ group.name }}</td>
-                        <td>{{ group.curator|default:"—" }}</td>
-                        <td>{{ group.description|default:"—" }}</td>
+
+                        <td>
+                            {% if group.curator %}
+                                {{ group.curator.full_name }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if group.description %}
+                                {{ group.description }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
 
                         {% if user.role == 'admin' %}
                             <td>
                                 <div class="actions">
-                                    <a href="{% url 'frontend-group-edit' group.id %}" class="btn btn-small">Изменить</a>
-                                    <a href="{% url 'frontend-group-delete' group.id %}" class="btn btn-danger btn-small">Удалить</a>
+                                    <a href="{% url 'frontend-group-edit' group.id %}" class="btn btn-small">
+                                        {% trans "Изменить" %}
+                                    </a>
+
+                                    <a href="{% url 'frontend-group-delete' group.id %}" class="btn btn-danger btn-small">
+                                        {% trans "Удалить" %}
+                                    </a>
                                 </div>
                             </td>
                         {% endif %}
@@ -45,7 +72,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Групп пока нет.</div>
+        <div class="empty">{% trans "Групп пока нет." %}</div>
     {% endif %}
 </div>
 {% endblock %}

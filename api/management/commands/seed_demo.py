@@ -34,7 +34,9 @@ class Command(BaseCommand):
             username='admin',
             email='admin@example.com',
             password='password123',
-            role='admin'
+            role='admin',
+            first_name='Алексей',
+            last_name='Администраторов'
         )
 
         teacher = User.objects.create_user(
@@ -42,6 +44,8 @@ class Command(BaseCommand):
             email='teacher@example.com',
             password='password123',
             role='teacher',
+            first_name='Иван',
+            last_name='Петров',
             is_staff=True
         )
 
@@ -50,6 +54,8 @@ class Command(BaseCommand):
             email='teacher2@example.com',
             password='password123',
             role='teacher',
+            first_name='Мария',
+            last_name='Сидорова',
             is_staff=True
         )
 
@@ -72,6 +78,8 @@ class Command(BaseCommand):
             email='student1@example.com',
             password='password123',
             role='student',
+            first_name='Алихан',
+            last_name='Нурланов',
             group=group_is_31
         )
 
@@ -80,6 +88,8 @@ class Command(BaseCommand):
             email='student2@example.com',
             password='password123',
             role='student',
+            first_name='Дамир',
+            last_name='Сериков',
             group=group_is_31
         )
 
@@ -88,6 +98,8 @@ class Command(BaseCommand):
             email='student3@example.com',
             password='password123',
             role='student',
+            first_name='Аружан',
+            last_name='Калиева',
             group=group_po_22
         )
 
@@ -96,6 +108,8 @@ class Command(BaseCommand):
             email='student4@example.com',
             password='password123',
             role='student',
+            first_name='Ерасыл',
+            last_name='Тулегенов',
             group=group_po_22
         )
 

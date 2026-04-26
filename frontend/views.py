@@ -6,6 +6,10 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404
+
+from django.db.models import Avg, Count
+from users.models import User
 
 from .forms import GradeForm
 
@@ -20,6 +24,8 @@ from .forms import (
     ClassroomForm,
     TeachingAssignmentForm,
 )
+
+
 
 
 class AdminRequiredMixin(LoginRequiredMixin):
@@ -103,6 +109,52 @@ class SubjectsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Subject.objects.all()
+    
+class SubjectCreateFrontendView(LoginRequiredMixin, CreateView):
+    model = Subject
+    form_class = SubjectForm
+    template_name = 'frontend/subject_form.html'
+    success_url = reverse_lazy('frontend-subjects')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            raise PermissionDenied('Только администратор может создавать предметы.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Предмет успешно добавлен.')
+        return super().form_valid(form)
+
+
+class SubjectUpdateFrontendView(LoginRequiredMixin, UpdateView):
+    model = Subject
+    form_class = SubjectForm
+    template_name = 'frontend/subject_form.html'
+    success_url = reverse_lazy('frontend-subjects')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            raise PermissionDenied('Только администратор может редактировать предметы.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Предмет успешно обновлён.')
+        return super().form_valid(form)
+
+
+class SubjectDeleteFrontendView(LoginRequiredMixin, DeleteView):
+    model = Subject
+    template_name = 'frontend/subject_confirm_delete.html'
+    success_url = reverse_lazy('frontend-subjects')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'admin':
+            raise PermissionDenied('Только администратор может удалять предметы.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Предмет успешно удалён.')
+        return super().form_valid(form)
 
 
 class StatsView(LoginRequiredMixin, TemplateView):
@@ -337,3 +389,107 @@ class TeachingAssignmentDeleteView(AdminRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Назначение преподавателя успешно удалено.')
         return super().form_valid(form)
+    
+class TeacherGroupsView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/teacher_groups.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'teacher':
+            raise PermissionDenied('Эта страница доступна только преподавателю.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        teacher = self.request.user
+
+        groups = StudyGroup.objects.filter(
+            teaching_assignments__teacher=teacher
+        ).distinct().order_by('name')
+
+        groups_data = []
+
+        for group in groups:
+            assignments = TeachingAssignment.objects.select_related(
+                'subject',
+                'classroom'
+            ).filter(
+                teacher=teacher,
+                group=group
+            )
+
+            students = User.objects.filter(
+                role='student',
+                group=group
+            ).order_by('username')
+
+            grades = Grade.objects.filter(
+                teacher=teacher,
+                student__group=group
+            )
+
+            groups_data.append({
+                'group': group,
+                'assignments': assignments,
+                'students_count': students.count(),
+                'grades_count': grades.count(),
+                'average': round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2),
+            })
+
+        context['groups_data'] = groups_data
+        return context
+
+
+class TeacherGroupDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/teacher_group_detail.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'teacher':
+            raise PermissionDenied('Эта страница доступна только преподавателю.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        teacher = self.request.user
+        group = get_object_or_404(StudyGroup, id=self.kwargs['group_id'])
+
+        has_access = TeachingAssignment.objects.filter(
+            teacher=teacher,
+            group=group
+        ).exists()
+
+        if not has_access:
+            raise PermissionDenied('Вы не ведёте эту группу.')
+
+        assignments = TeachingAssignment.objects.select_related(
+            'subject',
+            'classroom'
+        ).filter(
+            teacher=teacher,
+            group=group
+        )
+
+        students = User.objects.filter(
+            role='student',
+            group=group
+        ).order_by('username')
+
+        grades = Grade.objects.select_related(
+            'student',
+            'teacher',
+            'subject'
+        ).filter(
+            teacher=teacher,
+            student__group=group
+        ).order_by('-date')
+
+        context['group'] = group
+        context['assignments'] = assignments
+        context['students'] = students
+        context['grades'] = grades
+        context['grades_count'] = grades.count()
+        context['students_count'] = students.count()
+        context['average'] = round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2)
+
+        return context

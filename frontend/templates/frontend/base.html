@@ -1,11 +1,53 @@
+{% load i18n %}
+
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ request.LANGUAGE_CODE|default:'ru' }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Электронный дневник{% endblock %}</title>
+    <title>{% block title %}{% trans "Электронный дневник" %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <script>
+        (function () {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-theme-init');
+            }
+        })();
+    </script>
+
     <style>
+        :root {
+            --bg-color: #f4f6fb;
+            --text-color: #1f2937;
+            --card-bg: #ffffff;
+            --navbar-bg: #1f2937;
+            --border-color: #e5e7eb;
+            --muted-color: #6b7280;
+            --table-head-bg: #f9fafb;
+            --table-hover-bg: #f9fafb;
+            --input-bg: #ffffff;
+            --input-text: #1f2937;
+            --input-border: #d1d5db;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-theme,
+        html.dark-theme-init body {
+            --bg-color: #111827;
+            --text-color: #f9fafb;
+            --card-bg: #1f2937;
+            --navbar-bg: #030712;
+            --border-color: #374151;
+            --muted-color: #d1d5db;
+            --table-head-bg: #111827;
+            --table-hover-bg: #273449;
+            --input-bg: #111827;
+            --input-text: #f9fafb;
+            --input-border: #4b5563;
+            --shadow-color: rgba(0, 0, 0, 0.35);
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -13,8 +55,9 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #1f2937;
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
         a {
@@ -23,7 +66,7 @@
         }
 
         .navbar {
-            background: #1f2937;
+            background: var(--navbar-bg);
             color: white;
             padding: 16px 40px;
             display: flex;
@@ -40,21 +83,39 @@
             display: flex;
             align-items: center;
             gap: 18px;
+            flex-wrap: wrap;
         }
 
         .navbar-menu a,
-        .logout-btn {
+        .logout-btn,
+        .theme-btn {
             color: white;
             font-size: 15px;
             background: none;
             border: none;
             cursor: pointer;
             padding: 0;
+            font-family: inherit;
         }
 
         .navbar-menu a:hover,
-        .logout-btn:hover {
+        .logout-btn:hover,
+        .theme-btn:hover {
             color: #93c5fd;
+        }
+
+        .language-form {
+            margin: 0;
+        }
+
+        .language-select {
+            width: auto;
+            padding: 6px 8px;
+            border-radius: 8px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: white;
+            font-size: 14px;
         }
 
         .container {
@@ -64,10 +125,11 @@
         }
 
         .card {
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 14px;
             padding: 24px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px var(--shadow-color);
             margin-bottom: 24px;
         }
 
@@ -77,7 +139,7 @@
         }
 
         .page-subtitle {
-            color: #6b7280;
+            color: var(--muted-color);
             margin-bottom: 25px;
         }
 
@@ -100,6 +162,10 @@
             background: #374151;
         }
 
+        .btn-secondary:hover {
+            background: #111827;
+        }
+
         .btn-danger {
             background: #dc2626;
         }
@@ -117,10 +183,7 @@
         .actions {
             display: flex;
             gap: 8px;
-        }
-
-        .btn-secondary:hover {
-            background: #111827;
+            flex-wrap: wrap;
         }
 
         .grid {
@@ -130,14 +193,15 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 14px;
             padding: 22px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px var(--shadow-color);
         }
 
         .stat-title {
-            color: #6b7280;
+            color: var(--muted-color);
             font-size: 14px;
         }
 
@@ -156,18 +220,18 @@
 
         th, td {
             padding: 14px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
             text-align: left;
         }
 
         th {
-            background: #f9fafb;
+            background: var(--table-head-bg);
             font-weight: bold;
-            color: #374151;
+            color: var(--text-color);
         }
 
         tr:hover {
-            background: #f9fafb;
+            background: var(--table-hover-bg);
         }
 
         .badge {
@@ -208,12 +272,20 @@
             font-weight: bold;
         }
 
-        input, select {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 11px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid var(--input-border);
             border-radius: 10px;
             font-size: 15px;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+
+        textarea {
+            resize: vertical;
         }
 
         .form-inline {
@@ -230,7 +302,7 @@
         .empty {
             padding: 30px;
             text-align: center;
-            color: #6b7280;
+            color: var(--muted-color);
         }
 
         .hero {
@@ -244,14 +316,14 @@
         }
 
         .hero p {
-            color: #6b7280;
+            color: var(--muted-color);
             font-size: 18px;
             margin-bottom: 30px;
         }
 
         .footer {
             text-align: center;
-            color: #6b7280;
+            color: var(--muted-color);
             padding: 30px;
             font-size: 14px;
         }
@@ -262,6 +334,10 @@
             padding: 12px;
             border-radius: 10px;
             margin-bottom: 18px;
+        }
+
+        .message-card {
+            border-left: 5px solid #2563eb;
         }
 
         @media (max-width: 700px) {
@@ -286,33 +362,70 @@
 <body>
 
 <nav class="navbar">
-    <a href="{% url 'home' %}" class="navbar-logo">Электронный дневник</a>
+    <a href="{% url 'home' %}" class="navbar-logo">{% trans "Электронный дневник" %}</a>
 
     <div class="navbar-menu">
         {% if user.is_authenticated %}
-        <a href="{% url 'frontend-assignments' %}">Назначения</a>
+            <a href="{% url 'frontend-assignments' %}">{% trans "Назначения" %}</a>
 
-        {% if user.role == 'admin' %}
-            <a href="{% url 'frontend-groups' %}">Группы</a>
-            <a href="{% url 'frontend-classrooms' %}">Кабинеты</a>
-        {% endif %}
-            <a href="{% url 'dashboard' %}">Кабинет</a>
-            <a href="{% url 'frontend-grades' %}">Оценки</a>
-            <a href="{% url 'frontend-subjects' %}">Предметы</a>
-
-            {% if user.role == 'teacher' %}
-                <a href="{% url 'frontend-stats' %}">Статистика</a>
-                <a href="/admin/">Админка</a>
+            {% if user.role == 'admin' %}
+                <a href="{% url 'frontend-groups' %}">{% trans "Группы" %}</a>
+                <a href="{% url 'frontend-classrooms' %}">{% trans "Кабинеты" %}</a>
             {% endif %}
 
-            <span>{{ user.username }}</span>
+            <a href="{% url 'dashboard' %}">{% trans "Кабинет" %}</a>
+            <a href="{% url 'frontend-grades' %}">{% trans "Оценки" %}</a>
+
+            {% if user.role == 'teacher' %}
+                <a href="{% url 'frontend-teacher-groups' %}">{% trans "Мои группы" %}</a>
+            {% endif %}
+
+            <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
+
+            {% if user.role == 'teacher' %}
+                <a href="{% url 'frontend-stats' %}">{% trans "Статистика" %}</a>
+            {% endif %}
+
+            {% if user.role == 'admin' or user.is_staff %}
+                <a href="/admin/">{% trans "Админка" %}</a>
+            {% endif %}
+
+            <button type="button" class="theme-btn" onclick="toggleTheme()">
+                {% trans "Тема" %}
+            </button>
+
+            <form action="{% url 'set_language' %}" method="post" class="language-form">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <select name="language" class="language-select" onchange="this.form.submit()">
+                    <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
+                    <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
+                    <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+                </select>
+            </form>
+
+            <span>{{ user.full_name }}</span>
 
             <form method="post" action="{% url 'logout' %}" style="margin: 0;">
                 {% csrf_token %}
-                <button type="submit" class="logout-btn">Выйти</button>
+                <button type="submit" class="logout-btn">{% trans "Выйти" %}</button>
             </form>
         {% else %}
-            <a href="{% url 'login' %}">Войти</a>
+            <button type="button" class="theme-btn" onclick="toggleTheme()">
+                {% trans "Тема" %}
+            </button>
+
+            <form action="{% url 'set_language' %}" method="post" class="language-form">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <select name="language" class="language-select" onchange="this.form.submit()">
+                    <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
+                    <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
+                    <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+                </select>
+            </form>
+
+            <a href="{% url 'login' %}">{% trans "Войти" %}</a>
             <a href="/api/docs/">Swagger</a>
         {% endif %}
     </div>
@@ -320,19 +433,41 @@
 
 <main class="container">
     {% if messages %}
-    {% for message in messages %}
-        <div class="card" style="border-left: 5px solid #2563eb;">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
+        {% for message in messages %}
+            <div class="card message-card">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     {% block content %}
     {% endblock %}
 </main>
 
 <footer class="footer">
-    Дипломный проект — Electronic Diary System
+    {% trans "Дипломный проект" %} — Electronic Diary System
 </footer>
+
+<script>
+    function applyTheme() {
+        const theme = localStorage.getItem('theme');
+
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+
+        document.documentElement.classList.remove('dark-theme-init');
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    applyTheme();
+</script>
 
 </body>
 </html>

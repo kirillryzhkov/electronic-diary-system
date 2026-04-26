@@ -3,9 +3,9 @@
 
 {% block title %}
     {% if object %}
-        {% trans "Редактировать кабинет" %}
+        {% trans "Редактировать предмет" %}
     {% else %}
-        {% trans "Добавить кабинет" %}
+        {% trans "Добавить предмет" %}
     {% endif %}
     — {% trans "Электронный дневник" %}
 {% endblock %}
@@ -13,9 +13,9 @@
 {% block content %}
 <h1 class="page-title">
     {% if object %}
-        {% trans "Редактировать кабинет" %}
+        {% trans "Редактировать предмет" %}
     {% else %}
-        {% trans "Добавить кабинет" %}
+        {% trans "Добавить предмет" %}
     {% endif %}
 </h1>
 
@@ -34,16 +34,16 @@
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.number.id_for_label }}">{% trans "Номер кабинета" %}</label>
-            {{ form.number }}
+            <label for="{{ form.name.id_for_label }}">{% trans "Название предмета" %}</label>
+            {{ form.name }}
 
-            {% if form.number.errors %}
-                <div class="error-box">{{ form.number.errors }}</div>
+            {% if form.name.errors %}
+                <div class="error-box">{{ form.name.errors }}</div>
             {% endif %}
         </div>
 
         <div class="form-group">
-            <label for="{{ form.description.id_for_label }}">{% trans "Описание" %}</label>
+            <label for="{{ form.description.id_for_label }}">{% trans "Описание предмета" %}</label>
             {{ form.description }}
 
             {% if form.description.errors %}
@@ -52,7 +52,7 @@
         </div>
 
         <button type="submit" class="btn">{% trans "Сохранить" %}</button>
-        <a href="{% url 'frontend-classrooms' %}" class="btn btn-secondary">
+        <a href="{% url 'frontend-subjects' %}" class="btn btn-secondary">
             {% trans "Назад" %}
         </a>
     </form>

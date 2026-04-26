@@ -1,36 +1,41 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Кабинет — Электронный дневник{% endblock %}
+{% block title %}{% trans "Кабинет" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Личный кабинет</h1>
+<h1 class="page-title">{% trans "Личный кабинет" %}</h1>
 
 <p class="page-subtitle">
-    Вы вошли как:
-    {% if user.role == 'teacher' %}
-        <span class="badge badge-blue">Учитель</span>
+    {% trans "Вы вошли как:" %}
+    {% if user.role == 'admin' %}
+        <span class="badge badge-blue">{% trans "Администратор" %}</span>
+    {% elif user.role == 'teacher' %}
+        <span class="badge badge-blue">{% trans "Учитель" %}</span>
     {% else %}
-        <span class="badge badge-green">Ученик</span>
+        <span class="badge badge-green">{% trans "Ученик" %}</span>
     {% endif %}
 </p>
 
 <div class="grid">
     <div class="stat-card">
-        <div class="stat-title">Количество оценок</div>
+        <div class="stat-title">{% trans "Количество оценок" %}</div>
         <div class="stat-value">{{ grades_count }}</div>
     </div>
 
     <div class="stat-card">
-        <div class="stat-title">Количество предметов</div>
+        <div class="stat-title">{% trans "Количество предметов" %}</div>
         <div class="stat-value">{{ subjects_count }}</div>
     </div>
 
     <div class="stat-card">
         <div class="stat-title">
             {% if user.role == 'teacher' %}
-                Средний балл по системе
+                {% trans "Средний балл по моим оценкам" %}
+            {% elif user.role == 'admin' %}
+                {% trans "Средний балл по системе" %}
             {% else %}
-                Мой средний балл
+                {% trans "Мой средний балл" %}
             {% endif %}
         </div>
         <div class="stat-value">{{ average }}</div>
@@ -38,27 +43,30 @@
 </div>
 
 <div class="card">
-    <h2>Последние оценки</h2>
+    <h2>{% trans "Последние оценки" %}</h2>
 
     {% if recent_grades %}
         <table>
             <thead>
                 <tr>
-                    {% if user.role == 'teacher' %}
-                        <th>Ученик</th>
+                    {% if user.role == 'teacher' or user.role == 'admin' %}
+                        <th>{% trans "Ученик" %}</th>
                     {% endif %}
-                    <th>Предмет</th>
-                    <th>Оценка</th>
-                    <th>Дата</th>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Оценка" %}</th>
+                    <th>{% trans "Пояснение" %}</th>
+                    <th>{% trans "Дата и время" %}</th>
                 </tr>
             </thead>
             <tbody>
                 {% for grade in recent_grades %}
                     <tr>
-                        {% if user.role == 'teacher' %}
-                            <td>{{ grade.student.username }}</td>
+                        {% if user.role == 'teacher' or user.role == 'admin' %}
+                            <td>{{ grade.student.full_name }}</td>
                         {% endif %}
+
                         <td>{{ grade.subject.name }}</td>
+
                         <td>
                             {% if grade.value >= 5 %}
                                 <span class="badge badge-green">{{ grade.value }}</span>
@@ -70,13 +78,22 @@
                                 <span class="badge badge-red">{{ grade.value }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ grade.date }}</td>
+
+                        <td>
+                            {% if grade.comment %}
+                                {{ grade.comment }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>{{ grade.date|date:"d.m.Y H:i" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Оценок пока нет.</div>
+        <div class="empty">{% trans "Оценок пока нет." %}</div>
     {% endif %}
 </div>
 {% endblock %}

@@ -7,21 +7,32 @@ from .views import (
     GradesView,
     SubjectsView,
     StatsView,
+
     GradeCreateFrontendView,
     GradeUpdateFrontendView,
     GradeDeleteFrontendView,
+
+    SubjectCreateFrontendView,
+    SubjectUpdateFrontendView,
+    SubjectDeleteFrontendView,
+
     StudyGroupListView,
     StudyGroupCreateView,
     StudyGroupUpdateView,
     StudyGroupDeleteView,
+
     ClassroomListView,
     ClassroomCreateView,
     ClassroomUpdateView,
     ClassroomDeleteView,
+
     TeachingAssignmentListView,
     TeachingAssignmentCreateView,
     TeachingAssignmentUpdateView,
     TeachingAssignmentDeleteView,
+
+    TeacherGroupsView,
+    TeacherGroupDetailView,
 )
 
 urlpatterns = [
@@ -31,6 +42,9 @@ urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('grades/', GradesView.as_view(), name='frontend-grades'),
     path('subjects/', SubjectsView.as_view(), name='frontend-subjects'),
+    path('subjects/create/', SubjectCreateFrontendView.as_view(), name='frontend-subject-create'),
+    path('subjects/<int:pk>/edit/', SubjectUpdateFrontendView.as_view(), name='frontend-subject-edit'),
+    path('subjects/<int:pk>/delete/', SubjectDeleteFrontendView.as_view(), name='frontend-subject-delete'),
     path('stats/', StatsView.as_view(), name='frontend-stats'),
     path('grades/create/', GradeCreateFrontendView.as_view(), name='frontend-grade-create'),
     path('grades/<int:pk>/edit/', GradeUpdateFrontendView.as_view(), name='frontend-grade-edit'),
@@ -51,4 +65,7 @@ urlpatterns = [
     path('assignments/create/', TeachingAssignmentCreateView.as_view(), name='frontend-assignment-create'),
     path('assignments/<int:pk>/edit/', TeachingAssignmentUpdateView.as_view(), name='frontend-assignment-edit'),
     path('assignments/<int:pk>/delete/', TeachingAssignmentDeleteView.as_view(), name='frontend-assignment-delete'),
+
+    path('my-groups/', TeacherGroupsView.as_view(), name='frontend-teacher-groups'),
+    path('my-groups/<int:group_id>/', TeacherGroupDetailView.as_view(), name='frontend-teacher-group-detail'),
 ]

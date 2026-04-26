@@ -5,6 +5,9 @@ from subjects.models import Subject
 from grades.models import Grade
 from academic.models import StudyGroup, Classroom, TeachingAssignment
 
+class UserFullNameChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.full_name
 
 class GradeForm(forms.ModelForm):
     class Meta:
@@ -40,7 +43,9 @@ class GradeForm(forms.ModelForm):
 
         self.fields['student'].queryset = User.objects.filter(
             role='student'
-        ).order_by('username')
+        ).order_by('last_name', 'first_name', 'username')
+
+        self.fields['student'].label_from_instance = lambda obj: obj.full_name
 
         self.fields['subject'].queryset = Subject.objects.all().order_by('name')
 
@@ -56,7 +61,9 @@ class GradeForm(forms.ModelForm):
             self.fields['student'].queryset = User.objects.filter(
                 role='student',
                 group_id__in=group_ids
-            ).order_by('group__name', 'username')
+            ).order_by('group__name', 'last_name', 'first_name', 'username')
+
+            self.fields['student'].label_from_instance = lambda obj: obj.full_name
 
             self.fields['subject'].queryset = Subject.objects.filter(
                 id__in=subject_ids
@@ -138,7 +145,9 @@ class StudyGroupForm(forms.ModelForm):
 
         self.fields['curator'].queryset = User.objects.filter(
             role='teacher'
-        ).order_by('username')
+        ).order_by('last_name', 'first_name', 'username')
+
+        self.fields['curator'].label_from_instance = lambda obj: obj.full_name
 
 
 class ClassroomForm(forms.ModelForm):
@@ -187,7 +196,9 @@ class TeachingAssignmentForm(forms.ModelForm):
 
         self.fields['teacher'].queryset = User.objects.filter(
             role='teacher'
-        ).order_by('username')
+        ).order_by('last_name', 'first_name', 'username')
+
+        self.fields['teacher'].label_from_instance = lambda obj: obj.full_name
 
         self.fields['subject'].queryset = Subject.objects.all().order_by('name')
         self.fields['group'].queryset = StudyGroup.objects.all().order_by('name')

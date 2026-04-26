@@ -1,40 +1,48 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Главная — Электронный дневник{% endblock %}
+{% block title %}{% trans "Главная" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
 <div class="card hero">
-    <h1>Электронный дневник</h1>
+    <h1>{% trans "Электронный дневник" %}</h1>
+
     <p>
-        Система для учёта учеников, предметов и оценок с разделением ролей
-        для учителей и учеников.
+        {% trans "Система для учёта учеников, предметов и оценок с разделением ролей для администраторов, преподавателей и учеников." %}
     </p>
 
     {% if user.is_authenticated %}
-        <a href="{% url 'dashboard' %}" class="btn">Перейти в кабинет</a>
+        <a href="{% url 'dashboard' %}" class="btn">
+            {% trans "Перейти в кабинет" %}
+        </a>
     {% else %}
-        <a href="{% url 'login' %}" class="btn">Войти в систему</a>
-        <a href="/api/docs/" class="btn btn-secondary">API Swagger</a>
+        <a href="{% url 'login' %}" class="btn">
+            {% trans "Войти в систему" %}
+        </a>
+
+        <a href="/api/docs/" class="btn btn-secondary">
+            API Swagger
+        </a>
     {% endif %}
 </div>
 
 <div class="grid">
     <div class="stat-card">
-        <div class="stat-title">Роли</div>
-        <div class="stat-value">2</div>
-        <p>Учитель и ученик с разными правами доступа.</p>
+        <div class="stat-title">{% trans "Роли" %}</div>
+        <div class="stat-value">3</div>
+        <p>{% trans "Администратор, преподаватель и ученик с разными правами доступа." %}</p>
     </div>
 
     <div class="stat-card">
         <div class="stat-title">API</div>
         <div class="stat-value">REST</div>
-        <p>Проект имеет REST API и Swagger-документацию.</p>
+        <p>{% trans "Проект имеет REST API и Swagger-документацию." %}</p>
     </div>
 
     <div class="stat-card">
-        <div class="stat-title">Тесты</div>
+        <div class="stat-title">{% trans "Тесты" %}</div>
         <div class="stat-value">10</div>
-        <p>Основная логика проекта покрыта тестами.</p>
+        <p>{% trans "Основная логика проекта покрыта автоматическими тестами." %}</p>
     </div>
 </div>
 {% endblock %}

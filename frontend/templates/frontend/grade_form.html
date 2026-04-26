@@ -1,16 +1,27 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Добавить оценку — Электронный дневник{% endblock %}
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать оценку" %}
+    {% else %}
+        {% trans "Добавить оценку" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
 
 {% block content %}
 <h1 class="page-title">
     {% if object %}
-        Редактировать оценку
+        {% trans "Редактировать оценку" %}
     {% else %}
-        Добавить оценку
+        {% trans "Добавить оценку" %}
     {% endif %}
 </h1>
-<p class="page-subtitle">Форма доступна только пользователю с ролью учителя.</p>
+
+<p class="page-subtitle">
+    {% trans "Форма доступна только пользователю с ролью учителя." %}
+</p>
 
 <div class="card" style="max-width: 600px;">
     <form method="post">
@@ -23,7 +34,7 @@
         {% endif %}
 
         <div class="form-group">
-            <label for="{{ form.student.id_for_label }}">Ученик</label>
+            <label for="{{ form.student.id_for_label }}">{% trans "Ученик" %}</label>
             {{ form.student }}
 
             {% if form.student.errors %}
@@ -32,7 +43,7 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.subject.id_for_label }}">Предмет</label>
+            <label for="{{ form.subject.id_for_label }}">{% trans "Предмет" %}</label>
             {{ form.subject }}
 
             {% if form.subject.errors %}
@@ -41,15 +52,16 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.value.id_for_label }}">Оценка</label>
+            <label for="{{ form.value.id_for_label }}">{% trans "Оценка" %}</label>
             {{ form.value }}
 
             {% if form.value.errors %}
                 <div class="error-box">{{ form.value.errors }}</div>
             {% endif %}
         </div>
+
         <div class="form-group">
-            <label for="{{ form.comment.id_for_label }}">Пояснение к оценке</label>
+            <label for="{{ form.comment.id_for_label }}">{% trans "Пояснение к оценке" %}</label>
             {{ form.comment }}
 
             {% if form.comment.errors %}
@@ -57,8 +69,10 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="btn">Сохранить</button>
-        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">Назад</a>
+        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
     </form>
 </div>
 {% endblock %}

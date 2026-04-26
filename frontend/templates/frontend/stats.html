@@ -1,21 +1,26 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Статистика — Электронный дневник{% endblock %}
+{% block title %}{% trans "Статистика" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Статистика по предметам</h1>
-<p class="page-subtitle">Доступно только пользователю с ролью учителя.</p>
+<h1 class="page-title">{% trans "Статистика по предметам" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Страница отображает количество оценок и средний балл по каждому предмету." %}
+</p>
 
 <div class="card">
     {% if subjects %}
         <table>
             <thead>
                 <tr>
-                    <th>Предмет</th>
-                    <th>Количество оценок</th>
-                    <th>Средний балл</th>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Количество оценок" %}</th>
+                    <th>{% trans "Средний балл" %}</th>
                 </tr>
             </thead>
+
             <tbody>
                 {% for subject in subjects %}
                     <tr>
@@ -33,7 +38,9 @@
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Статистика пока недоступна.</div>
+        <div class="empty">
+            {% trans "Статистика пока недоступна." %}
+        </div>
     {% endif %}
 </div>
 {% endblock %}

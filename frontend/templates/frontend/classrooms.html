@@ -1,14 +1,20 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Кабинеты — Электронный дневник{% endblock %}
+{% block title %}{% trans "Кабинеты" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Кабинеты</h1>
-<p class="page-subtitle">Список учебных кабинетов.</p>
+<h1 class="page-title">{% trans "Кабинеты" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Список учебных кабинетов." %}
+</p>
 
 {% if user.role == 'admin' %}
     <p>
-        <a href="{% url 'frontend-classroom-create' %}" class="btn">Добавить кабинет</a>
+        <a href="{% url 'frontend-classroom-create' %}" class="btn">
+            {% trans "Добавить кабинет" %}
+        </a>
     </p>
 {% endif %}
 
@@ -17,24 +23,38 @@
         <table>
             <thead>
                 <tr>
-                    <th>Кабинет</th>
-                    <th>Описание</th>
+                    <th>{% trans "Кабинет" %}</th>
+                    <th>{% trans "Описание" %}</th>
+
                     {% if user.role == 'admin' %}
-                        <th>Действия</th>
+                        <th>{% trans "Действия" %}</th>
                     {% endif %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for classroom in classrooms %}
                     <tr>
                         <td>{{ classroom.number }}</td>
-                        <td>{{ classroom.description|default:"—" }}</td>
+
+                        <td>
+                            {% if classroom.description %}
+                                {{ classroom.description }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
 
                         {% if user.role == 'admin' %}
                             <td>
                                 <div class="actions">
-                                    <a href="{% url 'frontend-classroom-edit' classroom.id %}" class="btn btn-small">Изменить</a>
-                                    <a href="{% url 'frontend-classroom-delete' classroom.id %}" class="btn btn-danger btn-small">Удалить</a>
+                                    <a href="{% url 'frontend-classroom-edit' classroom.id %}" class="btn btn-small">
+                                        {% trans "Изменить" %}
+                                    </a>
+
+                                    <a href="{% url 'frontend-classroom-delete' classroom.id %}" class="btn btn-danger btn-small">
+                                        {% trans "Удалить" %}
+                                    </a>
                                 </div>
                             </td>
                         {% endif %}
@@ -43,7 +63,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Кабинетов пока нет.</div>
+        <div class="empty">{% trans "Кабинетов пока нет." %}</div>
     {% endif %}
 </div>
 {% endblock %}

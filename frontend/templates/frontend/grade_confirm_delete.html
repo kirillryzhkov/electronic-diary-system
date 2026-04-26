@@ -1,32 +1,45 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Удалить оценку — Электронный дневник{% endblock %}
+{% block title %}{% trans "Удалить оценку" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Удалить оценку</h1>
-<p class="page-subtitle">Подтвердите удаление оценки.</p>
+<h1 class="page-title">{% trans "Удалить оценку" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Подтвердите удаление оценки." %}
+</p>
 
 <div class="card" style="max-width: 600px;">
     <p>
-        Вы действительно хотите удалить оценку?
+        {% trans "Вы действительно хотите удалить эту оценку?" %}
     </p>
 
     <table>
         <tr>
-            <th>Ученик</th>
-            <td>{{ object.student.username }}</td>
+            <th>{% trans "Ученик" %}</th>
+            <td>{{ object.student.full_name }}</td>
         </tr>
+
+        {% if object.teacher %}
+            <tr>
+                <th>{% trans "Преподаватель" %}</th>
+                <td>{{ object.teacher.full_name }}</td>
+            </tr>
+        {% endif %}
+
         <tr>
-            <th>Предмет</th>
+            <th>{% trans "Предмет" %}</th>
             <td>{{ object.subject.name }}</td>
         </tr>
+
         <tr>
-            <th>Оценка</th>
+            <th>{% trans "Оценка" %}</th>
             <td>{{ object.value }}</td>
         </tr>
-        
+
         <tr>
-            <th>Пояснение</th>
+            <th>{% trans "Пояснение" %}</th>
             <td>
                 {% if object.comment %}
                     {{ object.comment }}
@@ -36,18 +49,18 @@
             </td>
         </tr>
 
-
-
         <tr>
-            <th>Дата</th>
-            <td>{{ object.date }}</td>
+            <th>{% trans "Дата и время" %}</th>
+            <td>{{ object.date|date:"d.m.Y H:i" }}</td>
         </tr>
     </table>
 
     <form method="post" style="margin-top: 20px;">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger">Удалить</button>
-        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">Отмена</a>
+        <button type="submit" class="btn btn-danger">{% trans "Удалить" %}</button>
+        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+            {% trans "Отмена" %}
+        </a>
     </form>
 </div>
 {% endblock %}

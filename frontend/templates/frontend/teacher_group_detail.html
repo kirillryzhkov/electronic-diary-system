@@ -1,0 +1,144 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% trans "Группа" %} {{ group.name }} — {% trans "Электронный дневник" %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Группа" %} {{ group.name }}</h1>
+
+<p class="page-subtitle">
+    {% trans "Подробная информация по группе, которую ведёт преподаватель." %}
+</p>
+
+<div class="grid">
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Студентов" %}</div>
+        <div class="stat-value">{{ students_count }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Оценок" %}</div>
+        <div class="stat-value">{{ grades_count }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Средний балл" %}</div>
+        <div class="stat-value">{{ average }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>{% trans "Назначенные предметы" %}</h2>
+
+    {% if assignments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Кабинет" %}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for assignment in assignments %}
+                    <tr>
+                        <td>{{ assignment.subject.name }}</td>
+                        <td>
+                            {% if assignment.classroom %}
+                                {{ assignment.classroom.number }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">{% trans "Назначений нет." %}</div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>{% trans "Студенты группы" %}</h2>
+
+    {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "ФИО" %}</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.email }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">{% trans "В группе пока нет студентов." %}</div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>{% trans "Оценки по группе" %}</h2>
+
+    {% if grades %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Студент" %}</th>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Оценка" %}</th>
+                    <th>{% trans "Пояснение" %}</th>
+                    <th>{% trans "Дата и время" %}</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.student.full_name }}</td>
+                        <td>{{ grade.subject.name }}</td>
+
+                        <td>
+                            {% if grade.value >= 5 %}
+                                <span class="badge badge-green">{{ grade.value }}</span>
+                            {% elif grade.value == 4 %}
+                                <span class="badge badge-blue">{{ grade.value }}</span>
+                            {% elif grade.value == 3 %}
+                                <span class="badge badge-yellow">{{ grade.value }}</span>
+                            {% else %}
+                                <span class="badge badge-red">{{ grade.value }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if grade.comment %}
+                                {{ grade.comment }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>{{ grade.date|date:"d.m.Y H:i" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">{% trans "Оценок по этой группе пока нет." %}</div>
+    {% endif %}
+</div>
+
+<a href="{% url 'frontend-teacher-groups' %}" class="btn btn-secondary">
+    {% trans "Назад к группам" %}
+</a>
+{% endblock %}

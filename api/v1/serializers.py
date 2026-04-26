@@ -9,9 +9,11 @@ from grades.models import Grade
 
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role']
+        fields = ['id', 'username', 'first_name', 'last_name', 'full_name', 'email', 'role']
         read_only_fields = ['id']
 
 

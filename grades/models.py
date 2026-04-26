@@ -37,7 +37,10 @@ class Grade(models.Model):
         verbose_name='Пояснение к оценке'
     )
 
-    date = models.DateField(auto_now_add=True, verbose_name='Дата')
+    date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата и время выставления'
+    )
 
     def __str__(self):
         teacher_name = self.teacher.username if self.teacher else 'Без преподавателя'

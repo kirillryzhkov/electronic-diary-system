@@ -1,10 +1,22 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Предметы — Электронный дневник{% endblock %}
+{% block title %}{% trans "Предметы" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Предметы</h1>
-<p class="page-subtitle">Список учебных предметов в системе.</p>
+<h1 class="page-title">{% trans "Предметы" %}</h1>
+
+{% if user.role == 'admin' %}
+    <p>
+        <a href="{% url 'frontend-subject-create' %}" class="btn">
+            {% trans "Добавить предмет" %}
+        </a>
+    </p>
+{% endif %}
+
+<p class="page-subtitle">
+    {% trans "Список учебных предметов в системе." %}
+</p>
 
 <div class="card">
     {% if subjects %}
@@ -12,10 +24,15 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Название</th>
-                    <th>Описание</th>
+                    <th>{% trans "Название" %}</th>
+                    <th>{% trans "Описание" %}</th>
+
+                    {% if user.role == 'admin' %}
+                        <th>{% trans "Действия" %}</th>
+                    {% endif %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for subject in subjects %}
                     <tr>
@@ -28,12 +45,26 @@
                                 —
                             {% endif %}
                         </td>
+
+                        {% if user.role == 'admin' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-subject-edit' subject.id %}" class="btn btn-small">
+                                        {% trans "Изменить" %}
+                                    </a>
+
+                                    <a href="{% url 'frontend-subject-delete' subject.id %}" class="btn btn-danger btn-small">
+                                        {% trans "Удалить" %}
+                                    </a>
+                                </div>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Предметов пока нет.</div>
+        <div class="empty">{% trans "Предметов пока нет." %}</div>
     {% endif %}
 </div>
 {% endblock %}

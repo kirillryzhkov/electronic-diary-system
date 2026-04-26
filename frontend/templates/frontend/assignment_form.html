@@ -1,17 +1,78 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать назначение" %}
+    {% else %}
+        {% trans "Добавить назначение" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
 
 {% block content %}
 <h1 class="page-title">
-    {% if object %}Редактировать назначение{% else %}Добавить назначение{% endif %}
+    {% if object %}
+        {% trans "Редактировать назначение" %}
+    {% else %}
+        {% trans "Добавить назначение" %}
+    {% endif %}
 </h1>
+
+<p class="page-subtitle">
+    {% trans "Назначение связывает преподавателя, предмет, группу и кабинет." %}
+</p>
 
 <div class="card" style="max-width: 650px;">
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
 
-        <button type="submit" class="btn">Сохранить</button>
-        <a href="{% url 'frontend-assignments' %}" class="btn btn-secondary">Назад</a>
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.teacher.id_for_label }}">{% trans "Преподаватель" %}</label>
+            {{ form.teacher }}
+
+            {% if form.teacher.errors %}
+                <div class="error-box">{{ form.teacher.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.subject.id_for_label }}">{% trans "Предмет" %}</label>
+            {{ form.subject }}
+
+            {% if form.subject.errors %}
+                <div class="error-box">{{ form.subject.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.group.id_for_label }}">{% trans "Группа" %}</label>
+            {{ form.group }}
+
+            {% if form.group.errors %}
+                <div class="error-box">{{ form.group.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.classroom.id_for_label }}">{% trans "Кабинет" %}</label>
+            {{ form.classroom }}
+
+            {% if form.classroom.errors %}
+                <div class="error-box">{{ form.classroom.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+        <a href="{% url 'frontend-assignments' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
     </form>
 </div>
 {% endblock %}

@@ -1,15 +1,19 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Вход — Электронный дневник{% endblock %}
+{% block title %}{% trans "Вход" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
 <div class="card" style="max-width: 450px; margin: 60px auto;">
-    <h1 class="page-title">Вход</h1>
-    <p class="page-subtitle">Введите логин и пароль для входа в систему.</p>
+    <h1 class="page-title">{% trans "Вход" %}</h1>
+
+    <p class="page-subtitle">
+        {% trans "Введите логин и пароль для входа в систему." %}
+    </p>
 
     {% if form.errors %}
         <div class="error-box">
-            Неверный логин или пароль.
+            {% trans "Неверный логин или пароль." %}
         </div>
     {% endif %}
 
@@ -17,22 +21,25 @@
         {% csrf_token %}
 
         <div class="form-group">
-            <label for="id_username">Логин</label>
+            <label for="id_username">{% trans "Логин" %}</label>
             {{ form.username }}
         </div>
 
         <div class="form-group">
-            <label for="id_password">Пароль</label>
+            <label for="id_password">{% trans "Пароль" %}</label>
             {{ form.password }}
         </div>
 
-        <button type="submit" class="btn" style="width: 100%;">Войти</button>
+        <button type="submit" class="btn" style="width: 100%;">
+            {% trans "Войти" %}
+        </button>
     </form>
 
-    <div style="margin-top: 22px; color: #6b7280; font-size: 14px;">
-        <p><b>Демо-аккаунты:</b></p>
-        <p>Учитель: teacher / password123</p>
-        <p>Ученик: student1 / password123</p>
+    <div style="margin-top: 22px; color: var(--muted-color); font-size: 14px;">
+        <p><b>{% trans "Демо-аккаунты:" %}</b></p>
+        <p>{% trans "Администратор:" %} admin / password123</p>
+        <p>{% trans "Учитель:" %} teacher / password123</p>
+        <p>{% trans "Ученик:" %} student1 / password123</p>
     </div>
 </div>
 {% endblock %}

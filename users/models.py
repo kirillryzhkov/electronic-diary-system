@@ -26,13 +26,18 @@ class User(AbstractUser):
         verbose_name='Учебная группа'
     )
 
+    @property
+    def full_name(self):
+        name = f'{self.last_name} {self.first_name}'.strip()
+        return name if name else self.username
+
     def __str__(self):
         role = self.get_role_display()
 
         if self.role == 'student' and self.group:
-            return f"{self.username} ({role}, {self.group.name})"
+            return f"{self.full_name} ({role}, {self.group.name})"
 
-        return f"{self.username} ({role})"
+        return f"{self.full_name} ({role})"
 
     class Meta:
         verbose_name = 'Пользователь'

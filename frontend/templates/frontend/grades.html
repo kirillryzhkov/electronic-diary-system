@@ -1,28 +1,35 @@
 {% extends 'frontend/base.html' %}
+{% load i18n %}
 
-{% block title %}Оценки — Электронный дневник{% endblock %}
+{% block title %}{% trans "Оценки" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Оценки</h1>
+<h1 class="page-title">{% trans "Оценки" %}</h1>
+
 {% if user.role == 'teacher' %}
     <p>
-        <a href="{% url 'frontend-grade-create' %}" class="btn">Добавить оценку</a>
+        <a href="{% url 'frontend-grade-create' %}" class="btn">
+            {% trans "Добавить оценку" %}
+        </a>
     </p>
 {% endif %}
+
 <p class="page-subtitle">
-    {% if user.role == 'teacher' %}
-        Список всех оценок учеников.
+    {% if user.role == 'admin' %}
+        {% trans "Список всех оценок в системе." %}
+    {% elif user.role == 'teacher' %}
+        {% trans "Список оценок, которые вы выставили." %}
     {% else %}
-        Ваши оценки по предметам.
+        {% trans "Ваши оценки по предметам." %}
     {% endif %}
 </p>
 
 <div class="card">
     <form method="get" class="form-inline">
         <div>
-            <label for="subject">Фильтр по предмету</label>
+            <label for="subject">{% trans "Фильтр по предмету" %}</label>
             <select name="subject" id="subject">
-                <option value="">Все предметы</option>
+                <option value="">{% trans "Все предметы" %}</option>
                 {% for subject in subjects %}
                     <option value="{{ subject.id }}"
                         {% if request.GET.subject == subject.id|stringformat:"s" %}selected{% endif %}
@@ -33,47 +40,54 @@
             </select>
         </div>
 
-        <button type="submit" class="btn">Применить</button>
-        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">Сбросить</a>
+        <button type="submit" class="btn">{% trans "Применить" %}</button>
+        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+            {% trans "Сбросить" %}
+        </a>
     </form>
 
     {% if grades %}
         <table>
             <thead>
                 <tr>
-                    {% if user.role == 'teacher' %}
-                        <th>Ученик</th>
+                    {% if user.role == 'teacher' or user.role == 'admin' %}
+                        <th>{% trans "Ученик" %}</th>
                     {% endif %}
-                    <th>Предмет</th>
+
+                    <th>{% trans "Предмет" %}</th>
+
                     {% if user.role == 'admin' %}
-                        <th>Преподаватель</th>
+                        <th>{% trans "Преподаватель" %}</th>
                     {% endif %}
-                    <th>Оценка</th>
-                    <th>Пояснение</th>
-                    <th>Дата</th>
+
+                    <th>{% trans "Оценка" %}</th>
+                    <th>{% trans "Пояснение" %}</th>
+                    <th>{% trans "Дата и время" %}</th>
+
                     {% if user.role == 'teacher' %}
-                        <th>Действия</th>
+                        <th>{% trans "Действия" %}</th>
                     {% endif %}
                 </tr>
             </thead>
+
             <tbody>
                 {% for grade in grades %}
                     <tr>
-                        {% if user.role == 'teacher' %}
-                            <td>{{ grade.student.username }}</td>
+                        {% if user.role == 'teacher' or user.role == 'admin' %}
+                            <td>{{ grade.student.full_name }}</td>
                         {% endif %}
 
                         <td>{{ grade.subject.name }}</td>
 
-                            {% if user.role == 'admin' %}
-                                <td>
-                                    {% if grade.teacher %}
-                                        {{ grade.teacher.username }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                            {% endif %}
+                        {% if user.role == 'admin' %}
+                            <td>
+                                {% if grade.teacher %}
+                                    {{ grade.teacher.full_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        {% endif %}
 
                         <td>
                             {% if grade.value >= 5 %}
@@ -87,24 +101,25 @@
                             {% endif %}
                         </td>
 
-                    <td>
-                        {% if grade.comment %}
-                            {{ grade.comment }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
+                        <td>
+                            {% if grade.comment %}
+                                {{ grade.comment }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
 
-                        <td>{{ grade.date }}</td>
+                        <td>{{ grade.date|date:"d.m.Y H:i" }}</td>
+
                         {% if user.role == 'teacher' %}
                             <td>
                                 <div class="actions">
                                     <a href="{% url 'frontend-grade-edit' grade.id %}" class="btn btn-small">
-                                        Изменить
+                                        {% trans "Изменить" %}
                                     </a>
 
                                     <a href="{% url 'frontend-grade-delete' grade.id %}" class="btn btn-danger btn-small">
-                                        Удалить
+                                        {% trans "Удалить" %}
                                     </a>
                                 </div>
                             </td>
@@ -114,7 +129,7 @@
             </tbody>
         </table>
     {% else %}
-        <div class="empty">Оценки не найдены.</div>
+        <div class="empty">{% trans "Оценки не найдены." %}</div>
     {% endif %}
 </div>
 {% endblock %}

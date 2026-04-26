@@ -1,24 +1,24 @@
 {% extends 'frontend/base.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Удалить кабинет" %} — {% trans "Электронный дневник" %}{% endblock %}
+{% block title %}{% trans "Удалить предмет" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<h1 class="page-title">{% trans "Удалить кабинет" %}</h1>
+<h1 class="page-title">{% trans "Удалить предмет" %}</h1>
 
 <p class="page-subtitle">
-    {% trans "Подтвердите удаление кабинета." %}
+    {% trans "Подтвердите удаление предмета." %}
 </p>
 
 <div class="card" style="max-width: 650px;">
     <p>
-        {% trans "Вы действительно хотите удалить кабинет?" %}
+        {% trans "Вы действительно хотите удалить предмет?" %}
     </p>
 
     <table>
         <tr>
-            <th>{% trans "Кабинет" %}</th>
-            <td>{{ object.number }}</td>
+            <th>{% trans "Название" %}</th>
+            <td>{{ object.name }}</td>
         </tr>
 
         <tr>
@@ -34,13 +34,13 @@
     </table>
 
     <div class="error-box" style="margin-top: 20px;">
-        {% trans "Внимание: у связанных назначений преподавателей кабинет будет очищен." %}
+        {% trans "Внимание: при удалении предмета могут быть удалены связанные с ним оценки и назначения преподавателей." %}
     </div>
 
     <form method="post" style="margin-top: 20px;">
         {% csrf_token %}
         <button type="submit" class="btn btn-danger">{% trans "Удалить" %}</button>
-        <a href="{% url 'frontend-classrooms' %}" class="btn btn-secondary">
+        <a href="{% url 'frontend-subjects' %}" class="btn btn-secondary">
             {% trans "Отмена" %}
         </a>
     </form>

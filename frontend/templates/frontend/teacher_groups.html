@@ -1,0 +1,50 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Мои группы" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Мои группы" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Здесь отображаются группы, предметы и кабинеты, которые закреплены за вами." %}
+</p>
+
+{% if groups_data %}
+    <div class="grid">
+        {% for item in groups_data %}
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Группа" %}</div>
+                <div class="stat-value">{{ item.group.name }}</div>
+
+                <p>
+                    <b>{% trans "Студентов:" %}</b> {{ item.students_count }}<br>
+                    <b>{% trans "Оценок:" %}</b> {{ item.grades_count }}<br>
+                    <b>{% trans "Средний балл:" %}</b> {{ item.average }}
+                </p>
+
+                <p>
+                    <b>{% trans "Предметы:" %}</b><br>
+                    {% for assignment in item.assignments %}
+                        {{ assignment.subject.name }}
+                        {% if assignment.classroom %}
+                            — {% trans "каб." %} {{ assignment.classroom.number }}
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                </p>
+
+                <a href="{% url 'frontend-teacher-group-detail' item.group.id %}" class="btn">
+                    {% trans "Открыть группу" %}
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="empty">
+            {% trans "У вас пока нет назначенных групп." %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
