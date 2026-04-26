@@ -21,7 +21,7 @@
             --bg-color: #f4f6fb;
             --text-color: #1f2937;
             --card-bg: #ffffff;
-            --navbar-bg: #1f2937;
+            --navbar-bg: #030712;
             --border-color: #e5e7eb;
             --muted-color: #6b7280;
             --table-head-bg: #f9fafb;
@@ -30,6 +30,13 @@
             --input-text: #1f2937;
             --input-border: #d1d5db;
             --shadow-color: rgba(0, 0, 0, 0.08);
+
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-soft: rgba(37, 99, 235, 0.16);
+            --nav-hover: rgba(255, 255, 255, 0.08);
+            --nav-border: rgba(255, 255, 255, 0.08);
+            --nav-text-muted: rgba(255, 255, 255, 0.72);
         }
 
         body.dark-theme,
@@ -52,6 +59,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -65,62 +76,253 @@
             color: inherit;
         }
 
+        /* HEADER */
+
         .navbar {
-            background: var(--navbar-bg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background:
+                linear-gradient(180deg, rgba(3, 7, 18, 0.98) 0%, rgba(5, 10, 22, 0.95) 100%);
             color: white;
-            padding: 16px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid var(--nav-border);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
         }
 
-        .navbar-logo {
-            font-size: 20px;
-            font-weight: bold;
+        .navbar-shell {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 8px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            color: white;
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
+            flex-shrink: 0;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .brand-title {
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.05;
+            white-space: nowrap;
+        }
+
+        .brand-subtitle {
+            color: var(--nav-text-muted);
+            font-size: 11px;
+            line-height: 1.1;
+            margin-top: 1px;
+        }
+
+        .navbar-toggle {
+            display: none;
+            margin-left: auto;
+            color: white;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 13px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .navbar-toggle:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.22);
         }
 
         .navbar-menu {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .navbar-main {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
             flex-wrap: wrap;
         }
 
-        .navbar-menu a,
+        .nav-link,
+        .theme-btn,
         .logout-btn,
-        .theme-btn {
+        .nav-more summary {
             color: white;
-            font-size: 15px;
-            background: none;
+            font-size: 13px;
+            line-height: 1;
+            padding: 8px 10px;
+            border-radius: 9px;
+            background: transparent;
             border: none;
             cursor: pointer;
-            padding: 0;
             font-family: inherit;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
         }
 
-        .navbar-menu a:hover,
+        .nav-link:hover,
+        .theme-btn:hover,
         .logout-btn:hover,
-        .theme-btn:hover {
+        .nav-more summary:hover {
+            background: var(--nav-hover);
             color: #93c5fd;
         }
 
-        .language-form {
+         {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            min-width: 220px;
+            flex-shrink: 1;
+        }
+
+         input {
+            width: 100%;
+            padding: 9px 12px 9px 36px;
+            border-radius: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .language-form,
+        .logout-form {
             margin: 0;
         }
 
         .language-select {
             width: auto;
-            padding: 6px 8px;
-            border-radius: 8px;
-            border: 1px solid #4b5563;
-            background: #111827;
+            min-width: 62px;
+            padding: 8px 9px;
+            border-radius: 9px;
+            border: 1px solid rgba(147, 197, 253, 0.18);
+            background: rgba(255, 255, 255, 0.08);
             color: white;
+            font-size: 13px;
+            color-scheme: dark;
+        }
+
+        .language-select option {
+            background: #111827;
+            color: #ffffff;
+        }
+
+        .user-pill {
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 8px 11px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e5e7eb;
+            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-more {
+            position: relative;
+        }
+
+        .nav-more summary {
+            list-style: none;
+        }
+
+        .nav-more summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .nav-more summary::after {
+            content: "▾";
+            margin-left: 6px;
+            font-size: 11px;
+        }
+
+        .nav-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 220px;
+            padding: 8px;
+            border-radius: 14px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 18px 40px var(--shadow-color);
+        }
+
+        .nav-dropdown a {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: var(--text-color);
             font-size: 14px;
         }
 
+        .nav-dropdown a:hover {
+            background: var(--table-hover-bg);
+        }
+
+        /* BASE LAYOUT */
+
         .container {
+            width: 100%;
             max-width: 1150px;
-            margin: 30px auto;
+            margin: 28px auto;
             padding: 0 20px;
         }
 
@@ -130,16 +332,20 @@
             border-radius: 14px;
             padding: 24px;
             box-shadow: 0 8px 24px var(--shadow-color);
+            border: 1px solid var(--border-color);
             margin-bottom: 24px;
+            overflow-x: auto;
         }
 
         .page-title {
             font-size: 30px;
+            line-height: 1.2;
             margin-bottom: 10px;
         }
 
         .page-subtitle {
             color: var(--muted-color);
+            line-height: 1.6;
             margin-bottom: 25px;
         }
 
@@ -149,13 +355,15 @@
             border-radius: 10px;
             border: none;
             cursor: pointer;
-            background: #2563eb;
+            background: var(--primary);
             color: white;
             font-size: 15px;
+            transition: transform 0.15s ease, background 0.2s ease;
         }
 
         .btn:hover {
-            background: #1d4ed8;
+            background: var(--primary-hover);
+            transform: translateY(-1px);
         }
 
         .btn-secondary {
@@ -198,6 +406,7 @@
             border-radius: 14px;
             padding: 22px;
             box-shadow: 0 8px 24px var(--shadow-color);
+            border: 1px solid var(--border-color);
         }
 
         .stat-title {
@@ -213,6 +422,7 @@
 
         table {
             width: 100%;
+            min-width: 720px;
             border-collapse: collapse;
             overflow: hidden;
             border-radius: 12px;
@@ -222,6 +432,7 @@
             padding: 14px;
             border-bottom: 1px solid var(--border-color);
             text-align: left;
+            vertical-align: top;
         }
 
         th {
@@ -306,6 +517,9 @@
         }
 
         .hero {
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
             padding: 70px 20px;
             text-align: center;
         }
@@ -337,8 +551,13 @@
         }
 
         .message-card {
-            border-left: 5px solid #2563eb;
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
+            border-left: 5px solid var(--primary);
         }
+
+        /* HOMEWORK CARDS */
 
         .homework-list {
             display: flex;
@@ -398,22 +617,175 @@
             white-space: pre-wrap;
         }
 
-        @media (max-width: 700px) {
-            .navbar {
-                flex-direction: column;
-                gap: 14px;
-                padding: 16px 20px;
+        /* ADAPTIVE */
+
+        @media (max-width: 1180px) {
+            .navbar-shell {
+                flex-wrap: wrap;
+            }
+
+            .navbar-toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
             }
 
             .navbar-menu {
-                flex-wrap: wrap;
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 14px;
+                padding-top: 12px;
+            }
+
+            .navbar-menu.is-open {
+                display: flex;
+            }
+
+            .navbar-main {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .nav-links {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                width: 100%;
+            }
+
+            .nav-link,
+            .nav-more summary {
+                width: 100%;
+                text-align: center;
+                background: rgba(255, 255, 255, 0.06);
+            }
+
+            .nav-more {
+                width: 100%;
+            }
+
+            .nav-dropdown {
+                position: static;
+                margin-top: 8px;
+                width: 100%;
+                box-shadow: none;
+            }
+
+
+            .navbar-actions {
+                width: 100%;
+                margin-left: 0;
                 justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .navbar-shell {
+                padding: 9px 12px;
+            }
+
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+                border-radius: 10px;
+                font-size: 11px;
+            }
+
+            .brand-title {
+                font-size: 16px;
+            }
+
+            .brand-subtitle {
+                font-size: 11px;
+            }
+
+            .container {
+                margin: 18px auto;
+                padding: 0 12px;
+            }
+
+            .card,
+            .stat-card {
+                padding: 18px;
+                border-radius: 12px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .hero {
+                padding: 42px 18px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .stat-value {
+                font-size: 26px;
+            }
+
+            .nav-links {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .theme-btn,
+            .logout-btn,
+            .language-select,
+            .user-pill {
+                width: 100%;
+                text-align: center;
             }
 
             .form-inline {
                 flex-direction: column;
                 align-items: stretch;
             }
+
+            .form-inline select,
+            .form-inline .btn,
+            .form-inline a {
+                width: 100%;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            table {
+                min-width: 680px;
+            }
+
+            th,
+            td {
+                padding: 11px;
+                font-size: 14px;
+            }
+
             .homework-header {
                 flex-direction: column;
             }
@@ -432,76 +804,111 @@
 <body>
 
 <nav class="navbar">
-    <a href="{% url 'home' %}" class="navbar-logo">{% trans "Электронный дневник" %}</a>
+    <div class="navbar-shell">
+        <a href="{% url 'home' %}" class="navbar-brand">
+            <span class="brand-mark">EDS</span>
+            <span class="brand-text">
+                <span class="brand-title">{% trans "Электронный дневник" %}</span>
+                <span class="brand-subtitle">{% trans "Образовательная платформа" %}</span>
+            </span>
+        </a>
 
-    <div class="navbar-menu">
-        {% if user.is_authenticated %}
-            <a href="{% url 'frontend-assignments' %}">{% trans "Назначения" %}</a>
+        <button type="button" class="navbar-toggle" onclick="toggleMenu()">
+            ☰ {% trans "Меню" %}
+        </button>
 
-            {% if user.role == 'admin' %}
-                <a href="{% url 'frontend-groups' %}">{% trans "Группы" %}</a>
-                <a href="{% url 'frontend-classrooms' %}">{% trans "Кабинеты" %}</a>
+        <div class="navbar-menu" id="mainMenu">
+            {% if user.is_authenticated %}
+                <div class="navbar-main">
+                    <div class="nav-links">
+                        <a href="{% url 'dashboard' %}" class="nav-link">{% trans "Личный кабинет" %}</a>
+                        <a href="{% url 'frontend-schedule' %}" class="nav-link">{% trans "Расписание" %}</a>
+                        <a href="{% url 'frontend-attendance' %}" class="nav-link">{% trans "Посещаемость" %}</a>
+                        <a href="{% url 'frontend-homework' %}" class="nav-link">{% trans "Домашние задания" %}</a>
+                        <a href="{% url 'frontend-grades' %}" class="nav-link">{% trans "Оценки" %}</a>
+
+                        {% if user.role == 'teacher' %}
+                            <a href="{% url 'frontend-teacher-groups' %}" class="nav-link">{% trans "Мои группы" %}</a>
+                        {% endif %}
+
+                        <details class="nav-more">
+                            <summary>{% trans "Ещё" %}</summary>
+
+                            <div class="nav-dropdown">
+                                <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
+                                <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
+
+                                {% if user.role == 'admin' %}
+                                    <a href="{% url 'frontend-assignments' %}">{% trans "Назначения" %}</a>
+                                    <a href="{% url 'frontend-groups' %}">{% trans "Группы" %}</a>
+                                    <a href="{% url 'frontend-classrooms' %}">{% trans "Кабинеты" %}</a>
+                                {% endif %}
+
+                                {% if user.role == 'teacher' %}
+                                    <a href="{% url 'frontend-stats' %}">{% trans "Статистика" %}</a>
+                                {% endif %}
+
+                                {% if user.role == 'admin' or user.is_staff %}
+                                    <a href="/admin/">{% trans "Админка" %}</a>
+                                {% endif %}
+                            </div>
+                        </details>
+                    </div>
+
+
+
+                <div class="navbar-actions">
+                    <button type="button" class="theme-btn" onclick="toggleTheme()">
+                        {% trans "Тема" %}
+                    </button>
+
+                    <form action="{% url 'set_language' %}" method="post" class="language-form">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <select name="language" class="language-select" onchange="this.form.submit()">
+                            <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
+                            <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
+                            <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+                        </select>
+                    </form>
+
+                    <span class="user-pill">{{ user.full_name }}</span>
+
+                    <form method="post" action="{% url 'logout' %}" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn">{% trans "Выйти" %}</button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="navbar-main">
+                    <div class="nav-links">
+                        <a href="{% url 'login' %}" class="nav-link">{% trans "Войти" %}</a>
+                        <a href="/api/docs/" class="nav-link">Swagger</a>
+                    </div>
+
+                    <div class="navbar-search">
+                        <span class="navbar-search-icon">⌕</span>
+                        <input type="text" placeholder="{% trans 'Поиск по разделам...' %}">
+                    </div>
+                </div>
+
+                <div class="navbar-actions">
+                    <button type="button" class="theme-btn" onclick="toggleTheme()">
+                        {% trans "Тема" %}
+                    </button>
+
+                    <form action="{% url 'set_language' %}" method="post" class="language-form">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <select name="language" class="language-select" onchange="this.form.submit()">
+                            <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
+                            <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
+                            <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
+                        </select>
+                    </form>
+                </div>
             {% endif %}
-
-            <a href="{% url 'dashboard' %}">{% trans "Кабинет" %}</a>
-            <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
-            <a href="{% url 'frontend-schedule' %}">{% trans "Расписание" %}</a>
-            <a href="{% url 'frontend-attendance' %}">{% trans "Посещаемость" %}</a>
-            <a href="{% url 'frontend-homework' %}">{% trans "Домашние задания" %}</a>
-            <a href="{% url 'frontend-grades' %}">{% trans "Оценки" %}</a>
-
-            {% if user.role == 'teacher' %}
-                <a href="{% url 'frontend-teacher-groups' %}">{% trans "Мои группы" %}</a>
-            {% endif %}
-
-            <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
-
-            {% if user.role == 'teacher' %}
-                <a href="{% url 'frontend-stats' %}">{% trans "Статистика" %}</a>
-            {% endif %}
-
-            {% if user.role == 'admin' or user.is_staff %}
-                <a href="/admin/">{% trans "Админка" %}</a>
-            {% endif %}
-
-            <button type="button" class="theme-btn" onclick="toggleTheme()">
-                {% trans "Тема" %}
-            </button>
-
-            <form action="{% url 'set_language' %}" method="post" class="language-form">
-                {% csrf_token %}
-                <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                <select name="language" class="language-select" onchange="this.form.submit()">
-                    <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
-                    <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
-                    <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
-                </select>
-            </form>
-
-            <span>{{ user.full_name }}</span>
-
-            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn">{% trans "Выйти" %}</button>
-            </form>
-        {% else %}
-            <button type="button" class="theme-btn" onclick="toggleTheme()">
-                {% trans "Тема" %}
-            </button>
-
-            <form action="{% url 'set_language' %}" method="post" class="language-form">
-                {% csrf_token %}
-                <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                <select name="language" class="language-select" onchange="this.form.submit()">
-                    <option value="ru" {% if request.LANGUAGE_CODE == 'ru' %}selected{% endif %}>RU</option>
-                    <option value="kk" {% if request.LANGUAGE_CODE == 'kk' %}selected{% endif %}>KZ</option>
-                    <option value="en" {% if request.LANGUAGE_CODE == 'en' %}selected{% endif %}>EN</option>
-                </select>
-            </form>
-
-            <a href="{% url 'login' %}">{% trans "Войти" %}</a>
-            <a href="/api/docs/">Swagger</a>
-        {% endif %}
+        </div>
     </div>
 </nav>
 
@@ -539,6 +946,43 @@
         const isDark = document.body.classList.toggle('dark-theme');
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
     }
+
+    function toggleMenu() {
+        const menu = document.getElementById('mainMenu');
+
+        if (menu) {
+            menu.classList.toggle('is-open');
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const menu = document.getElementById('mainMenu');
+        const button = document.querySelector('.navbar-toggle');
+
+        if (!menu || !button) {
+            return;
+        }
+
+        const clickedInsideMenu = menu.contains(event.target);
+        const clickedButton = button.contains(event.target);
+
+        if (!clickedInsideMenu && !clickedButton) {
+            menu.classList.remove('is-open');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const menu = document.getElementById('mainMenu');
+        const navLinks = document.querySelectorAll('.nav-link, .nav-dropdown a');
+
+        navLinks.forEach(function (link) {
+            link.addEventListener('click', function () {
+                if (window.innerWidth <= 1180 && menu) {
+                    menu.classList.remove('is-open');
+                }
+            });
+        });
+    });
 
     applyTheme();
 </script>

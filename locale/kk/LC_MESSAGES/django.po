@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Electronic Diary\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-26 23:42+0500\n"
+"POT-Creation-Date: 2026-04-27 00:02+0500\n"
 "PO-Revision-Date: 2026-04-26 22:50+0500\n"
 "Last-Translator: Kirill\n"
 "Language-Team: Kazakh\n"
@@ -76,7 +76,7 @@ msgstr "Тағайындауды жою"
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:4
 #: .\frontend\templates\frontend\attendance_form.html:10
 #: .\frontend\templates\frontend\base.html:7
-#: .\frontend\templates\frontend\base.html:435
+#: .\frontend\templates\frontend\base.html:805
 #: .\frontend\templates\frontend\classroom_confirm_delete.html:4
 #: .\frontend\templates\frontend\classroom_form.html:10
 #: .\frontend\templates\frontend\classrooms.html:4
@@ -171,7 +171,6 @@ msgstr "Топ"
 #: .\frontend\templates\frontend\assignment_confirm_delete.html:35
 #: .\frontend\templates\frontend\assignment_form.html:64
 #: .\frontend\templates\frontend\assignments.html:29
-#: .\frontend\templates\frontend\base.html:446
 #: .\frontend\templates\frontend\classroom_confirm_delete.html:20
 #: .\frontend\templates\frontend\classrooms.html:26
 #: .\frontend\templates\frontend\dashboard.html:4
@@ -258,7 +257,7 @@ msgid "Назад"
 msgstr "Артқа"
 
 #: .\frontend\templates\frontend\assignments.html:4
-#: .\frontend\templates\frontend\base.html:439
+#: .\frontend\templates\frontend\base.html:836
 msgid "Назначения"
 msgstr "Тағайындаулар"
 
@@ -298,7 +297,7 @@ msgstr "Әзірге тағайындаулар жоқ."
 
 #: .\frontend\templates\frontend\attendance.html:4
 #: .\frontend\templates\frontend\attendance.html:7
-#: .\frontend\templates\frontend\base.html:449
+#: .\frontend\templates\frontend\base.html:820
 msgid "Посещаемость"
 msgstr "Қатысу"
 
@@ -378,76 +377,99 @@ msgstr "Бұл форма әкімші мен оқытушыға қолжеті�
 msgid "Назначение"
 msgstr "Тағайындау"
 
-#: .\frontend\templates\frontend\base.html:442
-#: .\frontend\templates\frontend\groups.html:4
-msgid "Группы"
-msgstr "Топтар"
+#: .\frontend\templates\frontend\base.html:806
+msgid "Образовательная платформа"
+msgstr "Білім беру платформасы"
 
-#: .\frontend\templates\frontend\base.html:443
-#: .\frontend\templates\frontend\classrooms.html:4
-#: .\frontend\templates\frontend\classrooms.html:7
-msgid "Кабинеты"
-msgstr "Кабинеттер"
+#: .\frontend\templates\frontend\base.html:811
+msgid "Меню"
+msgstr "Мәзір"
 
-#: .\frontend\templates\frontend\base.html:447
-#: .\frontend\templates\frontend\profile.html:4
-msgid "Профиль"
-msgstr "Профиль"
+#: .\frontend\templates\frontend\base.html:818
+#: .\frontend\templates\frontend\dashboard.html:7
+msgid "Личный кабинет"
+msgstr "Жеке кабинет"
 
-#: .\frontend\templates\frontend\base.html:448
+#: .\frontend\templates\frontend\base.html:819
 #: .\frontend\templates\frontend\schedule.html:4
 msgid "Расписание"
 msgstr "Кесте"
 
-#: .\frontend\templates\frontend\base.html:450
+#: .\frontend\templates\frontend\base.html:821
 #: .\frontend\templates\frontend\homework.html:4
 #: .\frontend\templates\frontend\homework.html:7
 msgid "Домашние задания"
 msgstr "Үй тапсырмалары"
 
-#: .\frontend\templates\frontend\base.html:451
+#: .\frontend\templates\frontend\base.html:822
 #: .\frontend\templates\frontend\grades.html:4
 #: .\frontend\templates\frontend\grades.html:7
 msgid "Оценки"
 msgstr "Бағалар"
 
-#: .\frontend\templates\frontend\base.html:454
+#: .\frontend\templates\frontend\base.html:825
 #: .\frontend\templates\frontend\profile.html:105
 #: .\frontend\templates\frontend\teacher_groups.html:4
 #: .\frontend\templates\frontend\teacher_groups.html:7
 msgid "Мои группы"
 msgstr "Менің топтарым"
 
-#: .\frontend\templates\frontend\base.html:457
+#: .\frontend\templates\frontend\base.html:829
+msgid "Ещё"
+msgstr "Тағы"
+
+#: .\frontend\templates\frontend\base.html:832
+#: .\frontend\templates\frontend\profile.html:4
+msgid "Профиль"
+msgstr "Профиль"
+
+#: .\frontend\templates\frontend\base.html:833
 #: .\frontend\templates\frontend\subjects.html:4
 #: .\frontend\templates\frontend\subjects.html:7
 msgid "Предметы"
 msgstr "Пәндер"
 
-#: .\frontend\templates\frontend\base.html:460
+#: .\frontend\templates\frontend\base.html:837
+#: .\frontend\templates\frontend\groups.html:4
+msgid "Группы"
+msgstr "Топтар"
+
+#: .\frontend\templates\frontend\base.html:838
+#: .\frontend\templates\frontend\classrooms.html:4
+#: .\frontend\templates\frontend\classrooms.html:7
+msgid "Кабинеты"
+msgstr "Кабинеттер"
+
+#: .\frontend\templates\frontend\base.html:842
 #: .\frontend\templates\frontend\stats.html:4
 msgid "Статистика"
 msgstr "Статистика"
 
-#: .\frontend\templates\frontend\base.html:464
+#: .\frontend\templates\frontend\base.html:846
 msgid "Админка"
 msgstr "Әкімші панелі"
 
-#: .\frontend\templates\frontend\base.html:468
-#: .\frontend\templates\frontend\base.html:489
+#: .\frontend\templates\frontend\base.html:856
+#: .\frontend\templates\frontend\base.html:891
 msgid "Тема"
 msgstr "Тақырып"
 
-#: .\frontend\templates\frontend\base.html:485
+#: .\frontend\templates\frontend\base.html:873
 msgid "Выйти"
 msgstr "Шығу"
 
-#: .\frontend\templates\frontend\base.html:502
+#: .\frontend\templates\frontend\base.html:879
 #: .\frontend\templates\frontend\login.html:34
 msgid "Войти"
 msgstr "Кіру"
 
-#: .\frontend\templates\frontend\base.html:522
+#: .\frontend\templates\frontend\base.html:885
+#, fuzzy
+#| msgid "Статистика по предметам"
+msgid "Поиск по разделам..."
+msgstr "Пәндер бойынша статистика"
+
+#: .\frontend\templates\frontend\base.html:923
 msgid "Дипломный проект"
 msgstr "Дипломдық жоба"
 
@@ -510,10 +532,6 @@ msgstr "Оқу кабинеттерінің тізімі."
 #: .\frontend\templates\frontend\classrooms.html:66
 msgid "Кабинетов пока нет."
 msgstr "Әзірге кабинеттер жоқ."
-
-#: .\frontend\templates\frontend\dashboard.html:7
-msgid "Личный кабинет"
-msgstr "Жеке кабинет"
 
 #: .\frontend\templates\frontend\dashboard.html:10
 msgid "Вы вошли как:"
