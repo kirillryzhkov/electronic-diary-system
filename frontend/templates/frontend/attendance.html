@@ -1,0 +1,111 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Посещаемость" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Посещаемость" %}</h1>
+
+<p class="page-subtitle">
+    {% if user.role == 'admin' %}
+        {% trans "Полный журнал посещаемости по всем группам." %}
+    {% elif user.role == 'teacher' %}
+        {% trans "Журнал посещаемости по вашим группам и предметам." %}
+    {% else %}
+        {% trans "Ваша посещаемость по предметам." %}
+    {% endif %}
+</p>
+
+{% if user.role == 'admin' or user.role == 'teacher' %}
+    <p>
+        <a href="{% url 'frontend-attendance-create' %}" class="btn">
+            {% trans "Добавить посещаемость" %}
+        </a>
+    </p>
+{% endif %}
+
+<div class="card">
+    {% if attendance_records %}
+        <table>
+            <thead>
+                <tr>
+                    {% if user.role == 'admin' or user.role == 'teacher' %}
+                        <th>{% trans "Студент" %}</th>
+                    {% endif %}
+
+                    <th>{% trans "Дата" %}</th>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Группа" %}</th>
+
+                    {% if user.role == 'admin' %}
+                        <th>{% trans "Преподаватель" %}</th>
+                    {% endif %}
+
+                    <th>{% trans "Статус" %}</th>
+                    <th>{% trans "Комментарий" %}</th>
+
+                    {% if user.role == 'admin' or user.role == 'teacher' %}
+                        <th>{% trans "Действия" %}</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in attendance_records %}
+                    <tr>
+                        {% if user.role == 'admin' or user.role == 'teacher' %}
+                            <td>{{ record.student.full_name }}</td>
+                        {% endif %}
+
+                        <td>{{ record.date|date:"d.m.Y" }}</td>
+                        <td>{{ record.assignment.subject.name }}</td>
+                        <td>{{ record.assignment.group.name }}</td>
+
+                        {% if user.role == 'admin' %}
+                            <td>{{ record.assignment.teacher.full_name }}</td>
+                        {% endif %}
+
+                        <td>
+                            {% if record.status == 'present' %}
+                                <span class="badge badge-green">{{ record.get_status_display }}</span>
+                            {% elif record.status == 'late' %}
+                                <span class="badge badge-yellow">{{ record.get_status_display }}</span>
+                            {% elif record.status == 'excused' %}
+                                <span class="badge badge-blue">{{ record.get_status_display }}</span>
+                            {% else %}
+                                <span class="badge badge-red">{{ record.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if record.comment %}
+                                {{ record.comment }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        {% if user.role == 'admin' or user.role == 'teacher' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-attendance-edit' record.id %}" class="btn btn-small">
+                                        {% trans "Изменить" %}
+                                    </a>
+
+                                    <a href="{% url 'frontend-attendance-delete' record.id %}" class="btn btn-danger btn-small">
+                                        {% trans "Удалить" %}
+                                    </a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">
+            {% trans "Записей посещаемости пока нет." %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

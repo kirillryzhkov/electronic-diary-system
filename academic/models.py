@@ -164,3 +164,57 @@ class Schedule(models.Model):
                 name='unique_assignment_day_start_time'
             )
         ]
+
+class Attendance(models.Model):
+    STATUS_CHOICES = (
+        ('present', _('Присутствовал')),
+        ('absent', _('Отсутствовал')),
+        ('late', _('Опоздал')),
+        ('excused', _('Уважительная причина')),
+    )
+
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'student'},
+        related_name='attendance_records',
+        verbose_name='Студент'
+    )
+
+    assignment = models.ForeignKey(
+        TeachingAssignment,
+        on_delete=models.CASCADE,
+        related_name='attendance_records',
+        verbose_name='Назначение'
+    )
+
+    date = models.DateField(
+        verbose_name='Дата'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        verbose_name='Статус'
+    )
+
+    comment = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Комментарий'
+    )
+
+    def __str__(self):
+        return f'{self.student.full_name} — {self.assignment.subject.name} — {self.get_status_display()}'
+
+    class Meta:
+        db_table = 'attendance'
+        verbose_name = 'Посещаемость'
+        verbose_name_plural = 'Посещаемость'
+        ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['student', 'assignment', 'date'],
+                name='unique_student_assignment_date_attendance'
+            )
+        ]

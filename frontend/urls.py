@@ -40,6 +40,11 @@ from .views import (
     ScheduleCreateView,
     ScheduleUpdateView,
     ScheduleDeleteView,
+
+    AttendanceListView,
+    AttendanceCreateView,
+    AttendanceUpdateView,
+    AttendanceDeleteView,
 )
 
 urlpatterns = [
@@ -81,4 +86,9 @@ urlpatterns = [
     path('schedule/create/', ScheduleCreateView.as_view(), name='frontend-schedule-create'),
     path('schedule/<int:pk>/edit/', ScheduleUpdateView.as_view(), name='frontend-schedule-edit'),
     path('schedule/<int:pk>/delete/', ScheduleDeleteView.as_view(), name='frontend-schedule-delete'),
+
+    path('attendance/', AttendanceListView.as_view(), name='frontend-attendance'),
+    path('attendance/create/', AttendanceCreateView.as_view(), name='frontend-attendance-create'),
+    path('attendance/<int:pk>/edit/', AttendanceUpdateView.as_view(), name='frontend-attendance-edit'),
+    path('attendance/<int:pk>/delete/', AttendanceDeleteView.as_view(), name='frontend-attendance-delete'),
 ]

@@ -15,7 +15,7 @@ from .forms import GradeForm
 from grades.models import Grade
 from subjects.models import Subject
 
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
 
 from .forms import (
     GradeForm,
@@ -24,6 +24,7 @@ from .forms import (
     ClassroomForm,
     TeachingAssignmentForm,
     ScheduleForm,
+    AttendanceForm,
 )
 
 
@@ -608,4 +609,118 @@ class ScheduleDeleteView(AdminRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Занятие удалено из расписания.')
+        return super().form_valid(form)
+    
+class AttendanceListView(LoginRequiredMixin, ListView):
+    model = Attendance
+    template_name = 'frontend/attendance.html'
+    context_object_name = 'attendance_records'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Attendance.objects.select_related(
+            'student',
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        ).order_by('-date')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        elif user.role == 'student':
+            queryset = queryset.filter(student=user)
+
+        return queryset
+
+
+class AttendanceCreateView(LoginRequiredMixin, CreateView):
+    model = Attendance
+    form_class = AttendanceForm
+    template_name = 'frontend/attendance_form.html'
+    success_url = reverse_lazy('frontend-attendance')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может отмечать посещаемость.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Посещаемость успешно добавлена.')
+        return super().form_valid(form)
+
+
+class AttendanceUpdateView(LoginRequiredMixin, UpdateView):
+    model = Attendance
+    form_class = AttendanceForm
+    template_name = 'frontend/attendance_form.html'
+    success_url = reverse_lazy('frontend-attendance')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может редактировать посещаемость.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Attendance.objects.select_related(
+            'student',
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+        )
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        return queryset
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Посещаемость успешно обновлена.')
+        return super().form_valid(form)
+
+
+class AttendanceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Attendance
+    template_name = 'frontend/attendance_confirm_delete.html'
+    success_url = reverse_lazy('frontend-attendance')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может удалять посещаемость.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Attendance.objects.select_related(
+            'student',
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+        )
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        return queryset
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Запись посещаемости удалена.')
         return super().form_valid(form)

@@ -1,7 +1,7 @@
 # academic/admin.py
 from django.contrib import admin
 
-from .models import StudyGroup, Classroom, TeachingAssignment, Schedule
+from .models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
 
 
 @admin.register(StudyGroup)
@@ -80,3 +80,46 @@ class ScheduleAdmin(admin.ModelAdmin):
         return obj.assignment.classroom or '—'
 
     get_classroom.short_description = 'Кабинет'
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'student',
+        'get_teacher',
+        'get_subject',
+        'get_group',
+        'date',
+        'status',
+    )
+    list_filter = (
+        'status',
+        'date',
+        'assignment__teacher',
+        'assignment__subject',
+        'assignment__group',
+    )
+    search_fields = (
+        'student__username',
+        'student__first_name',
+        'student__last_name',
+        'assignment__teacher__username',
+        'assignment__subject__name',
+        'assignment__group__name',
+    )
+    ordering = ('-date',)
+
+    def get_teacher(self, obj):
+        return obj.assignment.teacher.full_name
+
+    get_teacher.short_description = 'Преподаватель'
+
+    def get_subject(self, obj):
+        return obj.assignment.subject.name
+
+    get_subject.short_description = 'Предмет'
+
+    def get_group(self, obj):
+        return obj.assignment.group.name
+
+    get_group.short_description = 'Группа'

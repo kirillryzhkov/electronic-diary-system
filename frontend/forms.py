@@ -3,7 +3,7 @@ from django import forms
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
 
 class UserFullNameChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -269,3 +269,88 @@ class ScheduleForm(forms.ModelForm):
             )
 
         return cleaned_data
+    
+class AttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['student', 'assignment', 'date', 'status', 'comment']
+
+        labels = {
+            'student': 'Студент',
+            'assignment': 'Назначение',
+            'date': 'Дата',
+            'status': 'Статус',
+            'comment': 'Комментарий',
+        }
+
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-control'}),
+            'assignment': forms.Select(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Например: отсутствовал по уважительной причине'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        self.fields['student'].queryset = User.objects.filter(
+            role='student'
+        ).order_by('group__name', 'last_name', 'first_name', 'username')
+
+        self.fields['student'].label_from_instance = lambda obj: obj.full_name
+
+        self.fields['assignment'].queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        ).order_by('group__name', 'subject__name')
+
+        self.fields['assignment'].label_from_instance = self.assignment_label
+
+        if self.user and self.user.role == 'teacher':
+            assignments = TeachingAssignment.objects.filter(
+                teacher=self.user
+            ).select_related('subject', 'group', 'classroom')
+
+            group_ids = assignments.values_list('group_id', flat=True).distinct()
+
+            self.fields['assignment'].queryset = assignments
+            self.fields['student'].queryset = User.objects.filter(
+                role='student',
+                group_id__in=group_ids
+            ).order_by('group__name', 'last_name', 'first_name', 'username')
+
+    def assignment_label(self, obj):
+        classroom = obj.classroom.number if obj.classroom else 'без кабинета'
+        return f'{obj.teacher.full_name} — {obj.subject.name} — {obj.group.name} — каб. {classroom}'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        student = cleaned_data.get('student')
+        assignment = cleaned_data.get('assignment')
+
+        if student and assignment:
+            if student.group != assignment.group:
+                raise forms.ValidationError(
+                    'Студент должен принадлежать группе выбранного назначения.'
+                )
+
+            if self.user and self.user.role == 'teacher':
+                if assignment.teacher != self.user:
+                    raise forms.ValidationError(
+                        'Вы можете отмечать посещаемость только по своим назначениям.'
+                    )
+
+        return cleaned_data
+    

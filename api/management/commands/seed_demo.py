@@ -3,8 +3,8 @@ from django.core.management.base import BaseCommand
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
-from datetime import time
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
+from datetime import time, date
 
 
 class Command(BaseCommand):
@@ -14,6 +14,7 @@ class Command(BaseCommand):
         self.stdout.write('Очистка старых демо-данных...')
 
         Grade.objects.all().delete()
+        Attendance.objects.all().delete()
         Schedule.objects.all().delete()
         TeachingAssignment.objects.all().delete()
         Classroom.objects.all().delete()
@@ -219,6 +220,31 @@ class Command(BaseCommand):
                 lesson_number=lesson_number,
                 start_time=start_time,
                 end_time=end_time
+            )
+
+            self.stdout.write('Создание посещаемости...')
+
+        demo_attendance = [
+            # ИС-31
+            (student1, assignment_is31_math, date(2026, 4, 20), 'present', 'Присутствовал на занятии.'),
+            (student2, assignment_is31_math, date(2026, 4, 20), 'late', 'Опоздал на 10 минут.'),
+            (student1, assignment_is31_informatics, date(2026, 4, 21), 'present', 'Активно работал на практике.'),
+            (student2, assignment_is31_informatics, date(2026, 4, 21), 'absent', 'Отсутствовал без предупреждения.'),
+
+            # ПО-22
+            (student3, assignment_po22_physics, date(2026, 4, 20), 'present', 'Присутствовал.'),
+            (student4, assignment_po22_physics, date(2026, 4, 20), 'excused', 'Отсутствовал по уважительной причине.'),
+            (student3, assignment_po22_history, date(2026, 4, 22), 'late', 'Опоздал к началу занятия.'),
+            (student4, assignment_po22_history, date(2026, 4, 22), 'present', 'Присутствовал на занятии.'),
+        ]
+
+        for student, assignment, attendance_date, status, comment in demo_attendance:
+            Attendance.objects.create(
+                student=student,
+                assignment=assignment,
+                date=attendance_date,
+                status=status,
+                comment=comment
             )
 
         self.stdout.write('Создание оценок...')
