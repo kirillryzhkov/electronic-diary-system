@@ -1,0 +1,87 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать занятие" %}
+    {% else %}
+        {% trans "Добавить занятие" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if object %}
+        {% trans "Редактировать занятие" %}
+    {% else %}
+        {% trans "Добавить занятие" %}
+    {% endif %}
+</h1>
+
+<p class="page-subtitle">
+    {% trans "Форма доступна только администратору." %}
+</p>
+
+<div class="card" style="max-width: 700px;">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.assignment.id_for_label }}">{% trans "Назначение" %}</label>
+            {{ form.assignment }}
+
+            {% if form.assignment.errors %}
+                <div class="error-box">{{ form.assignment.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.day.id_for_label }}">{% trans "День недели" %}</label>
+            {{ form.day }}
+
+            {% if form.day.errors %}
+                <div class="error-box">{{ form.day.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.lesson_number.id_for_label }}">{% trans "Номер пары/урока" %}</label>
+            {{ form.lesson_number }}
+
+            {% if form.lesson_number.errors %}
+                <div class="error-box">{{ form.lesson_number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.start_time.id_for_label }}">{% trans "Время начала" %}</label>
+            {{ form.start_time }}
+
+            {% if form.start_time.errors %}
+                <div class="error-box">{{ form.start_time.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.end_time.id_for_label }}">{% trans "Время окончания" %}</label>
+            {{ form.end_time }}
+
+            {% if form.end_time.errors %}
+                <div class="error-box">{{ form.end_time.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+        <a href="{% url 'frontend-schedule' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

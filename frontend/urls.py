@@ -35,6 +35,11 @@ from .views import (
     TeacherGroupDetailView,
 
     ProfileView,
+
+    ScheduleListView,
+    ScheduleCreateView,
+    ScheduleUpdateView,
+    ScheduleDeleteView,
 )
 
 urlpatterns = [
@@ -72,5 +77,8 @@ urlpatterns = [
     path('my-groups/', TeacherGroupsView.as_view(), name='frontend-teacher-groups'),
     path('my-groups/<int:group_id>/', TeacherGroupDetailView.as_view(), name='frontend-teacher-group-detail'),
 
-    
+    path('schedule/', ScheduleListView.as_view(), name='frontend-schedule'),
+    path('schedule/create/', ScheduleCreateView.as_view(), name='frontend-schedule-create'),
+    path('schedule/<int:pk>/edit/', ScheduleUpdateView.as_view(), name='frontend-schedule-edit'),
+    path('schedule/<int:pk>/delete/', ScheduleDeleteView.as_view(), name='frontend-schedule-delete'),
 ]

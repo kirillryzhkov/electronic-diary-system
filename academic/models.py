@@ -1,7 +1,7 @@
 # academic/models.py
 from django.conf import settings
 from django.db import models
-
+from django.utils.translation import gettext_lazy as _
 from subjects.models import Subject
 
 
@@ -106,5 +106,61 @@ class TeachingAssignment(models.Model):
             models.UniqueConstraint(
                 fields=['teacher', 'subject', 'group'],
                 name='unique_teacher_subject_group'
+            )
+        ]
+
+class Schedule(models.Model):
+    DAY_CHOICES = (
+        (1, _('Понедельник')),
+        (2, _('Вторник')),
+        (3, _('Среда')),
+        (4, _('Четверг')),
+        (5, _('Пятница')),
+        (6, _('Суббота')),
+    )
+
+    assignment = models.ForeignKey(
+        TeachingAssignment,
+        on_delete=models.CASCADE,
+        related_name='schedule_items',
+        verbose_name='Назначение преподавателя'
+    )
+
+    day = models.PositiveSmallIntegerField(
+        choices=DAY_CHOICES,
+        verbose_name='День недели'
+    )
+
+    start_time = models.TimeField(
+        verbose_name='Время начала'
+    )
+
+    end_time = models.TimeField(
+        verbose_name='Время окончания'
+    )
+
+    lesson_number = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Номер пары/урока'
+    )
+
+    def __str__(self):
+        return (
+            f'{self.get_day_display()} '
+            f'{self.start_time}-{self.end_time} — '
+            f'{self.assignment.subject.name} — '
+            f'{self.assignment.group.name}'
+        )
+
+    class Meta:
+        db_table = 'schedule'
+        verbose_name = 'Расписание'
+        verbose_name_plural = 'Расписание'
+        ordering = ['day', 'start_time']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['assignment', 'day', 'start_time'],
+                name='unique_assignment_day_start_time'
             )
         ]

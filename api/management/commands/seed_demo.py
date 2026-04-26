@@ -3,7 +3,8 @@ from django.core.management.base import BaseCommand
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
+from datetime import time
 
 
 class Command(BaseCommand):
@@ -13,6 +14,7 @@ class Command(BaseCommand):
         self.stdout.write('Очистка старых демо-данных...')
 
         Grade.objects.all().delete()
+        Schedule.objects.all().delete()
         TeachingAssignment.objects.all().delete()
         Classroom.objects.all().delete()
         StudyGroup.objects.all().delete()
@@ -159,40 +161,65 @@ class Command(BaseCommand):
 
         self.stdout.write('Создание назначений преподавателей...')
 
-        TeachingAssignment.objects.create(
+        assignment_is31_math = TeachingAssignment.objects.create(
             teacher=teacher,
             subject=math,
             group=group_is_31,
             classroom=room_204
         )
 
-        TeachingAssignment.objects.create(
+        assignment_is31_informatics = TeachingAssignment.objects.create(
             teacher=teacher,
             subject=informatics,
             group=group_is_31,
             classroom=room_305
         )
 
-        TeachingAssignment.objects.create(
+        assignment_po22_physics = TeachingAssignment.objects.create(
             teacher=teacher2,
             subject=physics,
             group=group_po_22,
             classroom=room_210
         )
 
-        TeachingAssignment.objects.create(
+        assignment_po22_history = TeachingAssignment.objects.create(
             teacher=teacher2,
             subject=history,
             group=group_po_22,
             classroom=room_112
         )
 
-        TeachingAssignment.objects.create(
+        assignment_po22_math = TeachingAssignment.objects.create(
             teacher=teacher2,
             subject=math,
             group=group_po_22,
             classroom=room_204
         )
+
+        self.stdout.write('Создание расписания...')
+
+        demo_schedule = [
+            # ИС-31
+            (assignment_is31_math, 1, 1, time(8, 30), time(10, 0)),
+            (assignment_is31_informatics, 1, 2, time(10, 10), time(11, 40)),
+            (assignment_is31_math, 3, 1, time(8, 30), time(10, 0)),
+            (assignment_is31_informatics, 4, 3, time(12, 10), time(13, 40)),
+
+            # ПО-22
+            (assignment_po22_math, 1, 1, time(8, 30), time(10, 0)),
+            (assignment_po22_physics, 2, 2, time(10, 10), time(11, 40)),
+            (assignment_po22_history, 3, 3, time(12, 10), time(13, 40)),
+            (assignment_po22_physics, 5, 1, time(8, 30), time(10, 0)),
+        ]
+
+        for assignment, day, lesson_number, start_time, end_time in demo_schedule:
+            Schedule.objects.create(
+                assignment=assignment,
+                day=day,
+                lesson_number=lesson_number,
+                start_time=start_time,
+                end_time=end_time
+            )
 
         self.stdout.write('Создание оценок...')
 

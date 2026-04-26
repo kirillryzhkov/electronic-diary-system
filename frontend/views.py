@@ -15,13 +15,15 @@ from .forms import GradeForm
 from grades.models import Grade
 from subjects.models import Subject
 
-from academic.models import StudyGroup, Classroom, TeachingAssignment
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
+
 from .forms import (
     GradeForm,
     SubjectForm,
     StudyGroupForm,
     ClassroomForm,
     TeachingAssignmentForm,
+    ScheduleForm,
 )
 
 
@@ -548,3 +550,62 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             context['grades_count'] = Grade.objects.count()
 
         return context
+    
+class ScheduleListView(LoginRequiredMixin, ListView):
+    model = Schedule
+    template_name = 'frontend/schedule.html'
+    context_object_name = 'schedule_items'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Schedule.objects.select_related(
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        ).order_by('day', 'start_time')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        elif user.role == 'student':
+            if user.group:
+                queryset = queryset.filter(assignment__group=user.group)
+            else:
+                queryset = queryset.none()
+
+        return queryset
+
+
+class ScheduleCreateView(AdminRequiredMixin, CreateView):
+    model = Schedule
+    form_class = ScheduleForm
+    template_name = 'frontend/schedule_form.html'
+    success_url = reverse_lazy('frontend-schedule')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Занятие успешно добавлено в расписание.')
+        return super().form_valid(form)
+
+
+class ScheduleUpdateView(AdminRequiredMixin, UpdateView):
+    model = Schedule
+    form_class = ScheduleForm
+    template_name = 'frontend/schedule_form.html'
+    success_url = reverse_lazy('frontend-schedule')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Занятие в расписании успешно обновлено.')
+        return super().form_valid(form)
+
+
+class ScheduleDeleteView(AdminRequiredMixin, DeleteView):
+    model = Schedule
+    template_name = 'frontend/schedule_confirm_delete.html'
+    success_url = reverse_lazy('frontend-schedule')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Занятие удалено из расписания.')
+        return super().form_valid(form)

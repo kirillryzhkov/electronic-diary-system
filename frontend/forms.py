@@ -3,7 +3,7 @@ from django import forms
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule
 
 class UserFullNameChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -203,3 +203,69 @@ class TeachingAssignmentForm(forms.ModelForm):
         self.fields['subject'].queryset = Subject.objects.all().order_by('name')
         self.fields['group'].queryset = StudyGroup.objects.all().order_by('name')
         self.fields['classroom'].queryset = Classroom.objects.all().order_by('number')
+
+
+class ScheduleForm(forms.ModelForm):
+    class Meta:
+        model = Schedule
+        fields = ['assignment', 'day', 'lesson_number', 'start_time', 'end_time']
+
+        labels = {
+            'assignment': 'Назначение',
+            'day': 'День недели',
+            'lesson_number': 'Номер пары/урока',
+            'start_time': 'Время начала',
+            'end_time': 'Время окончания',
+        }
+
+        widgets = {
+            'assignment': forms.Select(attrs={'class': 'form-control'}),
+            'day': forms.Select(attrs={'class': 'form-control'}),
+            'lesson_number': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Например: 1'
+            }),
+            'start_time': forms.TimeInput(attrs={
+                'class': 'form-control',
+                'type': 'time'
+            }),
+            'end_time': forms.TimeInput(attrs={
+                'class': 'form-control',
+                'type': 'time'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['assignment'].queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        ).order_by(
+            'group__name',
+            'subject__name',
+            'teacher__last_name',
+            'teacher__first_name'
+        )
+
+        self.fields['assignment'].label_from_instance = self.assignment_label
+
+    def assignment_label(self, obj):
+        classroom = obj.classroom.number if obj.classroom else 'без кабинета'
+        return f'{obj.teacher.full_name} — {obj.subject.name} — {obj.group.name} — каб. {classroom}'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+
+        if start_time and end_time and end_time <= start_time:
+            raise forms.ValidationError(
+                'Время окончания должно быть позже времени начала.'
+            )
+
+        return cleaned_data

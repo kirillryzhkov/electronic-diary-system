@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Electronic Diary\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-26 22:53+0500\n"
+"POT-Creation-Date: 2026-04-26 23:09+0500\n"
 "PO-Revision-Date: 2026-04-26 22:50+0500\n"
 "Last-Translator: Kirill\n"
 "Language-Team: Kazakh\n"
@@ -11,6 +11,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\academic\models.py:114
+msgid "Понедельник"
+msgstr "Дүйсенбі"
+
+#: .\academic\models.py:115
+msgid "Вторник"
+msgstr "Сейсенбі"
+
+#: .\academic\models.py:116
+msgid "Среда"
+msgstr "Сәрсенбі"
+
+#: .\academic\models.py:117
+msgid "Четверг"
+msgstr "Бейсенбі"
+
+#: .\academic\models.py:118
+msgid "Пятница"
+msgstr "Жұма"
+
+#: .\academic\models.py:119
+msgid "Суббота"
+msgstr "Сенбі"
 
 #: .\diary_project\settings.py:156
 msgid "Русский"
@@ -48,6 +72,9 @@ msgstr "Тағайындауды жою"
 #: .\frontend\templates\frontend\home.html:8
 #: .\frontend\templates\frontend\login.html:4
 #: .\frontend\templates\frontend\profile.html:4
+#: .\frontend\templates\frontend\schedule.html:4
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:4
+#: .\frontend\templates\frontend\schedule_form.html:10
 #: .\frontend\templates\frontend\stats.html:4
 #: .\frontend\templates\frontend\subject_confirm_delete.html:4
 #: .\frontend\templates\frontend\subject_form.html:10
@@ -70,6 +97,8 @@ msgstr "Бұл тағайындауды шынымен жойғыңыз келе
 #: .\frontend\templates\frontend\assignments.html:26
 #: .\frontend\templates\frontend\grade_confirm_delete.html:26
 #: .\frontend\templates\frontend\grades.html:60
+#: .\frontend\templates\frontend\schedule.html:37
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:43
 msgid "Преподаватель"
 msgstr "Оқытушы"
 
@@ -82,6 +111,8 @@ msgstr "Оқытушы"
 #: .\frontend\templates\frontend\grades.html:57
 #: .\frontend\templates\frontend\profile.html:127
 #: .\frontend\templates\frontend\profile.html:185
+#: .\frontend\templates\frontend\schedule.html:35
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:33
 #: .\frontend\templates\frontend\stats.html:18
 #: .\frontend\templates\frontend\teacher_group_detail.html:39
 #: .\frontend\templates\frontend\teacher_group_detail.html:98
@@ -95,6 +126,8 @@ msgstr "Пән"
 #: .\frontend\templates\frontend\groups.html:26
 #: .\frontend\templates\frontend\profile.html:45
 #: .\frontend\templates\frontend\profile.html:128
+#: .\frontend\templates\frontend\schedule.html:36
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:38
 #: .\frontend\templates\frontend\teacher_group_detail.html:5
 #: .\frontend\templates\frontend\teacher_group_detail.html:9
 #: .\frontend\templates\frontend\teacher_groups.html:17
@@ -109,6 +142,8 @@ msgstr "Топ"
 #: .\frontend\templates\frontend\classrooms.html:26
 #: .\frontend\templates\frontend\dashboard.html:4
 #: .\frontend\templates\frontend\profile.html:129
+#: .\frontend\templates\frontend\schedule.html:38
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:48
 #: .\frontend\templates\frontend\teacher_group_detail.html:40
 msgid "Кабинет"
 msgstr "Кабинет"
@@ -129,6 +164,8 @@ msgstr ""
 #: .\frontend\templates\frontend\grades.html:122
 #: .\frontend\templates\frontend\group_confirm_delete.html:53
 #: .\frontend\templates\frontend\groups.html:65
+#: .\frontend\templates\frontend\schedule.html:84
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:61
 #: .\frontend\templates\frontend\subject_confirm_delete.html:42
 #: .\frontend\templates\frontend\subjects.html:57
 msgid "Удалить"
@@ -138,6 +175,7 @@ msgstr "Жою"
 #: .\frontend\templates\frontend\classroom_confirm_delete.html:44
 #: .\frontend\templates\frontend\grade_confirm_delete.html:62
 #: .\frontend\templates\frontend\group_confirm_delete.html:55
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:63
 #: .\frontend\templates\frontend\subject_confirm_delete.html:44
 msgid "Отмена"
 msgstr "Бас тарту"
@@ -161,6 +199,7 @@ msgstr "Тағайындау оқытушыны, пәнді, топты және
 #: .\frontend\templates\frontend\classroom_form.html:54
 #: .\frontend\templates\frontend\grade_form.html:72
 #: .\frontend\templates\frontend\group_form.html:63
+#: .\frontend\templates\frontend\schedule_form.html:81
 #: .\frontend\templates\frontend\subject_form.html:54
 msgid "Сохранить"
 msgstr "Сақтау"
@@ -169,6 +208,7 @@ msgstr "Сақтау"
 #: .\frontend\templates\frontend\classroom_form.html:56
 #: .\frontend\templates\frontend\grade_form.html:74
 #: .\frontend\templates\frontend\group_form.html:65
+#: .\frontend\templates\frontend\schedule_form.html:83
 #: .\frontend\templates\frontend\subject_form.html:56
 msgid "Назад"
 msgstr "Артқа"
@@ -190,6 +230,7 @@ msgstr "Оқытушы, пән, топ және кабинет арасында�
 #: .\frontend\templates\frontend\classrooms.html:30
 #: .\frontend\templates\frontend\grades.html:68
 #: .\frontend\templates\frontend\groups.html:31
+#: .\frontend\templates\frontend\schedule.html:41
 #: .\frontend\templates\frontend\subjects.html:31
 msgid "Действия"
 msgstr "Әрекеттер"
@@ -198,6 +239,7 @@ msgstr "Әрекеттер"
 #: .\frontend\templates\frontend\classrooms.html:52
 #: .\frontend\templates\frontend\grades.html:118
 #: .\frontend\templates\frontend\groups.html:61
+#: .\frontend\templates\frontend\schedule.html:80
 #: .\frontend\templates\frontend\subjects.html:53
 msgid "Изменить"
 msgstr "Өңдеу"
@@ -224,48 +266,53 @@ msgid "Профиль"
 msgstr "Профиль"
 
 #: .\frontend\templates\frontend\base.html:378
+#: .\frontend\templates\frontend\schedule.html:4
+msgid "Расписание"
+msgstr "Кесте"
+
+#: .\frontend\templates\frontend\base.html:379
 #: .\frontend\templates\frontend\grades.html:4
 #: .\frontend\templates\frontend\grades.html:7
 msgid "Оценки"
 msgstr "Бағалар"
 
-#: .\frontend\templates\frontend\base.html:381
+#: .\frontend\templates\frontend\base.html:382
 #: .\frontend\templates\frontend\profile.html:105
 #: .\frontend\templates\frontend\teacher_groups.html:4
 #: .\frontend\templates\frontend\teacher_groups.html:7
 msgid "Мои группы"
 msgstr "Менің топтарым"
 
-#: .\frontend\templates\frontend\base.html:384
+#: .\frontend\templates\frontend\base.html:385
 #: .\frontend\templates\frontend\subjects.html:4
 #: .\frontend\templates\frontend\subjects.html:7
 msgid "Предметы"
 msgstr "Пәндер"
 
-#: .\frontend\templates\frontend\base.html:387
+#: .\frontend\templates\frontend\base.html:388
 #: .\frontend\templates\frontend\stats.html:4
 msgid "Статистика"
 msgstr "Статистика"
 
-#: .\frontend\templates\frontend\base.html:391
+#: .\frontend\templates\frontend\base.html:392
 msgid "Админка"
 msgstr "Әкімші панелі"
 
-#: .\frontend\templates\frontend\base.html:395
-#: .\frontend\templates\frontend\base.html:416
+#: .\frontend\templates\frontend\base.html:396
+#: .\frontend\templates\frontend\base.html:417
 msgid "Тема"
 msgstr "Тақырып"
 
-#: .\frontend\templates\frontend\base.html:412
+#: .\frontend\templates\frontend\base.html:413
 msgid "Выйти"
 msgstr "Шығу"
 
-#: .\frontend\templates\frontend\base.html:429
+#: .\frontend\templates\frontend\base.html:430
 #: .\frontend\templates\frontend\login.html:34
 msgid "Войти"
 msgstr "Кіру"
 
-#: .\frontend\templates\frontend\base.html:449
+#: .\frontend\templates\frontend\base.html:450
 msgid "Дипломный проект"
 msgstr "Дипломдық жоба"
 
@@ -312,6 +359,7 @@ msgstr "Кабинет қосу"
 
 #: .\frontend\templates\frontend\classroom_form.html:23
 #: .\frontend\templates\frontend\group_form.html:23
+#: .\frontend\templates\frontend\schedule_form.html:23
 #: .\frontend\templates\frontend\subject_form.html:23
 msgid "Форма доступна только администратору."
 msgstr "Бұл форма тек әкімшіге қолжетімді."
@@ -679,6 +727,81 @@ msgstr "Менің тағайындауларым"
 #: .\frontend\templates\frontend\profile.html:160
 msgid "Мои оценки"
 msgstr "Менің бағаларым"
+
+#: .\frontend\templates\frontend\schedule.html:7
+msgid "Расписание занятий"
+msgstr "Сабақ кестесі"
+
+#: .\frontend\templates\frontend\schedule.html:11
+msgid "Полное расписание занятий по группам, предметам и преподавателям."
+msgstr "Топтар, пәндер және оқытушылар бойынша толық сабақ кестесі."
+
+#: .\frontend\templates\frontend\schedule.html:13
+msgid "Ваше расписание занятий."
+msgstr "Сіздің сабақ кестеңіз."
+
+#: .\frontend\templates\frontend\schedule.html:15
+msgid "Расписание занятий вашей группы."
+msgstr "Сіздің тобыңыздың сабақ кестесі."
+
+#: .\frontend\templates\frontend\schedule.html:22
+#: .\frontend\templates\frontend\schedule_form.html:8
+#: .\frontend\templates\frontend\schedule_form.html:18
+msgid "Добавить занятие"
+msgstr "Сабақ қосу"
+
+#: .\frontend\templates\frontend\schedule.html:32
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:20
+#: .\frontend\templates\frontend\schedule_form.html:46
+msgid "День недели"
+msgstr "Апта күні"
+
+#: .\frontend\templates\frontend\schedule.html:33
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:25
+msgid "Время"
+msgstr "Уақыт"
+
+#: .\frontend\templates\frontend\schedule.html:34
+msgid "Пара/урок"
+msgstr "Жұп/сабақ"
+
+#: .\frontend\templates\frontend\schedule.html:95
+msgid "Расписание пока не заполнено."
+msgstr "Кесте әзірге толтырылмаған."
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:4
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:7
+msgid "Удалить занятие"
+msgstr "Сабақты жою"
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:10
+msgid "Подтвердите удаление занятия из расписания."
+msgstr "Сабақты кестеден жоюды растаңыз."
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:15
+msgid "Вы действительно хотите удалить это занятие из расписания?"
+msgstr "Бұл сабақты кестеден шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\schedule_form.html:6
+#: .\frontend\templates\frontend\schedule_form.html:16
+msgid "Редактировать занятие"
+msgstr "Сабақты өңдеу"
+
+#: .\frontend\templates\frontend\schedule_form.html:37
+msgid "Назначение"
+msgstr "Тағайындау"
+
+#: .\frontend\templates\frontend\schedule_form.html:55
+msgid "Номер пары/урока"
+msgstr "Жұп/сабақ нөмірі"
+
+#: .\frontend\templates\frontend\schedule_form.html:64
+msgid "Время начала"
+msgstr "Басталу уақыты"
+
+#: .\frontend\templates\frontend\schedule_form.html:73
+msgid "Время окончания"
+msgstr "Аяқталу уақыты"
 
 #: .\frontend\templates\frontend\stats.html:7
 msgid "Статистика по предметам"

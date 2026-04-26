@@ -375,6 +375,7 @@
 
             <a href="{% url 'dashboard' %}">{% trans "Кабинет" %}</a>
             <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
+            <a href="{% url 'frontend-schedule' %}">{% trans "Расписание" %}</a>
             <a href="{% url 'frontend-grades' %}">{% trans "Оценки" %}</a>
 
             {% if user.role == 'teacher' %}
