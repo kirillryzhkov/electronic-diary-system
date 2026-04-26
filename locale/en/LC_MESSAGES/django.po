@@ -1,733 +1,452 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Electronic Diary\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-04-26 22:32+0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-04-26 22:40+0500\n"
+"Last-Translator: Kirill\n"
+"Language-Team: English\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-#: .\diary_project\settings.py:156
+
 msgid "Русский"
-msgstr ""
+msgstr "Russian"
 
-#: .\diary_project\settings.py:157
 msgid "Қазақша"
-msgstr ""
+msgstr "Kazakh"
 
-#: .\diary_project\settings.py:158
 msgid "English"
-msgstr ""
+msgstr "English"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:4
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:7
-msgid "Удалить назначение"
-msgstr ""
-
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:4
-#: .\frontend\templates\frontend\assignment_form.html:10
-#: .\frontend\templates\frontend\assignments.html:4
-#: .\frontend\templates\frontend\base.html:7
-#: .\frontend\templates\frontend\base.html:365
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:4
-#: .\frontend\templates\frontend\classroom_form.html:10
-#: .\frontend\templates\frontend\classrooms.html:4
-#: .\frontend\templates\frontend\dashboard.html:4
-#: .\frontend\templates\frontend\grade_confirm_delete.html:4
-#: .\frontend\templates\frontend\grade_form.html:10
-#: .\frontend\templates\frontend\grades.html:4
-#: .\frontend\templates\frontend\group_confirm_delete.html:4
-#: .\frontend\templates\frontend\group_form.html:10
-#: .\frontend\templates\frontend\groups.html:4
-#: .\frontend\templates\frontend\home.html:4
-#: .\frontend\templates\frontend\home.html:8
-#: .\frontend\templates\frontend\login.html:4
-#: .\frontend\templates\frontend\stats.html:4
-#: .\frontend\templates\frontend\subject_confirm_delete.html:4
-#: .\frontend\templates\frontend\subject_form.html:10
-#: .\frontend\templates\frontend\subjects.html:4
-#: .\frontend\templates\frontend\teacher_group_detail.html:5
-#: .\frontend\templates\frontend\teacher_groups.html:4
 msgid "Электронный дневник"
 msgstr "Electronic Diary"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:10
+msgid "Удалить назначение"
+msgstr "Delete Assignment"
+
 msgid "Подтвердите удаление назначения преподавателя."
-msgstr ""
+msgstr "Confirm deletion of the teacher assignment."
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:15
 msgid "Вы действительно хотите удалить это назначение?"
-msgstr ""
+msgstr "Are you sure you want to delete this assignment?"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:20
-#: .\frontend\templates\frontend\assignment_form.html:37
-#: .\frontend\templates\frontend\assignments.html:26
-#: .\frontend\templates\frontend\grade_confirm_delete.html:26
-#: .\frontend\templates\frontend\grades.html:60
 msgid "Преподаватель"
-msgstr ""
+msgstr "Teacher"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:25
-#: .\frontend\templates\frontend\assignment_form.html:46
-#: .\frontend\templates\frontend\assignments.html:27
-#: .\frontend\templates\frontend\dashboard.html:55
-#: .\frontend\templates\frontend\grade_confirm_delete.html:32
-#: .\frontend\templates\frontend\grade_form.html:46
-#: .\frontend\templates\frontend\grades.html:57
-#: .\frontend\templates\frontend\stats.html:18
-#: .\frontend\templates\frontend\teacher_group_detail.html:39
-#: .\frontend\templates\frontend\teacher_group_detail.html:98
 msgid "Предмет"
-msgstr ""
+msgstr "Subject"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:30
-#: .\frontend\templates\frontend\assignment_form.html:55
-#: .\frontend\templates\frontend\assignments.html:28
-#: .\frontend\templates\frontend\group_confirm_delete.html:20
-#: .\frontend\templates\frontend\groups.html:26
-#: .\frontend\templates\frontend\teacher_group_detail.html:5
-#: .\frontend\templates\frontend\teacher_group_detail.html:9
-#: .\frontend\templates\frontend\teacher_groups.html:17
 msgid "Группа"
-msgstr ""
+msgstr "Group"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:35
-#: .\frontend\templates\frontend\assignment_form.html:64
-#: .\frontend\templates\frontend\assignments.html:29
-#: .\frontend\templates\frontend\base.html:376
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:20
-#: .\frontend\templates\frontend\classrooms.html:26
-#: .\frontend\templates\frontend\dashboard.html:4
-#: .\frontend\templates\frontend\teacher_group_detail.html:40
 msgid "Кабинет"
-msgstr ""
+msgstr "Classroom"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:47
 msgid ""
 "Внимание: после удаления назначения преподаватель потеряет доступ к этой "
 "группе и предмету."
 msgstr ""
+"Warning: after deleting this assignment, the teacher will lose access to this "
+"group and subject."
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:52
-#: .\frontend\templates\frontend\assignments.html:59
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:42
-#: .\frontend\templates\frontend\classrooms.html:56
-#: .\frontend\templates\frontend\grade_confirm_delete.html:60
-#: .\frontend\templates\frontend\grades.html:122
-#: .\frontend\templates\frontend\group_confirm_delete.html:53
-#: .\frontend\templates\frontend\groups.html:65
-#: .\frontend\templates\frontend\subject_confirm_delete.html:42
-#: .\frontend\templates\frontend\subjects.html:57
 msgid "Удалить"
-msgstr ""
+msgstr "Delete"
 
-#: .\frontend\templates\frontend\assignment_confirm_delete.html:54
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:44
-#: .\frontend\templates\frontend\grade_confirm_delete.html:62
-#: .\frontend\templates\frontend\group_confirm_delete.html:55
-#: .\frontend\templates\frontend\subject_confirm_delete.html:44
 msgid "Отмена"
-msgstr ""
+msgstr "Cancel"
 
-#: .\frontend\templates\frontend\assignment_form.html:6
-#: .\frontend\templates\frontend\assignment_form.html:16
 msgid "Редактировать назначение"
-msgstr ""
+msgstr "Edit Assignment"
 
-#: .\frontend\templates\frontend\assignment_form.html:8
-#: .\frontend\templates\frontend\assignment_form.html:18
-#: .\frontend\templates\frontend\assignments.html:16
 msgid "Добавить назначение"
-msgstr ""
+msgstr "Add Assignment"
 
-#: .\frontend\templates\frontend\assignment_form.html:23
 msgid "Назначение связывает преподавателя, предмет, группу и кабинет."
-msgstr ""
+msgstr "An assignment links a teacher, subject, group, and classroom."
 
-#: .\frontend\templates\frontend\assignment_form.html:72
-#: .\frontend\templates\frontend\classroom_form.html:54
-#: .\frontend\templates\frontend\grade_form.html:72
-#: .\frontend\templates\frontend\group_form.html:63
-#: .\frontend\templates\frontend\subject_form.html:54
 msgid "Сохранить"
-msgstr ""
+msgstr "Save"
 
-#: .\frontend\templates\frontend\assignment_form.html:74
-#: .\frontend\templates\frontend\classroom_form.html:56
-#: .\frontend\templates\frontend\grade_form.html:74
-#: .\frontend\templates\frontend\group_form.html:65
-#: .\frontend\templates\frontend\subject_form.html:56
 msgid "Назад"
-msgstr ""
+msgstr "Back"
 
-#: .\frontend\templates\frontend\assignments.html:4
-#: .\frontend\templates\frontend\base.html:369
 msgid "Назначения"
-msgstr ""
+msgstr "Assignments"
 
-#: .\frontend\templates\frontend\assignments.html:7
 msgid "Назначения преподавателей"
-msgstr ""
+msgstr "Teacher Assignments"
 
-#: .\frontend\templates\frontend\assignments.html:10
 msgid "Связь преподавателя, предмета, группы и кабинета."
-msgstr ""
+msgstr "Connection between teacher, subject, group, and classroom."
 
-#: .\frontend\templates\frontend\assignments.html:32
-#: .\frontend\templates\frontend\classrooms.html:30
-#: .\frontend\templates\frontend\grades.html:68
-#: .\frontend\templates\frontend\groups.html:31
-#: .\frontend\templates\frontend\subjects.html:31
 msgid "Действия"
-msgstr ""
+msgstr "Actions"
 
-#: .\frontend\templates\frontend\assignments.html:55
-#: .\frontend\templates\frontend\classrooms.html:52
-#: .\frontend\templates\frontend\grades.html:118
-#: .\frontend\templates\frontend\groups.html:61
-#: .\frontend\templates\frontend\subjects.html:53
 msgid "Изменить"
-msgstr ""
+msgstr "Edit"
 
-#: .\frontend\templates\frontend\assignments.html:69
 msgid "Назначений пока нет."
-msgstr ""
+msgstr "There are no assignments yet."
 
-#: .\frontend\templates\frontend\base.html:372
-#: .\frontend\templates\frontend\groups.html:4
 msgid "Группы"
-msgstr ""
+msgstr "Groups"
 
-#: .\frontend\templates\frontend\base.html:373
-#: .\frontend\templates\frontend\classrooms.html:4
-#: .\frontend\templates\frontend\classrooms.html:7
 msgid "Кабинеты"
-msgstr ""
+msgstr "Classrooms"
 
-#: .\frontend\templates\frontend\base.html:377
-#: .\frontend\templates\frontend\grades.html:4
-#: .\frontend\templates\frontend\grades.html:7
 msgid "Оценки"
-msgstr ""
+msgstr "Grades"
 
-#: .\frontend\templates\frontend\base.html:380
-#: .\frontend\templates\frontend\teacher_groups.html:4
-#: .\frontend\templates\frontend\teacher_groups.html:7
 msgid "Мои группы"
-msgstr ""
+msgstr "My Groups"
 
-#: .\frontend\templates\frontend\base.html:383
-#: .\frontend\templates\frontend\subjects.html:4
-#: .\frontend\templates\frontend\subjects.html:7
 msgid "Предметы"
-msgstr ""
+msgstr "Subjects"
 
-#: .\frontend\templates\frontend\base.html:386
-#: .\frontend\templates\frontend\stats.html:4
 msgid "Статистика"
-msgstr ""
+msgstr "Statistics"
 
-#: .\frontend\templates\frontend\base.html:390
 msgid "Админка"
-msgstr ""
+msgstr "Admin Panel"
 
-#: .\frontend\templates\frontend\base.html:394
-#: .\frontend\templates\frontend\base.html:415
 msgid "Тема"
-msgstr ""
+msgstr "Theme"
 
-#: .\frontend\templates\frontend\base.html:411
 msgid "Выйти"
-msgstr ""
+msgstr "Log out"
 
-#: .\frontend\templates\frontend\base.html:428
-#: .\frontend\templates\frontend\login.html:34
 msgid "Войти"
-msgstr ""
+msgstr "Log in"
 
-#: .\frontend\templates\frontend\base.html:448
 msgid "Дипломный проект"
-msgstr ""
+msgstr "Diploma Project"
 
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:4
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:7
 msgid "Удалить кабинет"
-msgstr ""
+msgstr "Delete Classroom"
 
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:10
 msgid "Подтвердите удаление кабинета."
-msgstr ""
+msgstr "Confirm deletion of the classroom."
 
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:15
 msgid "Вы действительно хотите удалить кабинет?"
-msgstr ""
+msgstr "Are you sure you want to delete this classroom?"
 
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:25
-#: .\frontend\templates\frontend\classroom_form.html:46
-#: .\frontend\templates\frontend\classrooms.html:27
-#: .\frontend\templates\frontend\group_confirm_delete.html:36
-#: .\frontend\templates\frontend\group_form.html:55
-#: .\frontend\templates\frontend\groups.html:28
-#: .\frontend\templates\frontend\subject_confirm_delete.html:25
-#: .\frontend\templates\frontend\subjects.html:28
 msgid "Описание"
-msgstr ""
+msgstr "Description"
 
-#: .\frontend\templates\frontend\classroom_confirm_delete.html:37
 msgid "Внимание: у связанных назначений преподавателей кабинет будет очищен."
-msgstr ""
+msgstr "Warning: the classroom will be cleared from related teacher assignments."
 
-#: .\frontend\templates\frontend\classroom_form.html:6
-#: .\frontend\templates\frontend\classroom_form.html:16
 msgid "Редактировать кабинет"
-msgstr ""
+msgstr "Edit Classroom"
 
-#: .\frontend\templates\frontend\classroom_form.html:8
-#: .\frontend\templates\frontend\classroom_form.html:18
-#: .\frontend\templates\frontend\classrooms.html:16
 msgid "Добавить кабинет"
-msgstr ""
+msgstr "Add Classroom"
 
-#: .\frontend\templates\frontend\classroom_form.html:23
-#: .\frontend\templates\frontend\group_form.html:23
-#: .\frontend\templates\frontend\subject_form.html:23
 msgid "Форма доступна только администратору."
-msgstr ""
+msgstr "This form is available only to the administrator."
 
-#: .\frontend\templates\frontend\classroom_form.html:37
 msgid "Номер кабинета"
-msgstr ""
+msgstr "Classroom Number"
 
-#: .\frontend\templates\frontend\classrooms.html:10
 msgid "Список учебных кабинетов."
-msgstr ""
+msgstr "List of classrooms."
 
-#: .\frontend\templates\frontend\classrooms.html:66
 msgid "Кабинетов пока нет."
-msgstr ""
+msgstr "There are no classrooms yet."
 
-#: .\frontend\templates\frontend\dashboard.html:7
 msgid "Личный кабинет"
-msgstr ""
+msgstr "Dashboard"
 
-#: .\frontend\templates\frontend\dashboard.html:10
 msgid "Вы вошли как:"
-msgstr ""
+msgstr "You are logged in as:"
 
-#: .\frontend\templates\frontend\dashboard.html:12
 msgid "Администратор"
-msgstr ""
+msgstr "Administrator"
 
-#: .\frontend\templates\frontend\dashboard.html:14
 msgid "Учитель"
-msgstr ""
+msgstr "Teacher"
 
-#: .\frontend\templates\frontend\dashboard.html:16
-#: .\frontend\templates\frontend\dashboard.html:53
-#: .\frontend\templates\frontend\grade_confirm_delete.html:20
-#: .\frontend\templates\frontend\grade_form.html:37
-#: .\frontend\templates\frontend\grades.html:54
 msgid "Ученик"
-msgstr ""
+msgstr "Student"
 
-#: .\frontend\templates\frontend\dashboard.html:22
-#: .\frontend\templates\frontend\stats.html:19
 msgid "Количество оценок"
-msgstr ""
+msgstr "Number of Grades"
 
-#: .\frontend\templates\frontend\dashboard.html:27
 msgid "Количество предметов"
-msgstr ""
+msgstr "Number of Subjects"
 
-#: .\frontend\templates\frontend\dashboard.html:34
 msgid "Средний балл по моим оценкам"
-msgstr ""
+msgstr "Average Grade for My Marks"
 
-#: .\frontend\templates\frontend\dashboard.html:36
 msgid "Средний балл по системе"
-msgstr ""
+msgstr "System Average Grade"
 
-#: .\frontend\templates\frontend\dashboard.html:38
 msgid "Мой средний балл"
-msgstr ""
+msgstr "My Average Grade"
 
-#: .\frontend\templates\frontend\dashboard.html:46
 msgid "Последние оценки"
-msgstr ""
+msgstr "Recent Grades"
 
-#: .\frontend\templates\frontend\dashboard.html:56
-#: .\frontend\templates\frontend\grade_confirm_delete.html:37
-#: .\frontend\templates\frontend\grade_form.html:55
-#: .\frontend\templates\frontend\grades.html:63
-#: .\frontend\templates\frontend\teacher_group_detail.html:99
 msgid "Оценка"
-msgstr ""
+msgstr "Grade"
 
-#: .\frontend\templates\frontend\dashboard.html:57
-#: .\frontend\templates\frontend\grade_confirm_delete.html:42
-#: .\frontend\templates\frontend\grades.html:64
-#: .\frontend\templates\frontend\teacher_group_detail.html:100
 msgid "Пояснение"
-msgstr ""
+msgstr "Comment"
 
-#: .\frontend\templates\frontend\dashboard.html:58
-#: .\frontend\templates\frontend\grade_confirm_delete.html:53
-#: .\frontend\templates\frontend\grades.html:65
-#: .\frontend\templates\frontend\teacher_group_detail.html:101
 msgid "Дата и время"
-msgstr ""
+msgstr "Date and Time"
 
-#: .\frontend\templates\frontend\dashboard.html:96
 msgid "Оценок пока нет."
-msgstr ""
+msgstr "There are no grades yet."
 
-#: .\frontend\templates\frontend\grade_confirm_delete.html:4
-#: .\frontend\templates\frontend\grade_confirm_delete.html:7
 msgid "Удалить оценку"
-msgstr ""
+msgstr "Delete Grade"
 
-#: .\frontend\templates\frontend\grade_confirm_delete.html:10
 msgid "Подтвердите удаление оценки."
-msgstr ""
+msgstr "Confirm deletion of the grade."
 
-#: .\frontend\templates\frontend\grade_confirm_delete.html:15
 msgid "Вы действительно хотите удалить эту оценку?"
-msgstr ""
+msgstr "Are you sure you want to delete this grade?"
 
-#: .\frontend\templates\frontend\grade_form.html:6
-#: .\frontend\templates\frontend\grade_form.html:16
 msgid "Редактировать оценку"
-msgstr ""
+msgstr "Edit Grade"
 
-#: .\frontend\templates\frontend\grade_form.html:8
-#: .\frontend\templates\frontend\grade_form.html:18
-#: .\frontend\templates\frontend\grades.html:12
 msgid "Добавить оценку"
-msgstr ""
+msgstr "Add Grade"
 
-#: .\frontend\templates\frontend\grade_form.html:23
 msgid "Форма доступна только пользователю с ролью учителя."
-msgstr ""
+msgstr "This form is available only to users with the teacher role."
 
-#: .\frontend\templates\frontend\grade_form.html:64
 msgid "Пояснение к оценке"
-msgstr ""
+msgstr "Grade Comment"
 
-#: .\frontend\templates\frontend\grades.html:19
 msgid "Список всех оценок в системе."
-msgstr ""
+msgstr "List of all grades in the system."
 
-#: .\frontend\templates\frontend\grades.html:21
 msgid "Список оценок, которые вы выставили."
-msgstr ""
+msgstr "List of grades you have assigned."
 
-#: .\frontend\templates\frontend\grades.html:23
 msgid "Ваши оценки по предметам."
-msgstr ""
+msgstr "Your grades by subject."
 
-#: .\frontend\templates\frontend\grades.html:30
 msgid "Фильтр по предмету"
-msgstr ""
+msgstr "Filter by Subject"
 
-#: .\frontend\templates\frontend\grades.html:32
 msgid "Все предметы"
-msgstr ""
+msgstr "All Subjects"
 
-#: .\frontend\templates\frontend\grades.html:43
 msgid "Применить"
-msgstr ""
+msgstr "Apply"
 
-#: .\frontend\templates\frontend\grades.html:45
 msgid "Сбросить"
-msgstr ""
+msgstr "Reset"
 
-#: .\frontend\templates\frontend\grades.html:132
 msgid "Оценки не найдены."
-msgstr ""
+msgstr "No grades found."
 
-#: .\frontend\templates\frontend\group_confirm_delete.html:4
-#: .\frontend\templates\frontend\group_confirm_delete.html:7
 msgid "Удалить группу"
-msgstr ""
+msgstr "Delete Group"
 
-#: .\frontend\templates\frontend\group_confirm_delete.html:10
 msgid "Подтвердите удаление учебной группы."
-msgstr ""
+msgstr "Confirm deletion of the study group."
 
-#: .\frontend\templates\frontend\group_confirm_delete.html:15
 msgid "Вы действительно хотите удалить группу?"
-msgstr ""
+msgstr "Are you sure you want to delete this group?"
 
-#: .\frontend\templates\frontend\group_confirm_delete.html:25
-#: .\frontend\templates\frontend\group_form.html:46
-#: .\frontend\templates\frontend\groups.html:27
 msgid "Куратор"
-msgstr ""
+msgstr "Curator"
 
-#: .\frontend\templates\frontend\group_confirm_delete.html:48
 msgid ""
 "Внимание: при удалении группы у студентов этой группы может очиститься поле "
 "группы, а связанные назначения преподавателей будут удалены."
 msgstr ""
+"Warning: when deleting this group, the group field may be cleared for its "
+"students, and related teacher assignments will be deleted."
 
-#: .\frontend\templates\frontend\group_form.html:6
-#: .\frontend\templates\frontend\group_form.html:16
 msgid "Редактировать группу"
-msgstr ""
+msgstr "Edit Group"
 
-#: .\frontend\templates\frontend\group_form.html:8
-#: .\frontend\templates\frontend\group_form.html:18
-#: .\frontend\templates\frontend\groups.html:16
 msgid "Добавить группу"
-msgstr ""
+msgstr "Add Group"
 
-#: .\frontend\templates\frontend\group_form.html:37
 msgid "Название группы"
-msgstr ""
+msgstr "Group Name"
 
-#: .\frontend\templates\frontend\groups.html:7
 msgid "Учебные группы"
-msgstr ""
+msgstr "Study Groups"
 
-#: .\frontend\templates\frontend\groups.html:10
 msgid "Список учебных групп в системе."
-msgstr ""
+msgstr "List of study groups in the system."
 
-#: .\frontend\templates\frontend\groups.html:75
 msgid "Групп пока нет."
-msgstr ""
+msgstr "There are no groups yet."
 
-#: .\frontend\templates\frontend\home.html:4
 msgid "Главная"
-msgstr ""
+msgstr "Home"
 
-#: .\frontend\templates\frontend\home.html:11
 msgid ""
 "Система для учёта учеников, предметов и оценок с разделением ролей для "
 "администраторов, преподавателей и учеников."
 msgstr ""
+"A system for managing students, subjects, and grades with separate roles for "
+"administrators, teachers, and students."
 
-#: .\frontend\templates\frontend\home.html:16
 msgid "Перейти в кабинет"
-msgstr ""
+msgstr "Go to Dashboard"
 
-#: .\frontend\templates\frontend\home.html:20
 msgid "Войти в систему"
-msgstr ""
+msgstr "Log in to the System"
 
-#: .\frontend\templates\frontend\home.html:31
 msgid "Роли"
-msgstr ""
+msgstr "Roles"
 
-#: .\frontend\templates\frontend\home.html:33
 msgid "Администратор, преподаватель и ученик с разными правами доступа."
-msgstr ""
+msgstr "Administrator, teacher, and student with different access rights."
 
-#: .\frontend\templates\frontend\home.html:39
 msgid "Проект имеет REST API и Swagger-документацию."
-msgstr ""
+msgstr "The project has a REST API and Swagger documentation."
 
-#: .\frontend\templates\frontend\home.html:43
 msgid "Тесты"
-msgstr ""
+msgstr "Tests"
 
-#: .\frontend\templates\frontend\home.html:45
 msgid "Основная логика проекта покрыта автоматическими тестами."
-msgstr ""
+msgstr "The main project logic is covered by automated tests."
 
-#: .\frontend\templates\frontend\login.html:4
-#: .\frontend\templates\frontend\login.html:8
 msgid "Вход"
-msgstr ""
+msgstr "Login"
 
-#: .\frontend\templates\frontend\login.html:11
 msgid "Введите логин и пароль для входа в систему."
-msgstr ""
+msgstr "Enter your username and password to log in."
 
-#: .\frontend\templates\frontend\login.html:16
 msgid "Неверный логин или пароль."
-msgstr ""
+msgstr "Invalid username or password."
 
-#: .\frontend\templates\frontend\login.html:24
 msgid "Логин"
-msgstr ""
+msgstr "Username"
 
-#: .\frontend\templates\frontend\login.html:29
 msgid "Пароль"
-msgstr ""
+msgstr "Password"
 
-#: .\frontend\templates\frontend\login.html:39
 msgid "Демо-аккаунты:"
-msgstr ""
+msgstr "Demo Accounts:"
 
-#: .\frontend\templates\frontend\login.html:40
 msgid "Администратор:"
-msgstr ""
+msgstr "Administrator:"
 
-#: .\frontend\templates\frontend\login.html:41
 msgid "Учитель:"
-msgstr ""
+msgstr "Teacher:"
 
-#: .\frontend\templates\frontend\login.html:42
 msgid "Ученик:"
-msgstr ""
+msgstr "Student:"
 
-#: .\frontend\templates\frontend\stats.html:7
 msgid "Статистика по предметам"
-msgstr ""
+msgstr "Subject Statistics"
 
-#: .\frontend\templates\frontend\stats.html:10
-msgid ""
-"Страница отображает количество оценок и средний балл по каждому предмету."
-msgstr ""
+msgid "Страница отображает количество оценок и средний балл по каждому предмету."
+msgstr "This page displays the number of grades and the average grade for each subject."
 
-#: .\frontend\templates\frontend\stats.html:20
-#: .\frontend\templates\frontend\teacher_group_detail.html:27
 msgid "Средний балл"
-msgstr ""
+msgstr "Average Grade"
 
-#: .\frontend\templates\frontend\stats.html:42
 msgid "Статистика пока недоступна."
-msgstr ""
+msgstr "Statistics are not available yet."
 
-#: .\frontend\templates\frontend\subject_confirm_delete.html:4
-#: .\frontend\templates\frontend\subject_confirm_delete.html:7
 msgid "Удалить предмет"
-msgstr ""
+msgstr "Delete Subject"
 
-#: .\frontend\templates\frontend\subject_confirm_delete.html:10
 msgid "Подтвердите удаление предмета."
-msgstr ""
+msgstr "Confirm deletion of the subject."
 
-#: .\frontend\templates\frontend\subject_confirm_delete.html:15
 msgid "Вы действительно хотите удалить предмет?"
-msgstr ""
+msgstr "Are you sure you want to delete this subject?"
 
-#: .\frontend\templates\frontend\subject_confirm_delete.html:20
-#: .\frontend\templates\frontend\subjects.html:27
 msgid "Название"
-msgstr ""
+msgstr "Name"
 
-#: .\frontend\templates\frontend\subject_confirm_delete.html:37
 msgid ""
 "Внимание: при удалении предмета могут быть удалены связанные с ним оценки и "
 "назначения преподавателей."
 msgstr ""
+"Warning: deleting this subject may also delete related grades and teacher "
+"assignments."
 
-#: .\frontend\templates\frontend\subject_form.html:6
-#: .\frontend\templates\frontend\subject_form.html:16
 msgid "Редактировать предмет"
-msgstr ""
+msgstr "Edit Subject"
 
-#: .\frontend\templates\frontend\subject_form.html:8
-#: .\frontend\templates\frontend\subject_form.html:18
-#: .\frontend\templates\frontend\subjects.html:12
 msgid "Добавить предмет"
-msgstr ""
+msgstr "Add Subject"
 
-#: .\frontend\templates\frontend\subject_form.html:37
 msgid "Название предмета"
-msgstr ""
+msgstr "Subject Name"
 
-#: .\frontend\templates\frontend\subject_form.html:46
 msgid "Описание предмета"
-msgstr ""
+msgstr "Subject Description"
 
-#: .\frontend\templates\frontend\subjects.html:18
 msgid "Список учебных предметов в системе."
-msgstr ""
+msgstr "List of subjects in the system."
 
-#: .\frontend\templates\frontend\subjects.html:67
 msgid "Предметов пока нет."
-msgstr ""
+msgstr "There are no subjects yet."
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:12
 msgid "Подробная информация по группе, которую ведёт преподаватель."
-msgstr ""
+msgstr "Detailed information about the group taught by the teacher."
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:17
 msgid "Студентов"
-msgstr ""
+msgstr "Students"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:22
 msgid "Оценок"
-msgstr ""
+msgstr "Grades"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:33
 msgid "Назначенные предметы"
-msgstr ""
+msgstr "Assigned Subjects"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:60
 msgid "Назначений нет."
-msgstr ""
+msgstr "There are no assignments."
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:65
 msgid "Студенты группы"
-msgstr ""
+msgstr "Group Students"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:71
 msgid "ФИО"
-msgstr ""
+msgstr "Full Name"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:86
 msgid "В группе пока нет студентов."
-msgstr ""
+msgstr "There are no students in this group yet."
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:91
 msgid "Оценки по группе"
-msgstr ""
+msgstr "Group Grades"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:97
 msgid "Студент"
-msgstr ""
+msgstr "Student"
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:137
 msgid "Оценок по этой группе пока нет."
-msgstr ""
+msgstr "There are no grades for this group yet."
 
-#: .\frontend\templates\frontend\teacher_group_detail.html:142
 msgid "Назад к группам"
-msgstr ""
+msgstr "Back to Groups"
 
-#: .\frontend\templates\frontend\teacher_groups.html:10
-msgid ""
-"Здесь отображаются группы, предметы и кабинеты, которые закреплены за вами."
-msgstr ""
+msgid "Здесь отображаются группы, предметы и кабинеты, которые закреплены за вами."
+msgstr "This page shows the groups, subjects, and classrooms assigned to you."
 
-#: .\frontend\templates\frontend\teacher_groups.html:21
 msgid "Студентов:"
-msgstr ""
+msgstr "Students:"
 
-#: .\frontend\templates\frontend\teacher_groups.html:22
 msgid "Оценок:"
-msgstr ""
+msgstr "Grades:"
 
-#: .\frontend\templates\frontend\teacher_groups.html:23
 msgid "Средний балл:"
-msgstr ""
+msgstr "Average Grade:"
 
-#: .\frontend\templates\frontend\teacher_groups.html:27
 msgid "Предметы:"
-msgstr ""
+msgstr "Subjects:"
 
-#: .\frontend\templates\frontend\teacher_groups.html:31
 msgid "каб."
-msgstr ""
+msgstr "room"
 
-#: .\frontend\templates\frontend\teacher_groups.html:38
 msgid "Открыть группу"
-msgstr ""
+msgstr "Open Group"
 
-#: .\frontend\templates\frontend\teacher_groups.html:46
 msgid "У вас пока нет назначенных групп."
-msgstr ""
+msgstr "You do not have any assigned groups yet."
