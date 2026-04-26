@@ -33,6 +33,8 @@ from .views import (
 
     TeacherGroupsView,
     TeacherGroupDetailView,
+
+    ProfileView,
 )
 
 urlpatterns = [
@@ -40,6 +42,7 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='login'), name='logout'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('profile/', ProfileView.as_view(), name='profile'),
     path('grades/', GradesView.as_view(), name='frontend-grades'),
     path('subjects/', SubjectsView.as_view(), name='frontend-subjects'),
     path('subjects/create/', SubjectCreateFrontendView.as_view(), name='frontend-subject-create'),
@@ -68,4 +71,6 @@ urlpatterns = [
 
     path('my-groups/', TeacherGroupsView.as_view(), name='frontend-teacher-groups'),
     path('my-groups/<int:group_id>/', TeacherGroupDetailView.as_view(), name='frontend-teacher-group-detail'),
+
+    
 ]

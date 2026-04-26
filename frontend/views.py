@@ -8,7 +8,6 @@ from django.views.generic import CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 
-from django.db.models import Avg, Count
 from users.models import User
 
 from .forms import GradeForm
@@ -491,5 +490,61 @@ class TeacherGroupDetailView(LoginRequiredMixin, TemplateView):
         context['grades_count'] = grades.count()
         context['students_count'] = students.count()
         context['average'] = round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2)
+
+        return context
+    
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        user = self.request.user
+
+        context['profile_user'] = user
+
+        if user.role == 'student':
+            grades = Grade.objects.select_related(
+                'student',
+                'teacher',
+                'subject'
+            ).filter(student=user).order_by('-date')
+
+            context['grades_count'] = grades.count()
+            context['average'] = round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2)
+            context['recent_grades'] = grades[:5]
+
+        elif user.role == 'teacher':
+            grades = Grade.objects.select_related(
+                'student',
+                'teacher',
+                'subject'
+            ).filter(teacher=user).order_by('-date')
+
+            assignments = TeachingAssignment.objects.select_related(
+                'subject',
+                'group',
+                'classroom'
+            ).filter(teacher=user)
+
+            groups = StudyGroup.objects.filter(
+                teaching_assignments__teacher=user
+            ).distinct()
+
+            context['grades_count'] = grades.count()
+            context['average'] = round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2)
+            context['recent_grades'] = grades[:5]
+            context['assignments'] = assignments
+            context['groups_count'] = groups.count()
+
+        elif user.role == 'admin':
+            context['users_count'] = User.objects.count()
+            context['students_count'] = User.objects.filter(role='student').count()
+            context['teachers_count'] = User.objects.filter(role='teacher').count()
+            context['subjects_count'] = Subject.objects.count()
+            context['groups_count'] = StudyGroup.objects.count()
+            context['classrooms_count'] = Classroom.objects.count()
+            context['assignments_count'] = TeachingAssignment.objects.count()
+            context['grades_count'] = Grade.objects.count()
 
         return context
