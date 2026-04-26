@@ -15,7 +15,7 @@ from .forms import GradeForm
 from grades.models import Grade
 from subjects.models import Subject
 
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 
 from .forms import (
     GradeForm,
@@ -25,6 +25,7 @@ from .forms import (
     TeachingAssignmentForm,
     ScheduleForm,
     AttendanceForm,
+    HomeworkForm,
 )
 
 
@@ -723,4 +724,120 @@ class AttendanceDeleteView(LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Запись посещаемости удалена.')
+        return super().form_valid(form)
+    
+class HomeworkListView(LoginRequiredMixin, ListView):
+    model = Homework
+    template_name = 'frontend/homework.html'
+    context_object_name = 'homeworks'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Homework.objects.select_related(
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        ).order_by('-created_at')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        elif user.role == 'student':
+            if user.group:
+                queryset = queryset.filter(assignment__group=user.group)
+            else:
+                queryset = queryset.none()
+
+        return queryset
+
+
+class HomeworkCreateView(LoginRequiredMixin, CreateView):
+    model = Homework
+    form_class = HomeworkForm
+    template_name = 'frontend/homework_form.html'
+    success_url = reverse_lazy('frontend-homework')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может добавлять домашние задания.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Домашнее задание успешно добавлено.')
+        return super().form_valid(form)
+
+
+class HomeworkUpdateView(LoginRequiredMixin, UpdateView):
+    model = Homework
+    form_class = HomeworkForm
+    template_name = 'frontend/homework_form.html'
+    success_url = reverse_lazy('frontend-homework')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может редактировать домашние задания.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Homework.objects.select_related(
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        )
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        return queryset
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Домашнее задание успешно обновлено.')
+        return super().form_valid(form)
+
+
+class HomeworkDeleteView(LoginRequiredMixin, DeleteView):
+    model = Homework
+    template_name = 'frontend/homework_confirm_delete.html'
+    success_url = reverse_lazy('frontend-homework')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Только администратор или преподаватель может удалять домашние задания.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Homework.objects.select_related(
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        )
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+
+        return queryset
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Домашнее задание удалено.')
         return super().form_valid(form)

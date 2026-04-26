@@ -1,0 +1,58 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Удалить домашнее задание" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Удалить домашнее задание" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Подтвердите удаление домашнего задания." %}
+</p>
+
+<div class="card" style="max-width: 700px;">
+    <p>
+        {% trans "Вы действительно хотите удалить это домашнее задание?" %}
+    </p>
+
+    <table>
+        <tr>
+            <th>{% trans "Тема задания" %}</th>
+            <td>{{ object.title }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Предмет" %}</th>
+            <td>{{ object.assignment.subject.name }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Группа" %}</th>
+            <td>{{ object.assignment.group.name }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Преподаватель" %}</th>
+            <td>{{ object.assignment.teacher.full_name }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Срок сдачи" %}</th>
+            <td>{{ object.deadline|date:"d.m.Y" }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Описание задания" %}</th>
+            <td>{{ object.description }}</td>
+        </tr>
+    </table>
+
+    <form method="post" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% trans "Удалить" %}</button>
+        <a href="{% url 'frontend-homework' %}" class="btn btn-secondary">
+            {% trans "Отмена" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

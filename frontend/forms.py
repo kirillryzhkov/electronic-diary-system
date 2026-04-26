@@ -3,7 +3,7 @@ from django import forms
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 
 class UserFullNameChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -351,6 +351,75 @@ class AttendanceForm(forms.ModelForm):
                     raise forms.ValidationError(
                         'Вы можете отмечать посещаемость только по своим назначениям.'
                     )
+
+        return cleaned_data
+    
+
+class HomeworkForm(forms.ModelForm):
+    class Meta:
+        model = Homework
+        fields = ['assignment', 'title', 'description', 'deadline']
+
+        labels = {
+            'assignment': 'Назначение',
+            'title': 'Тема задания',
+            'description': 'Описание задания',
+            'deadline': 'Срок сдачи',
+        }
+
+        widgets = {
+            'assignment': forms.Select(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Например: Решить задачи по теме'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Подробно опишите домашнее задание'
+            }),
+            'deadline': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        ).order_by(
+            'group__name',
+            'subject__name',
+            'teacher__last_name',
+            'teacher__first_name'
+        )
+
+        if self.user and self.user.role == 'teacher':
+            queryset = queryset.filter(teacher=self.user)
+
+        self.fields['assignment'].queryset = queryset
+        self.fields['assignment'].label_from_instance = self.assignment_label
+
+    def assignment_label(self, obj):
+        classroom = obj.classroom.number if obj.classroom else 'без кабинета'
+        return f'{obj.teacher.full_name} — {obj.subject.name} — {obj.group.name} — каб. {classroom}'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        assignment = cleaned_data.get('assignment')
+
+        if self.user and self.user.role == 'teacher' and assignment:
+            if assignment.teacher != self.user:
+                raise forms.ValidationError(
+                    'Вы можете создавать домашние задания только по своим назначениям.'
+                )
 
         return cleaned_data
     

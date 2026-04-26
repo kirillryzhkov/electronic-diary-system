@@ -340,6 +340,64 @@
             border-left: 5px solid #2563eb;
         }
 
+        .homework-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .homework-card {
+            overflow: hidden;
+        }
+
+        .homework-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .homework-title {
+            margin: 0 0 10px 0;
+            font-size: 22px;
+            line-height: 1.3;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+        }
+
+        .homework-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            color: var(--muted-color);
+            font-size: 14px;
+        }
+
+        .homework-actions {
+            flex-shrink: 0;
+        }
+
+        .homework-dates {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .homework-description {
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .homework-description p {
+            margin: 8px 0 0 0;
+            line-height: 1.6;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
         @media (max-width: 700px) {
             .navbar {
                 flex-direction: column;
@@ -355,6 +413,18 @@
             .form-inline {
                 flex-direction: column;
                 align-items: stretch;
+            }
+            .homework-header {
+                flex-direction: column;
+            }
+
+            .homework-actions {
+                width: 100%;
+            }
+
+            .homework-actions .btn {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -377,6 +447,7 @@
             <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
             <a href="{% url 'frontend-schedule' %}">{% trans "Расписание" %}</a>
             <a href="{% url 'frontend-attendance' %}">{% trans "Посещаемость" %}</a>
+            <a href="{% url 'frontend-homework' %}">{% trans "Домашние задания" %}</a>
             <a href="{% url 'frontend-grades' %}">{% trans "Оценки" %}</a>
 
             {% if user.role == 'teacher' %}

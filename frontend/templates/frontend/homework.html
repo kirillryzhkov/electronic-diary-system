@@ -1,0 +1,92 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Домашние задания" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Домашние задания" %}</h1>
+
+<p class="page-subtitle">
+    {% if user.role == 'admin' %}
+        {% trans "Список всех домашних заданий в системе." %}
+    {% elif user.role == 'teacher' %}
+        {% trans "Домашние задания, которые вы добавили для своих групп." %}
+    {% else %}
+        {% trans "Домашние задания вашей группы." %}
+    {% endif %}
+</p>
+
+{% if user.role == 'admin' or user.role == 'teacher' %}
+    <p>
+        <a href="{% url 'frontend-homework-create' %}" class="btn">
+            {% trans "Добавить домашнее задание" %}
+        </a>
+    </p>
+{% endif %}
+
+{% if homeworks %}
+    <div class="homework-list">
+        {% for homework in homeworks %}
+            <div class="card homework-card">
+                <div class="homework-header">
+                    <div>
+                        <h2 class="homework-title">{{ homework.title }}</h2>
+
+                        <div class="homework-meta">
+                            <span>
+                                <b>{% trans "Предмет" %}:</b>
+                                {{ homework.assignment.subject.name }}
+                            </span>
+
+                            <span>
+                                <b>{% trans "Группа" %}:</b>
+                                {{ homework.assignment.group.name }}
+                            </span>
+
+                            {% if user.role == 'admin' %}
+                                <span>
+                                    <b>{% trans "Преподаватель" %}:</b>
+                                    {{ homework.assignment.teacher.full_name }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.role == 'admin' or user.role == 'teacher' %}
+                        <div class="actions homework-actions">
+                            <a href="{% url 'frontend-homework-edit' homework.id %}" class="btn btn-small">
+                                {% trans "Изменить" %}
+                            </a>
+
+                            <a href="{% url 'frontend-homework-delete' homework.id %}" class="btn btn-danger btn-small">
+                                {% trans "Удалить" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="homework-dates">
+                    <span class="badge badge-blue">
+                        {% trans "Срок сдачи" %}: {{ homework.deadline|date:"d.m.Y" }}
+                    </span>
+
+                    <span class="badge badge-green">
+                        {% trans "Дата создания" %}: {{ homework.created_at|date:"d.m.Y H:i" }}
+                    </span>
+                </div>
+
+                <div class="homework-description">
+                    <b>{% trans "Описание задания" %}:</b>
+                    <p>{{ homework.description }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="empty">
+            {% trans "Домашних заданий пока нет." %}
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

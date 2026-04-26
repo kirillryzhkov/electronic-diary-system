@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 from datetime import time, date
 
 
@@ -15,6 +15,7 @@ class Command(BaseCommand):
 
         Grade.objects.all().delete()
         Attendance.objects.all().delete()
+        Homework.objects.all().delete()
         Schedule.objects.all().delete()
         TeachingAssignment.objects.all().delete()
         Classroom.objects.all().delete()
@@ -245,6 +246,49 @@ class Command(BaseCommand):
                 date=attendance_date,
                 status=status,
                 comment=comment
+            )
+
+        self.stdout.write('Создание домашних заданий...')
+
+        demo_homeworks = [
+            (
+                assignment_is31_math,
+                'Квадратные уравнения',
+                'Решить задачи №1-10 по теме квадратных уравнений. Повторить формулы дискриминанта и способы решения уравнений.',
+                date(2026, 5, 12)
+            ),
+            (
+                assignment_is31_informatics,
+                'Основы баз данных',
+                'Подготовить краткий конспект по теме SQL-запросов: SELECT, WHERE, ORDER BY. Сделать 5 примеров запросов.',
+                date(2026, 5, 14)
+            ),
+            (
+                assignment_po22_physics,
+                'Законы Ньютона',
+                'Повторить три закона Ньютона и решить задачи из учебника по теме динамики.',
+                date(2026, 5, 13)
+            ),
+            (
+                assignment_po22_history,
+                'История Казахстана',
+                'Подготовить сообщение на тему ключевых исторических событий Казахстана XX века.',
+                date(2026, 5, 15)
+            ),
+            (
+                assignment_po22_math,
+                'Производные',
+                'Решить примеры на нахождение производных простых функций. Повторить правила дифференцирования.',
+                date(2026, 5, 16)
+            ),
+        ]
+
+        for assignment, title, description, deadline in demo_homeworks:
+            Homework.objects.create(
+                assignment=assignment,
+                title=title,
+                description=description,
+                deadline=deadline
             )
 
         self.stdout.write('Создание оценок...')

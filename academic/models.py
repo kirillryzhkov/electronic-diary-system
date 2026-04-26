@@ -218,3 +218,38 @@ class Attendance(models.Model):
                 name='unique_student_assignment_date_attendance'
             )
         ]
+
+class Homework(models.Model):
+    assignment = models.ForeignKey(
+        TeachingAssignment,
+        on_delete=models.CASCADE,
+        related_name='homeworks',
+        verbose_name='Назначение'
+    )
+
+    title = models.CharField(
+        max_length=200,
+        verbose_name='Тема задания'
+    )
+
+    description = models.TextField(
+        verbose_name='Описание задания'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    deadline = models.DateField(
+        verbose_name='Срок сдачи'
+    )
+
+    def __str__(self):
+        return f'{self.assignment.subject.name} — {self.title}'
+
+    class Meta:
+        db_table = 'homework'
+        verbose_name = 'Домашнее задание'
+        verbose_name_plural = 'Домашние задания'
+        ordering = ['-created_at']
