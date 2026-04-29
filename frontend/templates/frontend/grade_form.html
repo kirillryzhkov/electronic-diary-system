@@ -1,4 +1,4 @@
-{% extends 'frontend/base.html' %}
+﻿{% extends 'frontend/base.html' %}
 {% load i18n %}
 
 {% block title %}
@@ -23,7 +23,7 @@
     {% trans "Форма доступна только пользователю с ролью учителя." %}
 </p>
 
-<div class="card" style="max-width: 600px;">
+<div class="card" style="max-width: 700px;">
     <form method="post">
         {% csrf_token %}
 
@@ -33,46 +33,56 @@
             </div>
         {% endif %}
 
-        <div class="form-group">
-            <label for="{{ form.student.id_for_label }}">{% trans "Ученик" %}</label>
-            {{ form.student }}
+        {% for field in form %}
+            <div class="form-group"
+                 {% if field.name == 'month' %}id="month-field"{% endif %}
+                 {% if field.name == 'semester' %}id="semester-field"{% endif %}>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
 
-            {% if form.student.errors %}
-                <div class="error-box">{{ form.student.errors }}</div>
-            {% endif %}
+                {% if field.errors %}
+                    <div class="error-box">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="actions">
+            <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+            <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+                {% trans "Назад" %}
+            </a>
         </div>
-
-        <div class="form-group">
-            <label for="{{ form.subject.id_for_label }}">{% trans "Предмет" %}</label>
-            {{ form.subject }}
-
-            {% if form.subject.errors %}
-                <div class="error-box">{{ form.subject.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.value.id_for_label }}">{% trans "Оценка" %}</label>
-            {{ form.value }}
-
-            {% if form.value.errors %}
-                <div class="error-box">{{ form.value.errors }}</div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.comment.id_for_label }}">{% trans "Пояснение к оценке" %}</label>
-            {{ form.comment }}
-
-            {% if form.comment.errors %}
-                <div class="error-box">{{ form.comment.errors }}</div>
-            {% endif %}
-        </div>
-
-        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
-        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
-            {% trans "Назад" %}
-        </a>
     </form>
 </div>
+
+<script>
+    function toggleGradeExtraFields() {
+        const gradeType = document.getElementById("id_grade_type");
+        const monthField = document.getElementById("month-field");
+        const semesterField = document.getElementById("semester-field");
+
+        if (!gradeType || !monthField || !semesterField) {
+            return;
+        }
+
+        monthField.style.display = "none";
+        semesterField.style.display = "none";
+
+        if (gradeType.value === "monthly") {
+            monthField.style.display = "block";
+        } else if (gradeType.value === "semester" || gradeType.value === "exam") {
+            semesterField.style.display = "block";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const gradeType = document.getElementById("id_grade_type");
+
+        toggleGradeExtraFields();
+
+        if (gradeType) {
+            gradeType.addEventListener("change", toggleGradeExtraFields);
+        }
+    });
+</script>
 {% endblock %}

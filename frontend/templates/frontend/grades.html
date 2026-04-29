@@ -7,9 +7,23 @@
 <h1 class="page-title">{% trans "Оценки" %}</h1>
 
 {% if user.role == 'teacher' %}
-    <p>
+    <div class="actions" style="margin-bottom: 12px;">
         <a href="{% url 'frontend-grade-create' %}" class="btn">
             {% trans "Добавить оценку" %}
+        </a>
+
+        <a href="{% url 'frontend-group-grade-entry' %}" class="btn btn-secondary">
+            {% trans "Выставить оценки группе" %}
+        </a>
+
+        <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
+            {% trans "Журнал по дням" %}
+        </a>
+    </div>
+{% else %}
+    <p>
+        <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
+            {% trans "Журнал по дням" %}
         </a>
     </p>
 {% endif %}
@@ -55,6 +69,8 @@
                     {% endif %}
 
                     <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Тип оценки" %}</th>
+                    <th>{% trans "Период" %}</th>
 
                     {% if user.role == 'admin' %}
                         <th>{% trans "Преподаватель" %}</th>
@@ -78,6 +94,8 @@
                         {% endif %}
 
                         <td>{{ grade.subject.name }}</td>
+                        <td>{{ grade.get_grade_type_display }}</td>
+                        <td>{{ grade.period_label }}</td>
 
                         {% if user.role == 'admin' %}
                             <td>

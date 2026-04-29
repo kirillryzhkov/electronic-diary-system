@@ -3,14 +3,15 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.db.models import Avg, Count
 from django.contrib import messages
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
+
+from collections import defaultdict
+from django.utils.formats import date_format
 
 from users.models import User
-
-from .forms import GradeForm
 
 from grades.models import Grade
 from subjects.models import Subject
@@ -26,6 +27,7 @@ from .forms import (
     ScheduleForm,
     AttendanceForm,
     HomeworkForm,
+    BulkGradeAssignmentForm,
 )
 
 
@@ -181,6 +183,7 @@ class StatsView(LoginRequiredMixin, TemplateView):
         return context
     
 class GradeCreateFrontendView(LoginRequiredMixin, CreateView):
+    model = Grade
     template_name = 'frontend/grade_form.html'
     form_class = GradeForm
     success_url = reverse_lazy('frontend-grades')
@@ -199,7 +202,8 @@ class GradeCreateFrontendView(LoginRequiredMixin, CreateView):
         form.instance.teacher = self.request.user
         messages.success(self.request, 'Оценка успешно добавлена.')
         return super().form_valid(form)
-    
+
+
 class GradeUpdateFrontendView(LoginRequiredMixin, UpdateView):
     model = Grade
     template_name = 'frontend/grade_form.html'
@@ -211,6 +215,15 @@ class GradeUpdateFrontendView(LoginRequiredMixin, UpdateView):
             raise PermissionDenied('Только учитель может редактировать оценки.')
         return super().dispatch(request, *args, **kwargs)
 
+    def get_queryset(self):
+        return Grade.objects.select_related(
+            'student',
+            'teacher',
+            'subject'
+        ).filter(
+            teacher=self.request.user
+        )
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
@@ -219,16 +232,6 @@ class GradeUpdateFrontendView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Оценка успешно обновлена.')
         return super().form_valid(form)
-    
-    def get_queryset(self):
-        user = self.request.user
-
-        queryset = Grade.objects.select_related('student', 'teacher', 'subject')
-
-        if user.role == 'teacher':
-            queryset = queryset.filter(teacher=user)
-
-        return queryset
 
 
 class GradeDeleteFrontendView(LoginRequiredMixin, DeleteView):
@@ -841,3 +844,218 @@ class HomeworkDeleteView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Домашнее задание удалено.')
         return super().form_valid(form)
+    
+
+class GroupGradeEntryView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/group_grade_entry.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'teacher':
+            raise PermissionDenied('Только преподаватель может выставлять оценки группе.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_selected_assignment(self):
+        assignment_id = self.request.GET.get('assignment') or self.request.POST.get('assignment')
+
+        if not assignment_id:
+            return None
+
+        return get_object_or_404(
+            TeachingAssignment.objects.select_related(
+                'group',
+                'subject',
+                'classroom',
+                'teacher'
+            ),
+            pk=assignment_id,
+            teacher=self.request.user
+        )
+
+    def get_students(self, assignment):
+        if not assignment:
+            return User.objects.none()
+
+        return User.objects.filter(
+            role='student',
+            group=assignment.group
+        ).order_by('last_name', 'first_name', 'username')
+
+    def get_last_grades_map(self, assignment, students):
+        if not assignment:
+            return {}
+
+        student_ids = list(students.values_list('id', flat=True))
+
+        last_grades = Grade.objects.select_related('subject').filter(
+            student_id__in=student_ids,
+            subject=assignment.subject
+        ).order_by('student_id', '-date')
+
+        result = {}
+        for grade in last_grades:
+            if grade.student_id not in result:
+                result[grade.student_id] = grade
+
+        return result
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        selected_assignment = self.get_selected_assignment()
+        students = self.get_students(selected_assignment)
+
+        form_data = self.request.GET if self.request.GET.get('assignment') else None
+        form = BulkGradeAssignmentForm(form_data, user=self.request.user)
+
+        if selected_assignment and not form.is_bound:
+            form = BulkGradeAssignmentForm(
+                initial={
+                    'assignment': selected_assignment,
+                    'grade_type': 'current',
+                },
+                user=self.request.user
+            )
+
+        context['form'] = form
+        context['selected_assignment'] = selected_assignment
+        context['students'] = students
+        context['last_grades_map'] = self.get_last_grades_map(selected_assignment, students) or {}
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        selected_assignment = self.get_selected_assignment()
+        form = BulkGradeAssignmentForm(request.POST, user=request.user)
+
+        if not form.is_valid():
+            context = self.get_context_data()
+            context['form'] = form
+            return self.render_to_response(context)
+
+        if not selected_assignment:
+            messages.error(request, 'Сначала выберите группу и предмет.')
+            return redirect('frontend-group-grade-entry')
+
+        students = self.get_students(selected_assignment)
+
+        grade_type = form.cleaned_data['grade_type']
+        month = form.cleaned_data['month'] or None
+        semester = form.cleaned_data['semester'] or None
+
+        if month:
+            month = int(month)
+
+        if semester:
+            semester = int(semester)
+
+        created_count = 0
+        skipped_count = 0
+        invalid_students = []
+
+        for student in students:
+            value = request.POST.get(f'value_{student.id}', '').strip()
+            comment = request.POST.get(f'comment_{student.id}', '').strip()
+
+            if not value:
+                skipped_count += 1
+                continue
+
+            try:
+                value_int = int(value)
+            except ValueError:
+                invalid_students.append(student.full_name)
+                continue
+
+            if value_int < 1 or value_int > 5:
+                invalid_students.append(student.full_name)
+                continue
+
+            Grade.objects.create(
+                student=student,
+                teacher=request.user,
+                subject=selected_assignment.subject,
+                value=value_int,
+                comment=comment,
+                grade_type=grade_type,
+                month=month,
+                semester=semester
+            )
+            created_count += 1
+
+        if created_count:
+            messages.success(
+                request,
+                f'Успешно добавлено оценок: {created_count}.'
+            )
+
+        if skipped_count and created_count == 0 and not invalid_students:
+            messages.warning(
+                request,
+                'Вы не заполнили ни одной оценки.'
+            )
+
+        if invalid_students:
+            names = ', '.join(invalid_students[:5])
+            messages.error(
+                request,
+                f'Некорректные оценки у студентов: {names}.'
+            )
+
+        redirect_url = (
+            f"{reverse('frontend-group-grade-entry')}"
+            f"?assignment={selected_assignment.id}"
+            f"&grade_type={grade_type}"
+            f"&month={month or ''}"
+            f"&semester={semester or ''}"
+        )
+        return redirect(redirect_url)
+    
+class GradeJournalView(LoginRequiredMixin, TemplateView):
+    template_name = 'frontend/grade_journal.html'
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Grade.objects.select_related(
+            'student',
+            'teacher',
+            'subject'
+        ).order_by('-date')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(teacher=user)
+        elif user.role == 'student':
+            queryset = queryset.filter(student=user)
+
+        subject_id = self.request.GET.get('subject')
+        if subject_id:
+            queryset = queryset.filter(subject_id=subject_id)
+
+        grade_type = self.request.GET.get('grade_type')
+        if grade_type:
+            queryset = queryset.filter(grade_type=grade_type)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        grades = self.get_queryset()
+        grouped = defaultdict(list)
+
+        for grade in grades:
+            grouped[grade.date.date()].append(grade)
+
+        grouped_days = []
+        for day in sorted(grouped.keys(), reverse=True):
+            grouped_days.append({
+                'date': day,
+                'weekday': date_format(day, 'l'),
+                'items': grouped[day],
+            })
+
+        context['grouped_days'] = grouped_days
+        context['subjects'] = Subject.objects.order_by('name')
+        context['grade_types'] = Grade.GRADE_TYPE_CHOICES
+
+        return context

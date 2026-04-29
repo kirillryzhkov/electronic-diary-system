@@ -1,0 +1,104 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Журнал оценок" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Журнал оценок по дням" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Здесь оценки сгруппированы по датам, чтобы было удобно смотреть, когда и что было выставлено." %}
+</p>
+
+<div class="card">
+    <form method="get" class="form-inline">
+        <div>
+            <label>{% trans "Предмет" %}</label>
+            <select name="subject">
+                <option value="">{% trans "Все предметы" %}</option>
+                {% for subject in subjects %}
+                    <option value="{{ subject.id }}" {% if request.GET.subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>{% trans "Тип оценки" %}</label>
+            <select name="grade_type">
+                <option value="">{% trans "Все типы" %}</option>
+                {% for value, label in grade_types %}
+                    <option value="{{ value }}" {% if request.GET.grade_type == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn">{% trans "Применить" %}</button>
+        <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">{% trans "Сбросить" %}</a>
+    </form>
+</div>
+
+{% if grouped_days %}
+    {% for day in grouped_days %}
+        <div class="card">
+            <h2 style="margin-top: 0;">
+                {{ day.weekday|capfirst }}, {{ day.date|date:"d.m.Y" }}
+            </h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        {% if user.role != 'student' %}
+                            <th>{% trans "Студент" %}</th>
+                        {% endif %}
+                        <th>{% trans "Предмет" %}</th>
+                        <th>{% trans "Тип оценки" %}</th>
+                        <th>{% trans "Период" %}</th>
+                        <th>{% trans "Оценка" %}</th>
+                        <th>{% trans "Комментарий" %}</th>
+                        <th>{% trans "Время" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in day.items %}
+                        <tr>
+                            {% if user.role != 'student' %}
+                                <td>{{ grade.student.full_name }}</td>
+                            {% endif %}
+                            <td>{{ grade.subject.name }}</td>
+                            <td>{{ grade.get_grade_type_display }}</td>
+                            <td>{{ grade.period_label }}</td>
+                            <td>
+                                {% if grade.value >= 5 %}
+                                    <span class="badge badge-green">{{ grade.value }}</span>
+                                {% elif grade.value == 4 %}
+                                    <span class="badge badge-blue">{{ grade.value }}</span>
+                                {% elif grade.value == 3 %}
+                                    <span class="badge badge-yellow">{{ grade.value }}</span>
+                                {% else %}
+                                    <span class="badge badge-red">{{ grade.value }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if grade.comment %}
+                                    {{ grade.comment }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>{{ grade.date|time:"H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="card">
+        <div class="empty">{% trans "Оценок пока нет." %}</div>
+    </div>
+{% endif %}
+{% endblock %}

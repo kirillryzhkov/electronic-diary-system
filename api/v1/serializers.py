@@ -24,18 +24,41 @@ class SubjectSerializer(serializers.ModelSerializer):
 
 class GradeSerializer(serializers.ModelSerializer):
     student = UserSerializer(read_only=True)
-    teacher = UserSerializer(read_only=True)
     subject = SubjectSerializer(read_only=True)
+    period_label = serializers.CharField(read_only=True)
 
     class Meta:
         model = Grade
-        fields = ['id', 'student', 'teacher', 'subject', 'value', 'comment', 'date']
-        read_only_fields = ['id', 'student', 'teacher', 'subject', 'date']
+        fields = [
+            'id',
+            'student',
+            'subject',
+            'value',
+            'comment',
+            'grade_type',
+            'month',
+            'semester',
+            'period_label',
+            'date',
+        ]
+        read_only_fields = ['id', 'student', 'subject', 'date', 'period_label']
 
-    def validate_value(self, value):
+    def validate(self, attrs):
+        value = attrs.get('value')
+        grade_type = attrs.get('grade_type')
+        month = attrs.get('month')
+        semester = attrs.get('semester')
+
         if value < 1 or value > 5:
             raise serializers.ValidationError('Оценка должна быть от 1 до 5.')
-        return value
+
+        if grade_type == 'monthly' and not month:
+            raise serializers.ValidationError('Для месячной аттестации нужно указать месяц.')
+
+        if grade_type in ['semester', 'exam'] and not semester:
+            raise serializers.ValidationError('Для сессии и экзамена нужно указать полугодие.')
+
+        return attrs
 
 
 class GradeCreateSerializer(serializers.ModelSerializer):
@@ -45,12 +68,32 @@ class GradeCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Grade
-        fields = ['student', 'subject', 'value', 'comment']
+        fields = [
+            'student',
+            'subject',
+            'value',
+            'comment',
+            'grade_type',
+            'month',
+            'semester',
+        ]
 
-    def validate_value(self, value):
+    def validate(self, attrs):
+        value = attrs.get('value')
+        grade_type = attrs.get('grade_type')
+        month = attrs.get('month')
+        semester = attrs.get('semester')
+
         if value < 1 or value > 5:
             raise serializers.ValidationError('Оценка должна быть от 1 до 5.')
-        return value
+
+        if grade_type == 'monthly' and not month:
+            raise serializers.ValidationError('Для месячной аттестации нужно указать месяц.')
+
+        if grade_type in ['semester', 'exam'] and not semester:
+            raise serializers.ValidationError('Для сессии и экзамена нужно указать полугодие.')
+
+        return attrs
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

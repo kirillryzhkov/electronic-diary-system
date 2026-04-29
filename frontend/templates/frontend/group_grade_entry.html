@@ -1,0 +1,179 @@
+{% extends 'frontend/base.html' %}
+{% load i18n frontend_extras %}
+
+{% block title %}{% trans "Выставление оценок группе" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Выставление оценок группе" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Выберите группу, предмет и тип оценки, затем выставьте оценки сразу нескольким студентам." %}
+</p>
+
+<div class="card">
+    <form method="get">
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="grid">
+            <div class="form-group">
+                <label for="{{ form.assignment.id_for_label }}">{% trans "Группа и предмет" %}</label>
+                {{ form.assignment }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.grade_type.id_for_label }}">{% trans "Тип оценки" %}</label>
+                {{ form.grade_type }}
+            </div>
+
+            <div class="form-group" id="bulk-month-field">
+                <label for="{{ form.month.id_for_label }}">{% trans "Месяц аттестации" %}</label>
+                {{ form.month }}
+            </div>
+
+            <div class="form-group" id="bulk-semester-field">
+                <label for="{{ form.semester.id_for_label }}">{% trans "Полугодие" %}</label>
+                {{ form.semester }}
+            </div>
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn">{% trans "Показать студентов" %}</button>
+            <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">{% trans "Назад к оценкам" %}</a>
+        </div>
+    </form>
+</div>
+
+{% if selected_assignment %}
+    <div class="card">
+        <h2 style="margin-top: 0;">{% trans "Информация о выбранном назначении" %}</h2>
+
+        <div class="grid">
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Группа" %}</div>
+                <div class="stat-value">{{ selected_assignment.group.name }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Предмет" %}</div>
+                <div class="stat-value">{{ selected_assignment.subject.name }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Кабинет" %}</div>
+                <div class="stat-value">
+                    {% if selected_assignment.classroom %}
+                        {{ selected_assignment.classroom.number }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="assignment" value="{{ selected_assignment.id }}">
+            <input type="hidden" name="grade_type" value="{{ form.grade_type.value|default:'current' }}">
+            <input type="hidden" name="month" value="{{ form.month.value|default:'' }}">
+            <input type="hidden" name="semester" value="{{ form.semester.value|default:'' }}">
+
+            {% if students %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{% trans "Студент" %}</th>
+                            <th>{% trans "Последняя оценка по предмету" %}</th>
+                            <th>{% trans "Оценка" %}</th>
+                            <th>{% trans "Комментарий" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.full_name }}</td>
+
+                                <td>
+                                    {% with last_grade=last_grades_map|get_item:student.id %}
+                                        {% if last_grade %}
+                                            <div>
+                                                <b>{{ last_grade.get_grade_type_display }}</b>:
+                                                {{ last_grade.value }}
+                                            </div>
+                                            <div style="color: var(--muted-color); font-size: 13px;">
+                                                {{ last_grade.date|date:"d.m.Y H:i" }}
+                                            </div>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+
+                                <td style="min-width: 130px;">
+                                    <select name="value_{{ student.id }}">
+                                        <option value="">—</option>
+                                        <option value="5">5</option>
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </td>
+
+                                <td>
+                                    <textarea
+                                        name="comment_{{ student.id }}"
+                                        rows="2"
+                                        placeholder="{% trans 'Комментарий к оценке' %}"
+                                    ></textarea>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 18px;" class="actions">
+                    <button type="submit" class="btn">{% trans "Сохранить оценки" %}</button>
+                    <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">{% trans "Журнал по дням" %}</a>
+                </div>
+            {% else %}
+                <div class="empty">{% trans "В этой группе пока нет студентов." %}</div>
+            {% endif %}
+        </form>
+    </div>
+{% endif %}
+
+<script>
+    function toggleBulkGradeExtraFields() {
+        const gradeType = document.getElementById("id_grade_type");
+        const monthField = document.getElementById("bulk-month-field");
+        const semesterField = document.getElementById("bulk-semester-field");
+
+        if (!gradeType || !monthField || !semesterField) return;
+
+        monthField.style.display = "none";
+        semesterField.style.display = "none";
+
+        if (gradeType.value === "monthly") {
+            monthField.style.display = "block";
+        } else if (gradeType.value === "semester" || gradeType.value === "exam") {
+            semesterField.style.display = "block";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const gradeType = document.getElementById("id_grade_type");
+
+        toggleBulkGradeExtraFields();
+
+        if (gradeType) {
+            gradeType.addEventListener("change", toggleBulkGradeExtraFields);
+        }
+    });
+</script>
+{% endblock %}

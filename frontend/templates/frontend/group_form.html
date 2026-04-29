@@ -60,10 +60,12 @@
             {% endif %}
         </div>
 
-        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
-        <a href="{% url 'frontend-groups' %}" class="btn btn-secondary">
-            {% trans "Назад" %}
-        </a>
+        <div class="actions">
+            <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+            <a href="{% url 'frontend-groups' %}" class="btn btn-secondary">
+                {% trans "Назад" %}
+            </a>
+        </div>
     </form>
 </div>
 {% endblock %}

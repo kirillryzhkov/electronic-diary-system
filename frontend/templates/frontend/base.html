@@ -837,6 +837,7 @@
                             <div class="nav-dropdown">
                                 <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
                                 <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
+                                
 
                                 {% if user.role == 'admin' %}
                                     <a href="{% url 'frontend-assignments' %}">{% trans "Назначения" %}</a>
@@ -886,11 +887,6 @@
                         <a href="/api/docs/" class="nav-link">Swagger</a>
                     </div>
 
-                    <div class="navbar-search">
-                        <span class="navbar-search-icon">⌕</span>
-                        <input type="text" placeholder="{% trans 'Поиск по разделам...' %}">
-                    </div>
-                </div>
 
                 <div class="navbar-actions">
                     <button type="button" class="theme-btn" onclick="toggleTheme()">

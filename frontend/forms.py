@@ -12,13 +12,24 @@ class UserFullNameChoiceField(forms.ModelChoiceField):
 class GradeForm(forms.ModelForm):
     class Meta:
         model = Grade
-        fields = ['student', 'subject', 'value', 'comment']
+        fields = [
+            'student',
+            'subject',
+            'value',
+            'comment',
+            'grade_type',
+            'month',
+            'semester',
+        ]
 
         labels = {
-            'student': 'Ученик',
+            'student': 'Студент',
             'subject': 'Предмет',
             'value': 'Оценка',
-            'comment': 'Пояснение к оценке',
+            'comment': 'Комментарий',
+            'grade_type': 'Тип оценки',
+            'month': 'Месяц аттестации',
+            'semester': 'Полугодие',
         }
 
         widgets = {
@@ -28,32 +39,37 @@ class GradeForm(forms.ModelForm):
                 'class': 'form-control',
                 'min': 1,
                 'max': 5,
-                'placeholder': 'Введите оценку от 1 до 5'
             }),
             'comment': forms.Textarea(attrs={
                 'class': 'form-control',
-                'rows': 4,
-                'placeholder': 'Например: хорошо выполнил контрольную работу'
+                'rows': 3,
             }),
+            'grade_type': forms.Select(attrs={'class': 'form-control'}),
+            'month': forms.Select(
+                choices=[('', '---------')] + [(i, i) for i in range(1, 13)],
+                attrs={'class': 'form-control'}
+            ),
+            'semester': forms.Select(
+                choices=[('', '---------'), (1, '1'), (2, '2')],
+                attrs={'class': 'form-control'}
+            ),
         }
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
+    def __init__(self, *args, user=None, **kwargs):
+        self.user = user
         super().__init__(*args, **kwargs)
 
         self.fields['student'].queryset = User.objects.filter(
             role='student'
-        ).order_by('last_name', 'first_name', 'username')
-
+        ).order_by('group__name', 'last_name', 'first_name', 'username')
         self.fields['student'].label_from_instance = lambda obj: obj.full_name
 
-        self.fields['subject'].queryset = Subject.objects.all().order_by('name')
+        self.fields['subject'].queryset = Subject.objects.order_by('name')
 
-        if self.user and self.user.role == 'teacher':
-            assignments = self.user.teaching_assignments.select_related(
-                'subject',
-                'group'
-            )
+        if user and user.role == 'teacher':
+            assignments = TeachingAssignment.objects.filter(
+                teacher=user
+            ).select_related('subject', 'group')
 
             group_ids = assignments.values_list('group_id', flat=True).distinct()
             subject_ids = assignments.values_list('subject_id', flat=True).distinct()
@@ -63,35 +79,39 @@ class GradeForm(forms.ModelForm):
                 group_id__in=group_ids
             ).order_by('group__name', 'last_name', 'first_name', 'username')
 
-            self.fields['student'].label_from_instance = lambda obj: obj.full_name
-
             self.fields['subject'].queryset = Subject.objects.filter(
                 id__in=subject_ids
             ).order_by('name')
-
-    def clean_value(self):
-        value = self.cleaned_data.get('value')
-
-        if value < 1 or value > 5:
-            raise forms.ValidationError('Оценка должна быть от 1 до 5.')
-
-        return value
 
     def clean(self):
         cleaned_data = super().clean()
 
         student = cleaned_data.get('student')
         subject = cleaned_data.get('subject')
+        value = cleaned_data.get('value')
+        grade_type = cleaned_data.get('grade_type')
+        month = cleaned_data.get('month')
+        semester = cleaned_data.get('semester')
+
+        if value is not None and (value < 1 or value > 5):
+            raise forms.ValidationError('Оценка должна быть от 1 до 5.')
+
+        if grade_type == 'monthly' and not month:
+            raise forms.ValidationError('Для месячной аттестации нужно указать месяц.')
+
+        if grade_type in ['semester', 'exam'] and not semester:
+            raise forms.ValidationError('Для сессии и экзамена нужно указать полугодие.')
 
         if self.user and self.user.role == 'teacher' and student and subject:
-            has_assignment = self.user.teaching_assignments.filter(
+            has_assignment = TeachingAssignment.objects.filter(
+                teacher=self.user,
                 group=student.group,
                 subject=subject
             ).exists()
 
             if not has_assignment:
                 raise forms.ValidationError(
-                    'Вы не можете поставить оценку этому ученику по выбранному предмету.'
+                    'Вы можете выставлять оценку только по своим предметам и своим группам.'
                 )
 
         return cleaned_data
@@ -423,3 +443,69 @@ class HomeworkForm(forms.ModelForm):
 
         return cleaned_data
     
+
+class BulkGradeAssignmentForm(forms.Form):
+    assignment = forms.ModelChoiceField(
+        queryset=TeachingAssignment.objects.none(),
+        label='Группа и предмет',
+        empty_label='Выберите группу и предмет'
+    )
+
+    grade_type = forms.ChoiceField(
+        choices=Grade.GRADE_TYPE_CHOICES,
+        label='Тип оценки',
+        initial='current'
+    )
+
+    month = forms.ChoiceField(
+        choices=[('', '---------')] + [(i, i) for i in range(1, 13)],
+        required=False,
+        label='Месяц аттестации'
+    )
+
+    semester = forms.ChoiceField(
+        choices=[('', '---------'), (1, '1'), (2, '2')],
+        required=False,
+        label='Полугодие'
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        ).filter(
+            teacher=user
+        ).order_by(
+            'group__name',
+            'subject__name'
+        )
+
+        self.fields['assignment'].queryset = queryset
+        self.fields['assignment'].label_from_instance = self.assignment_label
+
+    def assignment_label(self, obj):
+        classroom = obj.classroom.number if obj.classroom else 'без кабинета'
+        return f'{obj.group.name} — {obj.subject.name} — каб. {classroom}'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        grade_type = cleaned_data.get('grade_type')
+        month = cleaned_data.get('month')
+        semester = cleaned_data.get('semester')
+
+        if grade_type == 'monthly' and not month:
+            raise forms.ValidationError(
+                'Для месячной аттестации нужно указать месяц.'
+            )
+
+        if grade_type in ['semester', 'exam'] and not semester:
+            raise forms.ValidationError(
+                'Для полугодовой сессии и экзамена нужно указать полугодие.'
+            )
+
+        return cleaned_data
