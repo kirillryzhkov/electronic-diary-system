@@ -25,6 +25,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
 from statistics import mean
+from urllib.parse import urlencode
 
 from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 
@@ -97,14 +98,18 @@ class GradesView(LoginRequiredMixin, ListView):
         queryset = Grade.objects.select_related(
             'student',
             'teacher',
-            'subject'
+            'subject',
+            'student__group'
         ).order_by('-date')
 
         if user.role == 'teacher':
             queryset = queryset.filter(teacher=user)
-
         elif user.role == 'student':
             queryset = queryset.filter(student=user)
+
+        group_id = self.request.GET.get('group')
+        if group_id and user.role != 'student':
+            queryset = queryset.filter(student__group_id=group_id)
 
         subject_id = self.request.GET.get('subject')
         if subject_id:
@@ -112,9 +117,27 @@ class GradesView(LoginRequiredMixin, ListView):
 
         return queryset
 
+    def get_groups_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'teacher':
+            group_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('group_id', flat=True).distinct()
+
+            return StudyGroup.objects.filter(
+                id__in=group_ids
+            ).order_by('name')
+
+        if user.role == 'admin':
+            return StudyGroup.objects.all().order_by('name')
+
+        return StudyGroup.objects.none()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['subjects'] = Subject.objects.all()
+        context['subjects'] = Subject.objects.order_by('name')
+        context['groups'] = self.get_groups_for_filter()
         return context
 
 
@@ -1024,19 +1047,29 @@ class GroupGradeEntryView(LoginRequiredMixin, TemplateView):
 class GradeJournalView(LoginRequiredMixin, TemplateView):
     template_name = 'frontend/grade_journal.html'
 
-    def get_queryset(self):
+    def get_base_queryset(self):
         user = self.request.user
 
         queryset = Grade.objects.select_related(
             'student',
             'teacher',
-            'subject'
+            'subject',
+            'student__group'
         ).order_by('-date')
 
         if user.role == 'teacher':
             queryset = queryset.filter(teacher=user)
         elif user.role == 'student':
             queryset = queryset.filter(student=user)
+
+        return queryset
+
+    def get_queryset(self):
+        queryset = self.get_base_queryset()
+
+        group_id = self.request.GET.get('group')
+        if group_id and self.request.user.role != 'student':
+            queryset = queryset.filter(student__group_id=group_id)
 
         subject_id = self.request.GET.get('subject')
         if subject_id:
@@ -1046,7 +1079,78 @@ class GradeJournalView(LoginRequiredMixin, TemplateView):
         if grade_type:
             queryset = queryset.filter(grade_type=grade_type)
 
+        student_id = self.request.GET.get('student')
+        if student_id and self.request.user.role != 'student':
+            queryset = queryset.filter(student_id=student_id)
+
         return queryset
+
+    def get_groups_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'teacher':
+            group_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('group_id', flat=True).distinct()
+
+            return StudyGroup.objects.filter(
+                id__in=group_ids
+            ).order_by('name')
+
+        if user.role == 'admin':
+            return StudyGroup.objects.all().order_by('name')
+
+        return StudyGroup.objects.none()
+
+    def get_students_for_filter(self):
+        user = self.request.user
+        selected_group_id = self.request.GET.get('group')
+
+        queryset = User.objects.none()
+
+        if user.role == 'teacher':
+            group_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('group_id', flat=True).distinct()
+
+            queryset = User.objects.filter(
+                role='student',
+                group_id__in=group_ids
+            )
+
+        elif user.role == 'admin':
+            queryset = User.objects.filter(role='student')
+
+        if selected_group_id and user.role != 'student':
+            queryset = queryset.filter(group_id=selected_group_id)
+
+        return queryset.order_by('last_name', 'first_name', 'username')
+
+    def build_grade_type_filter_url(self, grade_type=None):
+        params = {}
+
+        group_id = self.request.GET.get('group')
+        subject_id = self.request.GET.get('subject')
+        student_id = self.request.GET.get('student')
+
+        if group_id and self.request.user.role != 'student':
+            params['group'] = group_id
+
+        if subject_id:
+            params['subject'] = subject_id
+
+        if student_id and self.request.user.role != 'student':
+            params['student'] = student_id
+
+        if grade_type:
+            params['grade_type'] = grade_type
+
+        query_string = urlencode(params)
+        base_url = reverse('frontend-grade-journal')
+
+        if query_string:
+            return f'{base_url}?{query_string}'
+        return base_url
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1062,12 +1166,57 @@ class GradeJournalView(LoginRequiredMixin, TemplateView):
             grouped_days.append({
                 'date': day,
                 'weekday': date_format(day, 'l'),
-                'items': grouped[day],
+                'grades': grouped[day],
+                'count': len(grouped[day]),
             })
+
+        selected_group_id = self.request.GET.get('group')
+        selected_subject_id = self.request.GET.get('subject')
+        selected_grade_type = self.request.GET.get('grade_type')
+        selected_student_id = self.request.GET.get('student')
+
+        selected_group = None
+        if selected_group_id and self.request.user.role != 'student':
+            selected_group = StudyGroup.objects.filter(id=selected_group_id).first()
+
+        selected_subject = None
+        if selected_subject_id:
+            selected_subject = Subject.objects.filter(id=selected_subject_id).first()
+
+        selected_student = None
+        if selected_student_id and self.request.user.role != 'student':
+            selected_student = User.objects.filter(id=selected_student_id).first()
+
+        grade_type_map = dict(Grade.GRADE_TYPE_CHOICES)
 
         context['grouped_days'] = grouped_days
         context['subjects'] = Subject.objects.order_by('name')
+        context['groups'] = self.get_groups_for_filter()
+        context['students'] = self.get_students_for_filter()
         context['grade_types'] = Grade.GRADE_TYPE_CHOICES
+
+        context['total_grades'] = grades.count()
+        context['total_days'] = len(grouped_days)
+        context['average_grade'] = round(grades.aggregate(avg=Avg('value'))['avg'] or 0, 2) if grades.exists() else '—'
+
+        context['current_count'] = grades.filter(grade_type='current').count()
+        context['monthly_count'] = grades.filter(grade_type='monthly').count()
+        context['semester_count'] = grades.filter(grade_type='semester').count()
+        context['exam_count'] = grades.filter(grade_type='exam').count()
+
+        context['selected_group'] = selected_group
+        context['selected_subject'] = selected_subject
+        context['selected_student'] = selected_student
+        context['selected_grade_type'] = selected_grade_type
+        context['selected_grade_type_label'] = grade_type_map.get(selected_grade_type)
+
+        context['type_filter_urls'] = {
+            'all': self.build_grade_type_filter_url(),
+            'current': self.build_grade_type_filter_url('current'),
+            'monthly': self.build_grade_type_filter_url('monthly'),
+            'semester': self.build_grade_type_filter_url('semester'),
+            'exam': self.build_grade_type_filter_url('exam'),
+        }
 
         return context
     

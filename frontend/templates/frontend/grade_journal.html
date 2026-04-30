@@ -4,15 +4,197 @@
 {% block title %}{% trans "Журнал оценок" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
+<style>
+    .journal-toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .journal-type-bar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .journal-type-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .journal-type-link:hover {
+        background: var(--table-hover-bg);
+    }
+
+    .journal-type-link.active {
+        border-color: #2563eb;
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563eb;
+    }
+
+    .journal-stats {
+        margin-bottom: 24px;
+    }
+
+    .journal-mini-stats {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .journal-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .journal-day-card {
+        margin-bottom: 20px;
+    }
+
+    .journal-day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+    }
+
+    .journal-day-title {
+        margin: 0;
+        font-size: 22px;
+        line-height: 1.2;
+    }
+
+    .journal-day-subtitle {
+        color: var(--muted-color);
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    .journal-count-badge {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .type-pill {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .type-current {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .type-monthly {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .type-semester {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .type-exam {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .journal-meta {
+        color: var(--muted-color);
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+        .journal-day-title {
+            font-size: 19px;
+        }
+    }
+</style>
+
 <h1 class="page-title">{% trans "Журнал оценок по дням" %}</h1>
 
 <p class="page-subtitle">
     {% trans "Здесь оценки сгруппированы по датам, чтобы было удобно смотреть, когда и что было выставлено." %}
 </p>
 
+<div class="journal-toolbar">
+    <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+        {% trans "Назад к оценкам" %}
+    </a>
+
+    <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
+        {% trans "Экспорт в Excel" %}
+    </a>
+</div>
+
+<div class="journal-type-bar">
+    <a href="{{ type_filter_urls.all }}" class="journal-type-link {% if not selected_grade_type %}active{% endif %}">
+        {% trans "Все типы" %}
+    </a>
+
+    <a href="{{ type_filter_urls.current }}" class="journal-type-link {% if selected_grade_type == 'current' %}active{% endif %}">
+        {% trans "Текущая оценка" %}
+    </a>
+
+    <a href="{{ type_filter_urls.monthly }}" class="journal-type-link {% if selected_grade_type == 'monthly' %}active{% endif %}">
+        {% trans "Месячная аттестация" %}
+    </a>
+
+    <a href="{{ type_filter_urls.semester }}" class="journal-type-link {% if selected_grade_type == 'semester' %}active{% endif %}">
+        {% trans "Полугодовая сессия" %}
+    </a>
+
+    <a href="{{ type_filter_urls.exam }}" class="journal-type-link {% if selected_grade_type == 'exam' %}active{% endif %}">
+        {% trans "Экзамен" %}
+    </a>
+</div>
+
 <div class="card">
     <form method="get" class="form-inline">
         <div>
+        {% if user.role != 'student' %}
+            <div>
+                <label>{% trans "Группа" %}</label>
+                <select name="group">
+                    <option value="">{% trans "Все группы" %}</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}" {% if request.GET.group == group.id|stringformat:"s" %}selected{% endif %}>
+                            {{ group.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
             <label>{% trans "Предмет" %}</label>
             <select name="subject">
                 <option value="">{% trans "Все предметы" %}</option>
@@ -23,6 +205,20 @@
                 {% endfor %}
             </select>
         </div>
+
+        {% if user.role != 'student' %}
+            <div>
+                <label>{% trans "Студент" %}</label>
+                <select name="student">
+                    <option value="">{% trans "Все студенты" %}</option>
+                    {% for student in students %}
+                        <option value="{{ student.id }}" {% if request.GET.student == student.id|stringformat:"s" %}selected{% endif %}>
+                            {{ student.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
 
         <div>
             <label>{% trans "Тип оценки" %}</label>
@@ -38,21 +234,78 @@
 
         <button type="submit" class="btn">{% trans "Применить" %}</button>
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">{% trans "Сбросить" %}</a>
-
-        <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
-            {% trans "Экспорт в Excel" %}
-        </a>
     </form>
+</div>
 
+<div class="grid journal-stats">
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Всего оценок" %}</div>
+        <div class="stat-value">{{ total_grades }}</div>
+    </div>
 
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Дней в журнале" %}</div>
+        <div class="stat-value">{{ total_days }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Средний балл" %}</div>
+        <div class="stat-value">{{ average_grade }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">{% trans "Активный фильтр" %}</div>
+        <div class="stat-value" style="font-size: 18px;">
+           {% if selected_student %}
+                {{ selected_student.full_name }}
+            {% elif selected_group %}
+                {{ selected_group.name }}
+            {% elif selected_subject %}
+                {{ selected_subject.name }}
+            {% elif selected_grade_type_label %}
+                {{ selected_grade_type_label }}
+            {% else %}
+                {% trans "Без фильтра" %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="journal-mini-stats">
+    <span class="journal-mini-badge type-current">
+        {% trans "Текущая оценка" %}: {{ current_count }}
+    </span>
+
+    <span class="journal-mini-badge type-monthly">
+        {% trans "Месячная аттестация" %}: {{ monthly_count }}
+    </span>
+
+    <span class="journal-mini-badge type-semester">
+        {% trans "Полугодовая сессия" %}: {{ semester_count }}
+    </span>
+
+    <span class="journal-mini-badge type-exam">
+        {% trans "Экзамен" %}: {{ exam_count }}
+    </span>
 </div>
 
 {% if grouped_days %}
     {% for day in grouped_days %}
-        <div class="card">
-            <h2 style="margin-top: 0;">
-                {{ day.weekday|capfirst }}, {{ day.date|date:"d.m.Y" }}
-            </h2>
+        <div class="card journal-day-card">
+            <div class="journal-day-header">
+                <div>
+                    <h2 class="journal-day-title">
+                        {{ day.weekday|capfirst }}, {{ day.date|date:"d.m.Y" }}
+                    </h2>
+                    <div class="journal-day-subtitle">
+                        {% trans "Все оценки, выставленные в этот день" %}
+                    </div>
+                </div>
+
+                <span class="journal-count-badge">
+                    {% trans "Оценок" %}: {{ day.count }}
+                </span>
+            </div>
 
             <table>
                 <thead>
@@ -69,14 +322,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for grade in day.items %}
+                    {% for grade in day.grades %}
                         <tr>
                             {% if user.role != 'student' %}
                                 <td>{{ grade.student.full_name }}</td>
                             {% endif %}
+
                             <td>{{ grade.subject.name }}</td>
-                            <td>{{ grade.get_grade_type_display }}</td>
+
+                            <td>
+                                {% if grade.grade_type == 'current' %}
+                                    <span class="type-pill type-current">{{ grade.get_grade_type_display }}</span>
+                                {% elif grade.grade_type == 'monthly' %}
+                                    <span class="type-pill type-monthly">{{ grade.get_grade_type_display }}</span>
+                                {% elif grade.grade_type == 'semester' %}
+                                    <span class="type-pill type-semester">{{ grade.get_grade_type_display }}</span>
+                                {% else %}
+                                    <span class="type-pill type-exam">{{ grade.get_grade_type_display }}</span>
+                                {% endif %}
+                            </td>
+
                             <td>{{ grade.period_label }}</td>
+
                             <td>
                                 {% if grade.value >= 5 %}
                                     <span class="badge badge-green">{{ grade.value }}</span>
@@ -88,13 +355,15 @@
                                     <span class="badge badge-red">{{ grade.value }}</span>
                                 {% endif %}
                             </td>
+
                             <td>
                                 {% if grade.comment %}
-                                    {{ grade.comment }}
+                                    <div class="journal-meta">{{ grade.comment }}</div>
                                 {% else %}
                                     —
                                 {% endif %}
                             </td>
+
                             <td>{{ grade.date|time:"H:i" }}</td>
                         </tr>
                     {% endfor %}
