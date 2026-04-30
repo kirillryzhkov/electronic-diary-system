@@ -38,7 +38,13 @@
 
         <button type="submit" class="btn">{% trans "Применить" %}</button>
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">{% trans "Сбросить" %}</a>
+
+        <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
+            {% trans "Экспорт в Excel" %}
+        </a>
     </form>
+
+
 </div>
 
 {% if grouped_days %}

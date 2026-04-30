@@ -53,7 +53,11 @@ from .views import (
     HomeworkDeleteView,
 
     GroupGradeEntryView,
+
     GradeJournalView,
+    GradeExportExcelView,
+    GradeSummaryReportView,
+    GradeSummaryExcelExportView,
 )
 
 urlpatterns = [
@@ -109,4 +113,7 @@ urlpatterns = [
     path('grades/group-entry/', GroupGradeEntryView.as_view(), name='frontend-group-grade-entry'),
 
     path('grades/journal/', GradeJournalView.as_view(), name='frontend-grade-journal'),
+    path('grades/export/excel/', GradeExportExcelView.as_view(), name='frontend-grade-export-excel'),
+    path('grades/report/', GradeSummaryReportView.as_view(), name='frontend-grade-summary-report'),
+    path('grades/report/excel/', GradeSummaryExcelExportView.as_view(), name='frontend-grade-summary-excel'),
 ]

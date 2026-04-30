@@ -16,6 +16,16 @@ from users.models import User
 from grades.models import Grade
 from subjects.models import Subject
 
+from datetime import datetime
+
+from django.http import HttpResponse
+from django.views import View
+
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
+from openpyxl.utils import get_column_letter
+from statistics import mean
+
 from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 
 from .forms import (
@@ -28,6 +38,7 @@ from .forms import (
     AttendanceForm,
     HomeworkForm,
     BulkGradeAssignmentForm,
+    GroupSummaryReportForm,
 )
 
 
@@ -1059,3 +1070,661 @@ class GradeJournalView(LoginRequiredMixin, TemplateView):
         context['grade_types'] = Grade.GRADE_TYPE_CHOICES
 
         return context
+    
+
+class GradeExportExcelView(LoginRequiredMixin, View):
+    WEEKDAYS_RU = {
+        0: 'Понедельник',
+        1: 'Вторник',
+        2: 'Среда',
+        3: 'Четверг',
+        4: 'Пятница',
+        5: 'Суббота',
+        6: 'Воскресенье',
+    }
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Grade.objects.select_related(
+            'student',
+            'teacher',
+            'subject'
+        ).order_by('-date')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(teacher=user)
+        elif user.role == 'student':
+            queryset = queryset.filter(student=user)
+
+        subject_id = self.request.GET.get('subject')
+        if subject_id:
+            queryset = queryset.filter(subject_id=subject_id)
+
+        grade_type = self.request.GET.get('grade_type')
+        if grade_type:
+            queryset = queryset.filter(grade_type=grade_type)
+
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        grades = self.get_queryset()
+
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = 'Grades'
+
+        title_fill = PatternFill(fill_type='solid', fgColor='1E3A8A')
+        header_fill = PatternFill(fill_type='solid', fgColor='DBEAFE')
+
+        thin_side = Side(style='thin', color='D1D5DB')
+        border = Border(
+            left=thin_side,
+            right=thin_side,
+            top=thin_side,
+            bottom=thin_side
+        )
+
+        title_font = Font(color='FFFFFF', bold=True, size=14)
+        header_font = Font(bold=True, size=11)
+        body_font = Font(size=10)
+
+        center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        left_alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+        if request.user.role == 'student':
+            export_title = 'Экспорт моих оценок'
+        elif request.user.role == 'teacher':
+            export_title = 'Экспорт оценок преподавателя'
+        else:
+            export_title = 'Экспорт всех оценок'
+
+        headers = [
+            'Дата',
+            'День недели',
+            'Студент',
+            'Преподаватель',
+            'Предмет',
+            'Тип оценки',
+            'Период',
+            'Оценка',
+            'Комментарий',
+        ]
+
+        sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+        title_cell = sheet.cell(row=1, column=1, value=export_title)
+        title_cell.fill = title_fill
+        title_cell.font = title_font
+        title_cell.alignment = center_alignment
+        title_cell.border = border
+
+        for col_num, header in enumerate(headers, start=1):
+            cell = sheet.cell(row=2, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center_alignment
+            cell.border = border
+
+        row_num = 3
+
+        for grade in grades:
+            weekday_name = self.WEEKDAYS_RU.get(grade.date.weekday(), '—')
+
+            row_data = [
+                grade.date.strftime('%d.%m.%Y'),
+                weekday_name,
+                grade.student.full_name,
+                grade.teacher.full_name if grade.teacher else '—',
+                grade.subject.name,
+                grade.get_grade_type_display(),
+                grade.period_label,
+                grade.value,
+                grade.comment or '—',
+            ]
+
+            for col_num, value in enumerate(row_data, start=1):
+                cell = sheet.cell(row=row_num, column=col_num, value=value)
+                cell.font = body_font
+                cell.border = border
+
+                if col_num in [1, 2, 8]:
+                    cell.alignment = center_alignment
+                else:
+                    cell.alignment = left_alignment
+
+            row_num += 1
+
+        column_widths = {
+            1: 14,
+            2: 18,
+            3: 28,
+            4: 28,
+            5: 22,
+            6: 22,
+            7: 18,
+            8: 10,
+            9: 45,
+        }
+
+        for col_num, width in column_widths.items():
+            sheet.column_dimensions[get_column_letter(col_num)].width = width
+
+        sheet.freeze_panes = 'A3'
+        sheet.auto_filter.ref = f'A2:I{max(row_num - 1, 2)}'
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+        filename = f'grades_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        workbook.save(response)
+        return response
+    
+class GradeSummaryBaseMixin(LoginRequiredMixin):
+    MONTHS_RU = {
+        1: 'Январь',
+        2: 'Февраль',
+        3: 'Март',
+        4: 'Апрель',
+        5: 'Май',
+        6: 'Июнь',
+        7: 'Июль',
+        8: 'Август',
+        9: 'Сентябрь',
+        10: 'Октябрь',
+        11: 'Ноябрь',
+        12: 'Декабрь',
+    }
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Итоговый отчёт доступен только администратору и преподавателю.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_allowed_assignments(self):
+        queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        )
+
+        if self.request.user.role == 'teacher':
+            queryset = queryset.filter(teacher=self.request.user)
+
+        return queryset
+
+    def get_selected_assignment(self):
+        assignment_id = self.request.GET.get('assignment')
+
+        if not assignment_id:
+            return None
+
+        return get_object_or_404(
+            self.get_allowed_assignments(),
+            pk=assignment_id
+        )
+
+    def get_students(self, assignment):
+        if not assignment:
+            return User.objects.none()
+
+        return User.objects.filter(
+            role='student',
+            group=assignment.group
+        ).order_by('last_name', 'first_name', 'username')
+
+    def get_grades(self, assignment):
+        if not assignment:
+            return Grade.objects.none()
+
+        return Grade.objects.select_related(
+            'student',
+            'teacher',
+            'subject'
+        ).filter(
+            student__group=assignment.group,
+            subject=assignment.subject,
+            teacher=assignment.teacher
+        ).order_by('student__last_name', 'student__first_name', '-date')
+
+    def get_latest_grade_value(self, grades, grade_type, month=None, semester=None):
+        filtered = []
+
+        for grade in grades:
+            if grade.grade_type != grade_type:
+                continue
+            if month is not None and grade.month != month:
+                continue
+            if semester is not None and grade.semester != semester:
+                continue
+            filtered.append(grade)
+
+        if not filtered:
+            return '—'
+
+        return filtered[0].value
+
+    def build_report_data(self, assignment):
+        students = list(self.get_students(assignment))
+        grades = list(self.get_grades(assignment))
+
+        monthly_numbers = sorted({
+            grade.month for grade in grades
+            if grade.grade_type == 'monthly' and grade.month
+        })
+
+        grades_by_student = defaultdict(list)
+        for grade in grades:
+            grades_by_student[grade.student_id].append(grade)
+
+        rows = []
+
+        for index, student in enumerate(students, start=1):
+            student_grades = grades_by_student.get(student.id, [])
+
+            current_values = [
+                grade.value for grade in student_grades
+                if grade.grade_type == 'current'
+            ]
+
+            current_average = round(mean(current_values), 2) if current_values else '—'
+            overall_average = round(mean([grade.value for grade in student_grades]), 2) if student_grades else '—'
+
+            monthly_values = {
+                month: self.get_latest_grade_value(student_grades, 'monthly', month=month)
+                for month in monthly_numbers
+            }
+
+            row = {
+                'index': index,
+                'student': student,
+                'current_average': current_average,
+                'monthly_values': monthly_values,
+                'semester_1': self.get_latest_grade_value(student_grades, 'semester', semester=1),
+                'exam_1': self.get_latest_grade_value(student_grades, 'exam', semester=1),
+                'semester_2': self.get_latest_grade_value(student_grades, 'semester', semester=2),
+                'exam_2': self.get_latest_grade_value(student_grades, 'exam', semester=2),
+                'overall_average': overall_average,
+                'grades_count': len(student_grades),
+            }
+            rows.append(row)
+
+        return {
+            'students': students,
+            'grades': grades,
+            'monthly_numbers': monthly_numbers,
+            'monthly_labels': [self.MONTHS_RU.get(month, str(month)) for month in monthly_numbers],
+            'rows': rows,
+        }
+
+
+class GradeSummaryReportView(GradeSummaryBaseMixin, TemplateView):
+    template_name = 'frontend/grade_summary_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        selected_assignment = self.get_selected_assignment()
+        form = GroupSummaryReportForm(
+            self.request.GET or None,
+            user=self.request.user
+        )
+
+        context['form'] = form
+        context['selected_assignment'] = selected_assignment
+
+        if selected_assignment:
+            report_data = self.build_report_data(selected_assignment)
+            context.update(report_data)
+
+        return context
+
+
+class GradeSummaryExcelExportView(GradeSummaryBaseMixin, View):
+    def apply_grade_style(self, cell, value, border, center_alignment, body_font):
+        cell.font = body_font
+        cell.border = border
+        cell.alignment = center_alignment
+
+        if value in ['—', '', None]:
+            return
+
+        try:
+            numeric_value = float(str(value).replace(',', '.'))
+        except ValueError:
+            return
+
+        if numeric_value >= 5:
+            cell.fill = PatternFill(fill_type='solid', fgColor='DCFCE7')
+            cell.font = Font(size=10, bold=True, color='166534')
+        elif numeric_value >= 4:
+            cell.fill = PatternFill(fill_type='solid', fgColor='DBEAFE')
+            cell.font = Font(size=10, bold=True, color='1E40AF')
+        elif numeric_value >= 3:
+            cell.fill = PatternFill(fill_type='solid', fgColor='FEF3C7')
+            cell.font = Font(size=10, bold=True, color='92400E')
+        else:
+            cell.fill = PatternFill(fill_type='solid', fgColor='FEE2E2')
+            cell.font = Font(size=10, bold=True, color='991B1B')
+
+    def apply_average_style(self, cell, value, border, center_alignment, body_font):
+        cell.font = body_font
+        cell.border = border
+        cell.alignment = center_alignment
+
+        if value in ['—', '', None]:
+            return
+
+        try:
+            numeric_value = float(str(value).replace(',', '.'))
+        except ValueError:
+            return
+
+        if numeric_value >= 4.5:
+            cell.fill = PatternFill(fill_type='solid', fgColor='BBF7D0')
+            cell.font = Font(size=10, bold=True, color='166534')
+        elif numeric_value >= 4:
+            cell.fill = PatternFill(fill_type='solid', fgColor='BFDBFE')
+            cell.font = Font(size=10, bold=True, color='1E40AF')
+        elif numeric_value >= 3:
+            cell.fill = PatternFill(fill_type='solid', fgColor='FDE68A')
+            cell.font = Font(size=10, bold=True, color='92400E')
+        else:
+            cell.fill = PatternFill(fill_type='solid', fgColor='FECACA')
+            cell.font = Font(size=10, bold=True, color='991B1B')
+
+    def get(self, request, *args, **kwargs):
+        assignment = self.get_selected_assignment()
+
+        if not assignment:
+            messages.error(request, 'Сначала выберите группу и предмет.')
+            return redirect('frontend-grade-summary-report')
+
+        report_data = self.build_report_data(assignment)
+        workbook = Workbook()
+
+        title_fill = PatternFill(fill_type='solid', fgColor='1E3A8A')
+        header_fill = PatternFill(fill_type='solid', fgColor='DBEAFE')
+        section_fill = PatternFill(fill_type='solid', fgColor='E0E7FF')
+
+        thin_side = Side(style='thin', color='D1D5DB')
+        border = Border(
+            left=thin_side,
+            right=thin_side,
+            top=thin_side,
+            bottom=thin_side
+        )
+
+        title_font = Font(color='FFFFFF', bold=True, size=14)
+        header_font = Font(bold=True, size=11)
+        body_font = Font(size=10)
+
+        center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        left_alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+        summary_sheet = workbook.active
+        summary_sheet.title = 'Summary'
+
+        monthly_labels = report_data['monthly_labels']
+
+        headers = [
+            '№',
+            'Студент',
+            'Средний текущий балл',
+            *monthly_labels,
+            'Сессия 1',
+            'Экзамен 1',
+            'Сессия 2',
+            'Экзамен 2',
+            'Общий средний балл',
+            'Всего оценок',
+        ]
+
+        last_col = len(headers)
+
+        summary_sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=last_col)
+        title_cell = summary_sheet.cell(row=1, column=1, value='Итоговый отчёт по группе')
+        title_cell.fill = title_fill
+        title_cell.font = title_font
+        title_cell.alignment = center_alignment
+        title_cell.border = border
+
+        summary_sheet.row_dimensions[1].height = 28
+
+        info_rows = [
+            ('Группа', assignment.group.name),
+            ('Предмет', assignment.subject.name),
+            ('Преподаватель', assignment.teacher.full_name if assignment.teacher else '—'),
+            ('Кабинет', assignment.classroom.number if assignment.classroom else '—'),
+        ]
+
+        info_start_row = 3
+        for offset, (label, value) in enumerate(info_rows):
+            current_row = info_start_row + offset
+
+            label_cell = summary_sheet.cell(row=current_row, column=1, value=label)
+            label_cell.fill = section_fill
+            label_cell.font = header_font
+            label_cell.border = border
+            label_cell.alignment = left_alignment
+
+            summary_sheet.merge_cells(
+                start_row=current_row,
+                start_column=2,
+                end_row=current_row,
+                end_column=4
+            )
+            value_cell = summary_sheet.cell(row=current_row, column=2, value=value)
+            value_cell.font = body_font
+            value_cell.border = border
+            value_cell.alignment = left_alignment
+
+            # чтобы границы были на всей объединённой области
+            for col in range(2, 5):
+                cell = summary_sheet.cell(row=current_row, column=col)
+                cell.border = border
+
+        header_row = 8
+        for col_num, header in enumerate(headers, start=1):
+            cell = summary_sheet.cell(row=header_row, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.border = border
+            cell.alignment = center_alignment
+
+        summary_sheet.row_dimensions[header_row].height = 34
+
+        row_num = header_row + 1
+
+        for row in report_data['rows']:
+            monthly_values = [row['monthly_values'].get(month, '—') for month in report_data['monthly_numbers']]
+
+            values = [
+                row['index'],
+                row['student'].full_name,
+                row['current_average'],
+                *monthly_values,
+                row['semester_1'],
+                row['exam_1'],
+                row['semester_2'],
+                row['exam_2'],
+                row['overall_average'],
+                row['grades_count'],
+            ]
+
+            monthly_start_col = 4
+            monthly_end_col = monthly_start_col + len(report_data['monthly_numbers']) - 1
+
+            semester_1_col = monthly_end_col + 1
+            exam_1_col = monthly_end_col + 2
+            semester_2_col = monthly_end_col + 3
+            exam_2_col = monthly_end_col + 4
+            overall_average_col = monthly_end_col + 5
+
+            for col_num, value in enumerate(values, start=1):
+                cell = summary_sheet.cell(row=row_num, column=col_num, value=value)
+
+                if col_num == 2:
+                    cell.font = body_font
+                    cell.border = border
+                    cell.alignment = left_alignment
+
+                elif col_num == 3 or col_num == overall_average_col:
+                    self.apply_average_style(
+                        cell=cell,
+                        value=value,
+                        border=border,
+                        center_alignment=center_alignment,
+                        body_font=body_font
+                    )
+
+                elif monthly_start_col <= col_num <= exam_2_col:
+                    self.apply_grade_style(
+                        cell=cell,
+                        value=value,
+                        border=border,
+                        center_alignment=center_alignment,
+                        body_font=body_font
+                    )
+
+                else:
+                    cell.font = body_font
+                    cell.border = border
+                    cell.alignment = center_alignment
+
+            row_num += 1
+
+        # ширины колонок
+        summary_sheet.column_dimensions['A'].width = 8
+        summary_sheet.column_dimensions['B'].width = 28
+        summary_sheet.column_dimensions['C'].width = 18
+
+        current_col = 4
+        for _ in report_data['monthly_numbers']:
+            summary_sheet.column_dimensions[get_column_letter(current_col)].width = 12
+            current_col += 1
+
+        summary_sheet.column_dimensions[get_column_letter(current_col)].width = 12   # Сессия 1
+        summary_sheet.column_dimensions[get_column_letter(current_col + 1)].width = 12  # Экзамен 1
+        summary_sheet.column_dimensions[get_column_letter(current_col + 2)].width = 12  # Сессия 2
+        summary_sheet.column_dimensions[get_column_letter(current_col + 3)].width = 12  # Экзамен 2
+        summary_sheet.column_dimensions[get_column_letter(current_col + 4)].width = 18  # Общий средний балл
+        summary_sheet.column_dimensions[get_column_letter(current_col + 5)].width = 14  # Всего оценок
+
+        # строки с данными
+        for r in range(header_row + 1, row_num):
+            summary_sheet.row_dimensions[r].height = 22
+            if r % 2 == 0:
+                for c in range(1, last_col + 1):
+                    cell = summary_sheet.cell(row=r, column=c)
+                    if cell.fill.fill_type is None:
+                        cell.fill = PatternFill(fill_type='solid', fgColor='F8FAFC')
+
+        summary_sheet.freeze_panes = f'A{header_row + 1}'
+        summary_sheet.auto_filter.ref = f'A{header_row}:{get_column_letter(last_col)}{max(row_num - 1, header_row)}'
+        summary_sheet.sheet_view.showGridLines = False
+
+        details_sheet = workbook.create_sheet(title='Details')
+
+        detail_headers = [
+            'Дата',
+            'День недели',
+            'Студент',
+            'Предмет',
+            'Тип оценки',
+            'Период',
+            'Оценка',
+            'Комментарий',
+        ]
+
+        for col_num, header in enumerate(detail_headers, start=1):
+            cell = details_sheet.cell(row=1, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.border = border
+            cell.alignment = center_alignment
+
+        detail_row = 2
+        weekdays = {
+            0: 'Понедельник',
+            1: 'Вторник',
+            2: 'Среда',
+            3: 'Четверг',
+            4: 'Пятница',
+            5: 'Суббота',
+            6: 'Воскресенье',
+        }
+
+        for grade in report_data['grades']:
+            values = [
+                grade.date.strftime('%d.%m.%Y %H:%M'),
+                weekdays.get(grade.date.weekday(), '—'),
+                grade.student.full_name,
+                grade.subject.name,
+                grade.get_grade_type_display(),
+                grade.period_label,
+                grade.value,
+                grade.comment or '—',
+            ]
+
+            for col_num, value in enumerate(values, start=1):
+                cell = details_sheet.cell(row=detail_row, column=col_num, value=value)
+
+                if col_num == 7:
+                    self.apply_grade_style(
+                        cell=cell,
+                        value=value,
+                        border=border,
+                        center_alignment=center_alignment,
+                        body_font=body_font
+                    )
+                else:
+                    cell.font = body_font
+                    cell.border = border
+                    cell.alignment = left_alignment if col_num != 1 else center_alignment
+
+            detail_row += 1
+
+        detail_widths = {
+            1: 20,
+            2: 16,
+            3: 28,
+            4: 22,
+            5: 20,
+            6: 18,
+            7: 10,
+            8: 45,
+        }
+
+        for col_num, width in detail_widths.items():
+            details_sheet.column_dimensions[get_column_letter(col_num)].width = width
+
+        for r in range(2, detail_row):
+            details_sheet.row_dimensions[r].height = 20
+
+            if r % 2 == 0:
+                for c in range(1, 9):
+                    cell = details_sheet.cell(row=r, column=c)
+                    if cell.fill.fill_type is None:
+                        cell.fill = PatternFill(fill_type='solid', fgColor='F8FAFC')
+
+        details_sheet.freeze_panes = 'A2'
+        details_sheet.auto_filter.ref = f'A1:H{max(detail_row - 1, 1)}'
+        details_sheet.sheet_view.showGridLines = False
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+        filename = (
+            f'group_summary_{assignment.group.name}_{assignment.subject.name}'
+            .replace(' ', '_')
+            .replace('/', '_')
+        ) + '.xlsx'
+
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        workbook.save(response)
+        return response

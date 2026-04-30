@@ -509,3 +509,39 @@ class BulkGradeAssignmentForm(forms.Form):
             )
 
         return cleaned_data
+    
+
+class GroupSummaryReportForm(forms.Form):
+    assignment = forms.ModelChoiceField(
+        queryset=TeachingAssignment.objects.none(),
+        label='Группа и предмет',
+        empty_label='Выберите группу и предмет'
+    )
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        queryset = TeachingAssignment.objects.select_related(
+            'teacher',
+            'subject',
+            'group',
+            'classroom'
+        )
+
+        if user and user.role == 'teacher':
+            queryset = queryset.filter(teacher=user)
+
+        queryset = queryset.order_by(
+            'group__name',
+            'subject__name',
+            'teacher__last_name',
+            'teacher__first_name'
+        )
+
+        self.fields['assignment'].queryset = queryset
+        self.fields['assignment'].label_from_instance = self.assignment_label
+
+    def assignment_label(self, obj):
+        classroom = obj.classroom.number if obj.classroom else 'без кабинета'
+        teacher_name = obj.teacher.full_name if obj.teacher else '—'
+        return f'{obj.group.name} — {obj.subject.name} — {teacher_name} — каб. {classroom}'

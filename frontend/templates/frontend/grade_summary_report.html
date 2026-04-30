@@ -1,0 +1,100 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Итоговый отчёт" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Итоговый отчёт по группе" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Выберите группу и предмет, чтобы посмотреть сводную ведомость и экспортировать её в Excel." %}
+</p>
+
+<div class="card">
+    <form method="get" class="form-inline">
+        <div style="flex: 1;">
+            <label for="{{ form.assignment.id_for_label }}">{% trans "Группа и предмет" %}</label>
+            {{ form.assignment }}
+        </div>
+
+        <button type="submit" class="btn">{% trans "Показать отчёт" %}</button>
+
+        {% if selected_assignment %}
+            <a href="{% url 'frontend-grade-summary-excel' %}?assignment={{ selected_assignment.id }}" class="btn btn-secondary">
+                {% trans "Экспорт в Excel" %}
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+{% if selected_assignment %}
+    <div class="card">
+        <h2 style="margin-top: 0;">{% trans "Информация" %}</h2>
+
+        <div class="grid">
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Группа" %}</div>
+                <div class="stat-value">{{ selected_assignment.group.name }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Предмет" %}</div>
+                <div class="stat-value">{{ selected_assignment.subject.name }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">{% trans "Преподаватель" %}</div>
+                <div class="stat-value">{{ selected_assignment.teacher.full_name }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        {% if rows %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>{% trans "Студент" %}</th>
+                        <th>{% trans "Средний текущий балл" %}</th>
+
+                        {% for month_label in monthly_labels %}
+                            <th>{{ month_label }}</th>
+                        {% endfor %}
+
+                        <th>{% trans "Сессия 1" %}</th>
+                        <th>{% trans "Экзамен 1" %}</th>
+                        <th>{% trans "Сессия 2" %}</th>
+                        <th>{% trans "Экзамен 2" %}</th>
+                        <th>{% trans "Общий средний балл" %}</th>
+                        <th>{% trans "Всего оценок" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            <td>{{ row.index }}</td>
+                            <td>{{ row.student.full_name }}</td>
+                            <td>{{ row.current_average }}</td>
+
+                            {% for month_number, value in row.monthly_values.items %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+
+                            <td>{{ row.semester_1 }}</td>
+                            <td>{{ row.exam_1 }}</td>
+                            <td>{{ row.semester_2 }}</td>
+                            <td>{{ row.exam_2 }}</td>
+                            <td>{{ row.overall_average }}</td>
+                            <td>{{ row.grades_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty">{% trans "Оценок пока нет." %}</div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

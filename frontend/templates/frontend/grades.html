@@ -19,12 +19,24 @@
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
             {% trans "Журнал по дням" %}
         </a>
+        <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
+            {% trans "Экспорт в Excel" %}
+        </a>
+        <a href="{% url 'frontend-grade-summary-report' %}" class="btn btn-secondary">
+            {% trans "Итоговый отчёт" %}
+        </a>
     </div>
 {% else %}
     <p>
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
             {% trans "Журнал по дням" %}
         </a>
+
+        <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
+            {% trans "Экспорт в Excel" %}
+        </a>
+
+
     </p>
 {% endif %}
 
