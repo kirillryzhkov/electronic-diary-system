@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Electronic Diary\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-30 00:15+0500\n"
+"POT-Creation-Date: 2026-05-04 21:59+0500\n"
 "PO-Revision-Date: 2026-04-26 22:40+0500\n"
 "Last-Translator: Kirill\n"
 "Language-Team: English\n"
@@ -84,6 +84,7 @@ msgstr "Delete Assignment"
 #: .\frontend\templates\frontend\grade_confirm_delete.html:4
 #: .\frontend\templates\frontend\grade_form.html:10
 #: .\frontend\templates\frontend\grade_journal.html:4
+#: .\frontend\templates\frontend\grade_summary_report.html:4
 #: .\frontend\templates\frontend\grades.html:4
 #: .\frontend\templates\frontend\group_confirm_delete.html:4
 #: .\frontend\templates\frontend\group_form.html:10
@@ -119,10 +120,11 @@ msgstr "Are you sure you want to delete this assignment?"
 #: .\frontend\templates\frontend\assignment_confirm_delete.html:20
 #: .\frontend\templates\frontend\assignment_form.html:37
 #: .\frontend\templates\frontend\assignments.html:26
-#: .\frontend\templates\frontend\attendance.html:41
+#: .\frontend\templates\frontend\attendance.html:92
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:40
 #: .\frontend\templates\frontend\grade_confirm_delete.html:26
-#: .\frontend\templates\frontend\grades.html:76
+#: .\frontend\templates\frontend\grade_summary_report.html:46
+#: .\frontend\templates\frontend\grades.html:109
 #: .\frontend\templates\frontend\homework.html:48
 #: .\frontend\templates\frontend\homework_confirm_delete.html:35
 #: .\frontend\templates\frontend\schedule.html:37
@@ -133,13 +135,14 @@ msgstr "Teacher"
 #: .\frontend\templates\frontend\assignment_confirm_delete.html:25
 #: .\frontend\templates\frontend\assignment_form.html:46
 #: .\frontend\templates\frontend\assignments.html:27
-#: .\frontend\templates\frontend\attendance.html:37
+#: .\frontend\templates\frontend\attendance.html:88
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:30
 #: .\frontend\templates\frontend\dashboard.html:55
 #: .\frontend\templates\frontend\grade_confirm_delete.html:32
-#: .\frontend\templates\frontend\grade_journal.html:16
-#: .\frontend\templates\frontend\grade_journal.html:57
-#: .\frontend\templates\frontend\grades.html:71
+#: .\frontend\templates\frontend\grade_journal.html:198
+#: .\frontend\templates\frontend\grade_journal.html:316
+#: .\frontend\templates\frontend\grade_summary_report.html:41
+#: .\frontend\templates\frontend\grades.html:104
 #: .\frontend\templates\frontend\group_grade_entry.html:61
 #: .\frontend\templates\frontend\homework.html:37
 #: .\frontend\templates\frontend\homework_confirm_delete.html:25
@@ -156,8 +159,11 @@ msgstr "Subject"
 #: .\frontend\templates\frontend\assignment_confirm_delete.html:30
 #: .\frontend\templates\frontend\assignment_form.html:55
 #: .\frontend\templates\frontend\assignments.html:28
-#: .\frontend\templates\frontend\attendance.html:38
+#: .\frontend\templates\frontend\attendance.html:89
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:35
+#: .\frontend\templates\frontend\grade_journal.html:187
+#: .\frontend\templates\frontend\grade_summary_report.html:36
+#: .\frontend\templates\frontend\grades.html:101
 #: .\frontend\templates\frontend\group_confirm_delete.html:20
 #: .\frontend\templates\frontend\group_grade_entry.html:56
 #: .\frontend\templates\frontend\groups.html:26
@@ -197,12 +203,12 @@ msgstr ""
 
 #: .\frontend\templates\frontend\assignment_confirm_delete.html:52
 #: .\frontend\templates\frontend\assignments.html:59
-#: .\frontend\templates\frontend\attendance.html:96
+#: .\frontend\templates\frontend\attendance.html:147
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:63
 #: .\frontend\templates\frontend\classroom_confirm_delete.html:42
 #: .\frontend\templates\frontend\classrooms.html:56
 #: .\frontend\templates\frontend\grade_confirm_delete.html:60
-#: .\frontend\templates\frontend\grades.html:140
+#: .\frontend\templates\frontend\grades.html:180
 #: .\frontend\templates\frontend\group_confirm_delete.html:53
 #: .\frontend\templates\frontend\groups.html:65
 #: .\frontend\templates\frontend\homework.html:62
@@ -276,9 +282,9 @@ msgid "Связь преподавателя, предмета, группы и 
 msgstr "Connection between teacher, subject, group, and classroom."
 
 #: .\frontend\templates\frontend\assignments.html:32
-#: .\frontend\templates\frontend\attendance.html:48
+#: .\frontend\templates\frontend\attendance.html:99
 #: .\frontend\templates\frontend\classrooms.html:30
-#: .\frontend\templates\frontend\grades.html:84
+#: .\frontend\templates\frontend\grades.html:117
 #: .\frontend\templates\frontend\groups.html:31
 #: .\frontend\templates\frontend\schedule.html:41
 #: .\frontend\templates\frontend\subjects.html:31
@@ -286,9 +292,9 @@ msgid "Действия"
 msgstr "Actions"
 
 #: .\frontend\templates\frontend\assignments.html:55
-#: .\frontend\templates\frontend\attendance.html:92
+#: .\frontend\templates\frontend\attendance.html:143
 #: .\frontend\templates\frontend\classrooms.html:52
-#: .\frontend\templates\frontend\grades.html:136
+#: .\frontend\templates\frontend\grades.html:176
 #: .\frontend\templates\frontend\groups.html:61
 #: .\frontend\templates\frontend\homework.html:58
 #: .\frontend\templates\frontend\schedule.html:80
@@ -325,36 +331,88 @@ msgstr "Your attendance by subject."
 msgid "Добавить посещаемость"
 msgstr "Add Attendance"
 
-#: .\frontend\templates\frontend\attendance.html:33
+#: .\frontend\templates\frontend\attendance.html:25
+#: .\frontend\templates\frontend\grade_journal.html:156
+#: .\frontend\templates\frontend\grade_summary_report.html:24
+#: .\frontend\templates\frontend\grades.html:24
+#: .\frontend\templates\frontend\grades.html:38
+msgid "Экспорт в Excel"
+msgstr "Export to Excel"
+
+#: .\frontend\templates\frontend\attendance.html:34
+#: .\frontend\templates\frontend\grades.html:63
+msgid "Фильтр по группе"
+msgstr "Filter by Group"
+
+#: .\frontend\templates\frontend\attendance.html:36
+#: .\frontend\templates\frontend\grade_journal.html:189
+#: .\frontend\templates\frontend\grades.html:65
+msgid "Все группы"
+msgstr "All Groups"
+
+#: .\frontend\templates\frontend\attendance.html:48
+#: .\frontend\templates\frontend\grades.html:77
+msgid "Фильтр по предмету"
+msgstr "Filter by Subject"
+
+#: .\frontend\templates\frontend\attendance.html:50
+#: .\frontend\templates\frontend\grade_journal.html:200
+#: .\frontend\templates\frontend\grades.html:79
+msgid "Все предметы"
+msgstr "All Subjects"
+
+#: .\frontend\templates\frontend\attendance.html:61
+msgid "Фильтр по статусу"
+msgstr "Filter by Status"
+
+#: .\frontend\templates\frontend\attendance.html:63
+msgid "Все статусы"
+msgstr "All Statuses"
+
+#: .\frontend\templates\frontend\attendance.html:73
+#: .\frontend\templates\frontend\grade_journal.html:235
+#: .\frontend\templates\frontend\grades.html:89
+msgid "Применить"
+msgstr "Apply"
+
+#: .\frontend\templates\frontend\attendance.html:75
+#: .\frontend\templates\frontend\grade_journal.html:236
+#: .\frontend\templates\frontend\grades.html:91
+msgid "Сбросить"
+msgstr "Reset"
+
+#: .\frontend\templates\frontend\attendance.html:84
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:20
 #: .\frontend\templates\frontend\attendance_form.html:37
-#: .\frontend\templates\frontend\grade_journal.html:55
+#: .\frontend\templates\frontend\grade_journal.html:211
+#: .\frontend\templates\frontend\grade_journal.html:314
+#: .\frontend\templates\frontend\grade_summary_report.html:58
 #: .\frontend\templates\frontend\group_grade_entry.html:90
 #: .\frontend\templates\frontend\teacher_group_detail.html:97
 msgid "Студент"
 msgstr "Student"
 
-#: .\frontend\templates\frontend\attendance.html:36
+#: .\frontend\templates\frontend\attendance.html:87
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:25
 #: .\frontend\templates\frontend\attendance_form.html:55
 msgid "Дата"
 msgstr "Date"
 
-#: .\frontend\templates\frontend\attendance.html:44
+#: .\frontend\templates\frontend\attendance.html:95
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:45
 #: .\frontend\templates\frontend\attendance_form.html:64
 msgid "Статус"
 msgstr "Status"
 
-#: .\frontend\templates\frontend\attendance.html:45
+#: .\frontend\templates\frontend\attendance.html:96
 #: .\frontend\templates\frontend\attendance_confirm_delete.html:50
 #: .\frontend\templates\frontend\attendance_form.html:73
-#: .\frontend\templates\frontend\grade_journal.html:61
+#: .\frontend\templates\frontend\grade_journal.html:320
 #: .\frontend\templates\frontend\group_grade_entry.html:93
 msgid "Комментарий"
 msgstr "Comment"
 
-#: .\frontend\templates\frontend\attendance.html:107
+#: .\frontend\templates\frontend\attendance.html:158
 msgid "Записей посещаемости пока нет."
 msgstr "There are no attendance records yet."
 
@@ -551,7 +609,7 @@ msgstr "Teacher"
 #: .\frontend\templates\frontend\dashboard.html:16
 #: .\frontend\templates\frontend\dashboard.html:53
 #: .\frontend\templates\frontend\grade_confirm_delete.html:20
-#: .\frontend\templates\frontend\grades.html:68
+#: .\frontend\templates\frontend\grades.html:100
 #: .\frontend\templates\frontend\profile.html:182
 msgid "Ученик"
 msgstr "Student"
@@ -584,8 +642,8 @@ msgstr "Recent Grades"
 
 #: .\frontend\templates\frontend\dashboard.html:56
 #: .\frontend\templates\frontend\grade_confirm_delete.html:37
-#: .\frontend\templates\frontend\grade_journal.html:60
-#: .\frontend\templates\frontend\grades.html:79
+#: .\frontend\templates\frontend\grade_journal.html:319
+#: .\frontend\templates\frontend\grades.html:112
 #: .\frontend\templates\frontend\group_grade_entry.html:92
 #: .\frontend\templates\frontend\profile.html:186
 #: .\frontend\templates\frontend\teacher_group_detail.html:99
@@ -594,7 +652,7 @@ msgstr "Grade"
 
 #: .\frontend\templates\frontend\dashboard.html:57
 #: .\frontend\templates\frontend\grade_confirm_delete.html:42
-#: .\frontend\templates\frontend\grades.html:80
+#: .\frontend\templates\frontend\grades.html:113
 #: .\frontend\templates\frontend\profile.html:187
 #: .\frontend\templates\frontend\teacher_group_detail.html:100
 msgid "Пояснение"
@@ -602,17 +660,18 @@ msgstr "Comment"
 
 #: .\frontend\templates\frontend\dashboard.html:58
 #: .\frontend\templates\frontend\grade_confirm_delete.html:53
-#: .\frontend\templates\frontend\grades.html:81
+#: .\frontend\templates\frontend\grades.html:114
 #: .\frontend\templates\frontend\profile.html:188
 #: .\frontend\templates\frontend\teacher_group_detail.html:101
 msgid "Дата и время"
 msgstr "Date and Time"
 
 #: .\frontend\templates\frontend\dashboard.html:96
-#: .\frontend\templates\frontend\grade_journal.html:101
+#: .\frontend\templates\frontend\grade_journal.html:376
+#: .\frontend\templates\frontend\grade_summary_report.html:96
 #: .\frontend\templates\frontend\profile.html:227
 msgid "Оценок пока нет."
-msgstr "There are no grades yet."
+msgstr "No grades yet."
 
 #: .\frontend\templates\frontend\grade_confirm_delete.html:4
 #: .\frontend\templates\frontend\grade_confirm_delete.html:7
@@ -646,82 +705,187 @@ msgstr "This form is available only to users with the teacher role."
 msgid "Журнал оценок"
 msgstr "Grade Journal"
 
-#: .\frontend\templates\frontend\grade_journal.html:7
+#: .\frontend\templates\frontend\grade_journal.html:144
 msgid "Журнал оценок по дням"
 msgstr "Grade Journal by Days"
 
-#: .\frontend\templates\frontend\grade_journal.html:10
+#: .\frontend\templates\frontend\grade_journal.html:147
 msgid ""
 "Здесь оценки сгруппированы по датам, чтобы было удобно смотреть, когда и что "
 "было выставлено."
-msgstr "Grades are grouped by dates here so it is convenient to see when and what was assigned."
+msgstr ""
+"Grades are grouped by dates here so it is convenient to see when and what "
+"was assigned."
 
-#: .\frontend\templates\frontend\grade_journal.html:18
-#: .\frontend\templates\frontend\grades.html:46
-msgid "Все предметы"
-msgstr "All Subjects"
+#: .\frontend\templates\frontend\grade_journal.html:152
+#: .\frontend\templates\frontend\group_grade_entry.html:45
+msgid "Назад к оценкам"
+msgstr "Back to Grades"
 
-#: .\frontend\templates\frontend\grade_journal.html:28
-#: .\frontend\templates\frontend\grade_journal.html:58
-#: .\frontend\templates\frontend\grades.html:72
+#: .\frontend\templates\frontend\grade_journal.html:162
+#: .\frontend\templates\frontend\grade_journal.html:226
+msgid "Все типы"
+msgstr "All Types"
+
+#: .\frontend\templates\frontend\grade_journal.html:166
+#: .\frontend\templates\frontend\grade_journal.html:276 .\grades\models.py:13
+msgid "Текущая оценка"
+msgstr "Current Grade"
+
+#: .\frontend\templates\frontend\grade_journal.html:170
+#: .\frontend\templates\frontend\grade_journal.html:280 .\grades\models.py:14
+msgid "Месячная аттестация"
+msgstr "Monthly Assessment"
+
+#: .\frontend\templates\frontend\grade_journal.html:174
+#: .\frontend\templates\frontend\grade_journal.html:284 .\grades\models.py:15
+msgid "Полугодовая сессия"
+msgstr "Semester Session"
+
+#: .\frontend\templates\frontend\grade_journal.html:178
+#: .\frontend\templates\frontend\grade_journal.html:288 .\grades\models.py:16
+msgid "Экзамен"
+msgstr "Exam"
+
+#: .\frontend\templates\frontend\grade_journal.html:213
+msgid "Все студенты"
+msgstr "All Students"
+
+#: .\frontend\templates\frontend\grade_journal.html:224
+#: .\frontend\templates\frontend\grade_journal.html:317
+#: .\frontend\templates\frontend\grades.html:105
 #: .\frontend\templates\frontend\group_grade_entry.html:28
 msgid "Тип оценки"
 msgstr "Grade Type"
 
-#: .\frontend\templates\frontend\grade_journal.html:30
-msgid "Все типы"
-msgstr "All Types"
+#: .\frontend\templates\frontend\grade_journal.html:242
+#: .\frontend\templates\frontend\grade_summary_report.html:70
+msgid "Всего оценок"
+msgstr "Total Grades"
 
-#: .\frontend\templates\frontend\grade_journal.html:39
-#: .\frontend\templates\frontend\grades.html:57
-msgid "Применить"
-msgstr "Apply"
+#: .\frontend\templates\frontend\grade_journal.html:247
+msgid "Дней в журнале"
+msgstr "Days in Journal"
 
-#: .\frontend\templates\frontend\grade_journal.html:40
-#: .\frontend\templates\frontend\grades.html:59
-msgid "Сбросить"
-msgstr "Reset"
+#: .\frontend\templates\frontend\grade_journal.html:252
+#: .\frontend\templates\frontend\profile.html:115
+#: .\frontend\templates\frontend\profile.html:169
+#: .\frontend\templates\frontend\stats.html:20
+#: .\frontend\templates\frontend\teacher_group_detail.html:27
+msgid "Средний балл"
+msgstr "Average Grade"
 
-#: .\frontend\templates\frontend\grade_journal.html:59
-#: .\frontend\templates\frontend\grades.html:73
+#: .\frontend\templates\frontend\grade_journal.html:257
+msgid "Активный фильтр"
+msgstr "Active Filter"
+
+#: .\frontend\templates\frontend\grade_journal.html:268
+msgid "Без фильтра"
+msgstr "No Filter"
+
+#: .\frontend\templates\frontend\grade_journal.html:301
+msgid "Все оценки, выставленные в этот день"
+msgstr "All grades assigned on this day"
+
+#: .\frontend\templates\frontend\grade_journal.html:306
+#: .\frontend\templates\frontend\profile.html:96
+#: .\frontend\templates\frontend\teacher_group_detail.html:22
+msgid "Оценок"
+msgstr "Grades"
+
+#: .\frontend\templates\frontend\grade_journal.html:318
+#: .\frontend\templates\frontend\grades.html:106
 msgid "Период"
 msgstr "Period"
 
-#: .\frontend\templates\frontend\grade_journal.html:62
+#: .\frontend\templates\frontend\grade_journal.html:321
 #: .\frontend\templates\frontend\schedule.html:33
 #: .\frontend\templates\frontend\schedule_confirm_delete.html:25
 msgid "Время"
 msgstr "Time"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:4
+#: .\frontend\templates\frontend\grades.html:28
+#: .\frontend\templates\frontend\grades.html:43
+msgid "Итоговый отчёт"
+msgstr "Summary Report"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:7
+msgid "Итоговый отчёт по группе"
+msgstr "Group Summary Report"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:10
+msgid ""
+"Выберите группу и предмет, чтобы посмотреть сводную ведомость и "
+"экспортировать её в Excel."
+msgstr "Choose a group and subject to view the summary sheet and export it to Excel."
+
+#: .\frontend\templates\frontend\grade_summary_report.html:16
+#: .\frontend\templates\frontend\group_grade_entry.html:23
+msgid "Группа и предмет"
+msgstr "Group and Subject"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:20
+msgid "Показать отчёт"
+msgstr "Show Report"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:32
+msgid "Информация"
+msgstr "Information"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:59
+msgid "Средний текущий балл"
+msgstr "Average Current Grade"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:65
+msgid "Сессия 1"
+msgstr ""
+
+#: .\frontend\templates\frontend\grade_summary_report.html:66
+#, fuzzy
+#| msgid "Экзамен"
+msgid "Экзамен 1"
+msgstr "Exam"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:67
+msgid "Сессия 2"
+msgstr ""
+
+#: .\frontend\templates\frontend\grade_summary_report.html:68
+#, fuzzy
+#| msgid "Экзамен"
+msgid "Экзамен 2"
+msgstr "Exam"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:69
+msgid "Общий средний балл"
+msgstr "Overall Average Grade"
 
 #: .\frontend\templates\frontend\grades.html:16
 msgid "Выставить оценки группе"
 msgstr "Assign Grades to Group"
 
 #: .\frontend\templates\frontend\grades.html:20
-#: .\frontend\templates\frontend\grades.html:26
+#: .\frontend\templates\frontend\grades.html:34
 #: .\frontend\templates\frontend\group_grade_entry.html:142
 msgid "Журнал по дням"
 msgstr "Daily Journal"
 
-#: .\frontend\templates\frontend\grades.html:33
+#: .\frontend\templates\frontend\grades.html:51
 msgid "Список всех оценок в системе."
 msgstr "List of all grades in the system."
 
-#: .\frontend\templates\frontend\grades.html:35
+#: .\frontend\templates\frontend\grades.html:53
 msgid "Список оценок, которые вы выставили."
 msgstr "List of grades you have assigned."
 
-#: .\frontend\templates\frontend\grades.html:37
+#: .\frontend\templates\frontend\grades.html:55
 msgid "Ваши оценки по предметам."
 msgstr "Your grades by subject."
 
-#: .\frontend\templates\frontend\grades.html:44
-msgid "Фильтр по предмету"
-msgstr "Filter by Subject"
-
-#: .\frontend\templates\frontend\grades.html:150
+#: .\frontend\templates\frontend\grades.html:190
 msgid "Оценки не найдены."
-msgstr "No grades found."
+msgstr "Grades not found."
 
 #: .\frontend\templates\frontend\group_confirm_delete.html:4
 #: .\frontend\templates\frontend\group_confirm_delete.html:7
@@ -774,11 +938,9 @@ msgstr "Group Grade Entry"
 msgid ""
 "Выберите группу, предмет и тип оценки, затем выставьте оценки сразу "
 "нескольким студентам."
-msgstr "Choose a group, subject, and grade type, then assign grades to several students at once."
-
-#: .\frontend\templates\frontend\group_grade_entry.html:23
-msgid "Группа и предмет"
-msgstr "Group and Subject"
+msgstr ""
+"Choose a group, subject, and grade type, then assign grades to several "
+"students at once."
 
 #: .\frontend\templates\frontend\group_grade_entry.html:33
 msgid "Месяц аттестации"
@@ -792,15 +954,9 @@ msgstr "Semester"
 msgid "Показать студентов"
 msgstr "Show Students"
 
-#: .\frontend\templates\frontend\group_grade_entry.html:45
-#, fuzzy
-#| msgid "Назад к группам"
-msgid "Назад к оценкам"
-msgstr "Back to Groups"
-
 #: .\frontend\templates\frontend\group_grade_entry.html:52
 msgid "Информация о выбранном назначении"
-msgstr "Information about Selected Assignment"
+msgstr "Information About Selected Assignment"
 
 #: .\frontend\templates\frontend\group_grade_entry.html:91
 msgid "Последняя оценка по предмету"
@@ -1021,22 +1177,10 @@ msgstr "Classrooms"
 msgid "Назначений"
 msgstr "Assignments"
 
-#: .\frontend\templates\frontend\profile.html:96
-#: .\frontend\templates\frontend\teacher_group_detail.html:22
-msgid "Оценок"
-msgstr "Grades"
-
 #: .\frontend\templates\frontend\profile.html:110
 #: .\frontend\templates\frontend\profile.html:162
 msgid "Выставленные оценки"
 msgstr "Assigned Grades"
-
-#: .\frontend\templates\frontend\profile.html:115
-#: .\frontend\templates\frontend\profile.html:169
-#: .\frontend\templates\frontend\stats.html:20
-#: .\frontend\templates\frontend\teacher_group_detail.html:27
-msgid "Средний балл"
-msgstr "Average Grade"
 
 #: .\frontend\templates\frontend\profile.html:121
 msgid "Мои назначения"
@@ -1245,51 +1389,41 @@ msgstr "Open Group"
 msgid "У вас пока нет назначенных групп."
 msgstr "You do not have any assigned groups yet."
 
-#: .\grades\models.py:13
-msgid "Текущая оценка"
-msgstr "Current Grade"
-
-#: .\grades\models.py:14
-msgid "Месячная аттестация"
-msgstr "Monthly Assessment"
-
-#: .\grades\models.py:15
-msgid "Полугодовая сессия"
-msgstr "Semester Session"
-
-#: .\grades\models.py:16
-msgid "Экзамен"
-msgstr "Exam"
-
 #, fuzzy
 #~| msgid "Статистика по предметам"
 #~ msgid "Поиск по разделам..."
 #~ msgstr "Subject Statistics"
 
+#~ msgid "Вы не заполнили ни одной оценки."
+#~ msgstr "You did not fill in any grades."
 
-msgid "Вы не заполнили ни одной оценки."
-msgstr "You did not fill in any grades."
+#~ msgid "Для месячной аттестации нужно указать месяц."
+#~ msgstr "You must specify a month for monthly assessment."
 
-msgid "Выберите группу и предмет, затем выставьте оценки сразу нескольким студентам."
-msgstr "Choose a group and subject, then assign grades to several students at once."
+#~ msgid "Для полугодовой сессии и экзамена нужно указать полугодие."
+#~ msgstr "You must specify a semester for semester session and exam."
 
-msgid "Для месячной аттестации нужно указать месяц."
-msgstr "You must specify a month for monthly assessment."
+#~ msgid "Некорректные оценки у студентов: %(names)s."
+#~ msgstr "Invalid grades for students: %(names)s."
 
-msgid "Для полугодовой сессии и экзамена нужно указать полугодие."
-msgstr "You must specify a semester for semester session and exam."
+#~ msgid "Некорректные оценки у студентов: {names}."
+#~ msgstr "Invalid grades for students: {names}."
 
-msgid "Некорректные оценки у студентов: %(names)s."
-msgstr "Invalid grades for students: %(names)s."
+#~ msgid "Сначала выберите группу и предмет."
+#~ msgstr "First choose a group and subject."
 
-msgid "Некорректные оценки у студентов: {names}."
-msgstr "Invalid grades for students: {names}."
+#~ msgid "Успешно добавлено оценок: %(count)s."
+#~ msgstr "Successfully added grades: %(count)s."
 
-msgid "Сначала выберите группу и предмет."
-msgstr "First choose a group and subject."
+#~ msgid "Успешно добавлено оценок: {count}."
+#~ msgstr "Successfully added grades: {count}."
 
-msgid "Успешно добавлено оценок: %(count)s."
-msgstr "Successfully added grades: %(count)s."
 
-msgid "Успешно добавлено оценок: {count}."
-msgstr "Successfully added grades: {count}."
+msgid "Экспорт всей посещаемости"
+msgstr "Export All Attendance"
+
+msgid "Экспорт моей посещаемости"
+msgstr "Export My Attendance"
+
+msgid "Экспорт посещаемости преподавателя"
+msgstr "Export Teacher Attendance"

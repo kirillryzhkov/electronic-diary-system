@@ -19,15 +19,17 @@
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
             {% trans "Журнал по дням" %}
         </a>
+
         <a href="{% url 'frontend-grade-export-excel' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" class="btn btn-secondary">
             {% trans "Экспорт в Excel" %}
         </a>
+
         <a href="{% url 'frontend-grade-summary-report' %}" class="btn btn-secondary">
             {% trans "Итоговый отчёт" %}
         </a>
     </div>
 {% else %}
-    <p>
+    <div class="actions" style="margin-bottom: 12px;">
         <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary">
             {% trans "Журнал по дням" %}
         </a>
@@ -36,8 +38,12 @@
             {% trans "Экспорт в Excel" %}
         </a>
 
-
-    </p>
+        {% if user.role == 'admin' %}
+            <a href="{% url 'frontend-grade-summary-report' %}" class="btn btn-secondary">
+                {% trans "Итоговый отчёт" %}
+            </a>
+        {% endif %}
+    </div>
 {% endif %}
 
 <p class="page-subtitle">
@@ -59,22 +65,21 @@
                     <option value="">{% trans "Все группы" %}</option>
                     {% for group in groups %}
                         <option value="{{ group.id }}"
-                            {% if request.GET.group == group.id|stringformat:"s" %}selected{% endif %}
-                        >
+                            {% if request.GET.group == group.id|stringformat:"s" %}selected{% endif %}>
                             {{ group.name }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
         {% endif %}
+
         <div>
             <label for="subject">{% trans "Фильтр по предмету" %}</label>
             <select name="subject" id="subject">
                 <option value="">{% trans "Все предметы" %}</option>
                 {% for subject in subjects %}
                     <option value="{{ subject.id }}"
-                        {% if request.GET.subject == subject.id|stringformat:"s" %}selected{% endif %}
-                    >
+                        {% if request.GET.subject == subject.id|stringformat:"s" %}selected{% endif %}>
                         {{ subject.name }}
                     </option>
                 {% endfor %}

@@ -58,6 +58,8 @@ from .views import (
     GradeExportExcelView,
     GradeSummaryReportView,
     GradeSummaryExcelExportView,
+
+    AttendanceExportExcelView,
 )
 
 urlpatterns = [
@@ -116,4 +118,6 @@ urlpatterns = [
     path('grades/export/excel/', GradeExportExcelView.as_view(), name='frontend-grade-export-excel'),
     path('grades/report/', GradeSummaryReportView.as_view(), name='frontend-grade-summary-report'),
     path('grades/report/excel/', GradeSummaryExcelExportView.as_view(), name='frontend-grade-summary-excel'),
+
+    path('attendance/export/excel/', AttendanceExportExcelView.as_view(), name='frontend-attendance-export-excel'),
 ]

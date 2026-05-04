@@ -668,11 +668,72 @@ class AttendanceListView(LoginRequiredMixin, ListView):
 
         if user.role == 'teacher':
             queryset = queryset.filter(assignment__teacher=user)
-
         elif user.role == 'student':
             queryset = queryset.filter(student=user)
 
+        group_id = self.request.GET.get('group')
+        if group_id and user.role != 'student':
+            queryset = queryset.filter(assignment__group_id=group_id)
+
+        subject_id = self.request.GET.get('subject')
+        if subject_id:
+            queryset = queryset.filter(assignment__subject_id=subject_id)
+
+        status_value = self.request.GET.get('status')
+        if status_value:
+            queryset = queryset.filter(status=status_value)
+
         return queryset
+
+    def get_groups_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'teacher':
+            group_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('group_id', flat=True).distinct()
+
+            return StudyGroup.objects.filter(
+                id__in=group_ids
+            ).order_by('name')
+
+        if user.role == 'admin':
+            return StudyGroup.objects.all().order_by('name')
+
+        return StudyGroup.objects.none()
+
+    def get_subjects_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'teacher':
+            subject_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('subject_id', flat=True).distinct()
+
+            return Subject.objects.filter(
+                id__in=subject_ids
+            ).order_by('name')
+
+        if user.role == 'admin':
+            return Subject.objects.all().order_by('name')
+
+        if user.role == 'student' and user.group:
+            subject_ids = TeachingAssignment.objects.filter(
+                group=user.group
+            ).values_list('subject_id', flat=True).distinct()
+
+            return Subject.objects.filter(
+                id__in=subject_ids
+            ).order_by('name')
+
+        return Subject.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = self.get_groups_for_filter()
+        context['subjects'] = self.get_subjects_for_filter()
+        context['status_choices'] = Attendance.STATUS_CHOICES
+        return context
 
 
 class AttendanceCreateView(LoginRequiredMixin, CreateView):
@@ -1875,5 +1936,184 @@ class GradeSummaryExcelExportView(GradeSummaryBaseMixin, View):
         ) + '.xlsx'
 
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        workbook.save(response)
+        return response
+    
+class AttendanceExportExcelView(LoginRequiredMixin, View):
+    WEEKDAYS_RU = {
+        0: 'Понедельник',
+        1: 'Вторник',
+        2: 'Среда',
+        3: 'Четверг',
+        4: 'Пятница',
+        5: 'Суббота',
+        6: 'Воскресенье',
+    }
+
+    STATUS_LABELS = {
+        'present': 'Присутствовал',
+        'absent': 'Отсутствовал',
+        'late': 'Опоздал',
+        'excused': 'Уважительная причина',
+    }
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = Attendance.objects.select_related(
+            'student',
+            'assignment',
+            'assignment__teacher',
+            'assignment__subject',
+            'assignment__group',
+            'assignment__classroom',
+        ).order_by('-date')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(assignment__teacher=user)
+        elif user.role == 'student':
+            queryset = queryset.filter(student=user)
+
+        group_id = self.request.GET.get('group')
+        if group_id and user.role != 'student':
+            queryset = queryset.filter(assignment__group_id=group_id)
+
+        subject_id = self.request.GET.get('subject')
+        if subject_id:
+            queryset = queryset.filter(assignment__subject_id=subject_id)
+
+        status_value = self.request.GET.get('status')
+        if status_value:
+            queryset = queryset.filter(status=status_value)
+
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        records = self.get_queryset()
+
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = 'Attendance'
+
+        title_fill = PatternFill(fill_type='solid', fgColor='1E3A8A')
+        header_fill = PatternFill(fill_type='solid', fgColor='DBEAFE')
+
+        thin_side = Side(style='thin', color='D1D5DB')
+        border = Border(
+            left=thin_side,
+            right=thin_side,
+            top=thin_side,
+            bottom=thin_side
+        )
+
+        title_font = Font(color='FFFFFF', bold=True, size=14)
+        header_font = Font(bold=True, size=11)
+        body_font = Font(size=10)
+
+        center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+        left_alignment = Alignment(horizontal='left', vertical='top', wrap_text=True)
+
+        if request.user.role == 'student':
+            export_title = 'Экспорт моей посещаемости'
+        elif request.user.role == 'teacher':
+            export_title = 'Экспорт посещаемости преподавателя'
+        else:
+            export_title = 'Экспорт всей посещаемости'
+
+        headers = [
+            'Дата',
+            'День недели',
+            'Студент',
+            'Группа',
+            'Предмет',
+            'Преподаватель',
+            'Кабинет',
+            'Статус',
+            'Комментарий',
+        ]
+
+        sheet.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+        title_cell = sheet.cell(row=1, column=1, value=export_title)
+        title_cell.fill = title_fill
+        title_cell.font = title_font
+        title_cell.alignment = center_alignment
+        title_cell.border = border
+
+        for col_num, header in enumerate(headers, start=1):
+            cell = sheet.cell(row=2, column=col_num, value=header)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = center_alignment
+            cell.border = border
+
+        row_num = 3
+
+        for record in records:
+            weekday_name = self.WEEKDAYS_RU.get(record.date.weekday(), '—')
+
+            row_data = [
+                record.date.strftime('%d.%m.%Y'),
+                weekday_name,
+                record.student.full_name,
+                record.assignment.group.name if record.assignment and record.assignment.group else '—',
+                record.assignment.subject.name if record.assignment and record.assignment.subject else '—',
+                record.assignment.teacher.full_name if record.assignment and record.assignment.teacher else '—',
+                record.assignment.classroom.number if record.assignment and record.assignment.classroom else '—',
+                self.STATUS_LABELS.get(record.status, record.status),
+                record.comment or '—',
+            ]
+
+            for col_num, value in enumerate(row_data, start=1):
+                cell = sheet.cell(row=row_num, column=col_num, value=value)
+                cell.font = body_font
+                cell.border = border
+
+                if col_num in [1, 2, 8]:
+                    cell.alignment = center_alignment
+                else:
+                    cell.alignment = left_alignment
+
+            status_cell = sheet.cell(row=row_num, column=8)
+            if record.status == 'present':
+                status_cell.fill = PatternFill(fill_type='solid', fgColor='DCFCE7')
+                status_cell.font = Font(size=10, bold=True, color='166534')
+            elif record.status == 'late':
+                status_cell.fill = PatternFill(fill_type='solid', fgColor='FEF3C7')
+                status_cell.font = Font(size=10, bold=True, color='92400E')
+            elif record.status == 'excused':
+                status_cell.fill = PatternFill(fill_type='solid', fgColor='DBEAFE')
+                status_cell.font = Font(size=10, bold=True, color='1E40AF')
+            elif record.status == 'absent':
+                status_cell.fill = PatternFill(fill_type='solid', fgColor='FEE2E2')
+                status_cell.font = Font(size=10, bold=True, color='991B1B')
+
+            row_num += 1
+
+        column_widths = {
+            1: 14,
+            2: 18,
+            3: 28,
+            4: 16,
+            5: 24,
+            6: 28,
+            7: 12,
+            8: 22,
+            9: 40,
+        }
+
+        for col_num, width in column_widths.items():
+            sheet.column_dimensions[get_column_letter(col_num)].width = width
+
+        sheet.freeze_panes = 'A3'
+        sheet.auto_filter.ref = f'A2:I{max(row_num - 1, 2)}'
+        sheet.sheet_view.showGridLines = False
+
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+
+        filename = f'attendance_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.xlsx'
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
         workbook.save(response)
         return response
