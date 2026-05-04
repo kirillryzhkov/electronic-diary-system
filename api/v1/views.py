@@ -1,9 +1,10 @@
-# api/v1/views.py
 from django.db.models import Avg, Count
 from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from drf_spectacular.utils import extend_schema
+
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
 from subjects.models import Subject
 from grades.models import Grade
@@ -19,23 +20,30 @@ from .permissions import (
     IsGradeOwnerOrTeacher,
 )
 
-@extend_schema(
-    tags=['Предметы'],
-    summary='Список и создание предметов',
-    description='Позволяет получить список предметов и создать новый предмет. Создание доступно только учителю.',
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=['Предметы'],
+        summary='Получить список предметов',
+        description='Возвращает список всех предметов.',
+    ),
+    post=extend_schema(
+        tags=['Предметы'],
+        summary='Создать предмет',
+        description='Создаёт новый предмет. Доступно только преподавателю.',
+    ),
 )
 class SubjectListCreateView(generics.ListCreateAPIView):
     serializer_class = SubjectSerializer
 
     def get_permissions(self):
-        # Смотреть список предметов может любой авторизованный пользователь,
-        # создавать предметы может только учитель.
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsTeacher()]
         return [IsAuthenticated()]
 
     def get_queryset(self):
         return Subject.objects.all().order_by('name')
+
 
 @extend_schema(
     tags=['Статистика'],
@@ -63,10 +71,31 @@ class SubjectStatisticsView(generics.GenericAPIView):
 
         return Response(stats, status=status.HTTP_200_OK)
 
+
 @extend_schema(
     tags=['Оценки'],
     summary='Получить список оценок',
     description='Учитель видит все оценки. Ученик видит только свои оценки.',
+    parameters=[
+        OpenApiParameter(
+            name='subject',
+            type=OpenApiTypes.INT,
+            location=OpenApiParameter.QUERY,
+            description='ID предмета для фильтрации'
+        ),
+        OpenApiParameter(
+            name='search',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Поиск по логину ученика или названию предмета'
+        ),
+        OpenApiParameter(
+            name='ordering',
+            type=OpenApiTypes.STR,
+            location=OpenApiParameter.QUERY,
+            description='Сортировка: date, -date, value, -value'
+        ),
+    ],
 )
 class GradeListView(generics.ListAPIView):
     serializer_class = GradeSerializer
@@ -80,11 +109,9 @@ class GradeListView(generics.ListAPIView):
         user = self.request.user
         queryset = Grade.objects.select_related('student', 'subject').all()
 
-        # Ученик видит только свои оценки.
         if user.role == 'student':
             queryset = queryset.filter(student=user)
 
-        # Фильтрация по предмету: /api/v1/grades/?subject=1
         subject_id = self.request.query_params.get('subject')
         if subject_id:
             try:
@@ -94,24 +121,41 @@ class GradeListView(generics.ListAPIView):
 
         return queryset.order_by('-date', '-id')
 
-@extend_schema(
-    tags=['Оценки'],
-    summary='Просмотр, изменение или удаление оценки',
-    description='Учитель может изменять и удалять оценки. Ученик может только просматривать свои оценки.',
+
+@extend_schema_view(
+    get=extend_schema(
+        tags=['Оценки'],
+        summary='Получить оценку',
+        description='Возвращает одну оценку по её ID.',
+    ),
+    put=extend_schema(
+        tags=['Оценки'],
+        summary='Полностью обновить оценку',
+        description='Полностью обновляет оценку. Доступно преподавателю.',
+    ),
+    patch=extend_schema(
+        tags=['Оценки'],
+        summary='Частично обновить оценку',
+        description='Частично обновляет оценку. Доступно преподавателю.',
+    ),
+    delete=extend_schema(
+        tags=['Оценки'],
+        summary='Удалить оценку',
+        description='Удаляет оценку. Доступно преподавателю.',
+    ),
 )
 class GradeDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = GradeSerializer
     permission_classes = [IsAuthenticated, IsGradeOwnerOrTeacher]
 
     def get_queryset(self):
-        # Не фильтруем queryset по студенту, чтобы чужая оценка возвращала 403,
-        # а не 404. Доступ проверяет IsGradeOwnerOrTeacher.
         return Grade.objects.select_related('student', 'subject').all()
+
 
 @extend_schema(
     tags=['Оценки'],
     summary='Создать оценку',
-    description='Создание оценки доступно только пользователю с ролью teacher.',
+    description='Создаёт новую оценку для студента. Доступно только преподавателю.',
 )
 class GradeCreateView(generics.CreateAPIView):
     serializer_class = GradeCreateSerializer
@@ -120,10 +164,11 @@ class GradeCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save()
 
+
 @extend_schema(
     tags=['Статистика'],
-    summary='Средний балл ученика',
-    description='Возвращает средний балл текущего авторизованного ученика.',
+    summary='Получить средний балл',
+    description='Возвращает средний балл текущего авторизованного студента.',
 )
 class StudentAverageView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
@@ -137,7 +182,6 @@ class StudentAverageView(generics.GenericAPIView):
             )
 
         grades = Grade.objects.filter(student=request.user)
-
         average = grades.aggregate(avg=Avg('value'))['avg']
 
         return Response(

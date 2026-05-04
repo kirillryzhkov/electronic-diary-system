@@ -26,6 +26,7 @@ from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
 from statistics import mean
 from urllib.parse import urlencode
+from notifications_app.models import Notification
 
 from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
 
@@ -234,8 +235,20 @@ class GradeCreateFrontendView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.teacher = self.request.user
+        response = super().form_valid(form)
+
+        Notification.objects.create(
+            user=self.object.student,
+            notification_type='grade',
+            title='Новая оценка',
+            message=(
+                f'Вам поставили оценку {self.object.value} '
+                f'по предмету "{self.object.subject.name}".'
+            )
+        )
+
         messages.success(self.request, 'Оценка успешно добавлена.')
-        return super().form_valid(form)
+        return response
 
 
 class GradeUpdateFrontendView(LoginRequiredMixin, UpdateView):
@@ -869,8 +882,30 @@ class HomeworkCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
+        response = super().form_valid(form)
+
+        students = User.objects.filter(
+            role='student',
+            group=self.object.assignment.group
+        )
+
+        notifications = [
+            Notification(
+                user=student,
+                notification_type='homework',
+                title='Новое домашнее задание',
+                message=(
+                    f'Добавлено новое домашнее задание по предмету '
+                    f'"{self.object.assignment.subject.name}": {self.object.title}'
+                )
+            )
+            for student in students
+        ]
+
+        Notification.objects.bulk_create(notifications)
+
         messages.success(self.request, 'Домашнее задание успешно добавлено.')
-        return super().form_valid(form)
+        return response
 
 
 class HomeworkUpdateView(LoginRequiredMixin, UpdateView):
@@ -1065,7 +1100,7 @@ class GroupGradeEntryView(LoginRequiredMixin, TemplateView):
                 invalid_students.append(student.full_name)
                 continue
 
-            Grade.objects.create(
+            grade = Grade.objects.create(
                 student=student,
                 teacher=request.user,
                 subject=selected_assignment.subject,
@@ -1074,6 +1109,16 @@ class GroupGradeEntryView(LoginRequiredMixin, TemplateView):
                 grade_type=grade_type,
                 month=month,
                 semester=semester
+            )
+
+            Notification.objects.create(
+                user=student,
+                notification_type='grade',
+                title='Новая оценка',
+                message=(
+                    f'Вам поставили оценку {grade.value} '
+                    f'по предмету "{grade.subject.name}".'
+                )
             )
             created_count += 1
 
@@ -2117,3 +2162,44 @@ class AttendanceExportExcelView(LoginRequiredMixin, View):
 
         workbook.save(response)
         return response
+    
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = 'frontend/notifications.html'
+    context_object_name = 'notifications'
+
+    def get_queryset(self):
+        return Notification.objects.filter(
+            user=self.request.user
+        ).order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['unread_count'] = Notification.objects.filter(
+            user=self.request.user,
+            is_read=False
+        ).count()
+        return context
+
+
+class NotificationMarkReadView(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        notification = get_object_or_404(
+            Notification,
+            pk=pk,
+            user=request.user
+        )
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+        return redirect('frontend-notifications')
+
+
+class NotificationMarkAllReadView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        Notification.objects.filter(
+            user=request.user,
+            is_read=False
+        ).update(is_read=True)
+
+        return redirect('frontend-notifications')

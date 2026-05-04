@@ -836,6 +836,12 @@
 
                             <div class="nav-dropdown">
                                 <a href="{% url 'profile' %}">{% trans "Профиль" %}</a>
+                                <a href="{% url 'frontend-notifications' %}" class="nav-link">
+                                    {% trans "Уведомления" %}
+                                    {% if notifications_unread_count > 0 %}
+                                        ({{ notifications_unread_count }})
+                                    {% endif %}
+                                </a>
                                 <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
                                 
 

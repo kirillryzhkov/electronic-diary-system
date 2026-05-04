@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'api',
     'frontend',
     'academic.apps.AcademicConfig',
+    'notifications_app',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -109,6 +110,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'frontend.context_processors.notifications_context',
             ],
         },
     },
@@ -182,10 +184,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # diary_project/settings.py
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Electronic Diary API',
-    'DESCRIPTION': 'API для дипломного проекта электронного дневника',
+    'TITLE': 'Electronic Diary System API',
+    'DESCRIPTION': 'REST API для дипломного проекта "Electronic Diary System". API включает работу с предметами, оценками, статистикой и JWT-аутентификацией.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'displayOperationId': False,
+        'defaultModelsExpandDepth': 1,
+        'defaultModelExpandDepth': 1,
+        'displayRequestDuration': True,
+        'docExpansion': 'list',
+        'persistAuthorization': True,
+        'filter': True,
+    },
+
+    'TAGS': [
+        {
+            'name': 'Auth',
+            'description': 'JWT авторизация и обновление токена',
+        },
+        {
+            'name': 'Предметы',
+            'description': 'Работа со списком предметов',
+        },
+        {
+            'name': 'Оценки',
+            'description': 'Создание, просмотр, изменение и удаление оценок',
+        },
+        {
+            'name': 'Статистика',
+            'description': 'Средний балл и статистика по предметам',
+        },
+    ],
 }
 
 # Для тестов

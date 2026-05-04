@@ -60,6 +60,10 @@ from .views import (
     GradeSummaryExcelExportView,
 
     AttendanceExportExcelView,
+
+    NotificationListView,
+    NotificationMarkReadView,
+    NotificationMarkAllReadView,
 )
 
 urlpatterns = [
@@ -120,4 +124,8 @@ urlpatterns = [
     path('grades/report/excel/', GradeSummaryExcelExportView.as_view(), name='frontend-grade-summary-excel'),
 
     path('attendance/export/excel/', AttendanceExportExcelView.as_view(), name='frontend-attendance-export-excel'),
+
+    path('notifications/', NotificationListView.as_view(), name='frontend-notifications'),
+    path('notifications/<int:pk>/read/', NotificationMarkReadView.as_view(), name='frontend-notification-read'),
+    path('notifications/read-all/', NotificationMarkAllReadView.as_view(), name='frontend-notifications-read-all'),
 ]
