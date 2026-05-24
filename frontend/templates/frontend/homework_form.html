@@ -1,0 +1,78 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать домашнее задание" %}
+    {% else %}
+        {% trans "Добавить домашнее задание" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if object %}
+        {% trans "Редактировать домашнее задание" %}
+    {% else %}
+        {% trans "Добавить домашнее задание" %}
+    {% endif %}
+</h1>
+
+<p class="page-subtitle">
+    {% trans "Форма доступна администратору и преподавателю." %}
+</p>
+
+<div class="card" style="max-width: 700px;">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.assignment.id_for_label }}">{% trans "Назначение" %}</label>
+            {{ form.assignment }}
+
+            {% if form.assignment.errors %}
+                <div class="error-box">{{ form.assignment.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">{% trans "Тема задания" %}</label>
+            {{ form.title }}
+
+            {% if form.title.errors %}
+                <div class="error-box">{{ form.title.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{% trans "Описание задания" %}</label>
+            {{ form.description }}
+
+            {% if form.description.errors %}
+                <div class="error-box">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.deadline.id_for_label }}">{% trans "Срок сдачи" %}</label>
+            {{ form.deadline }}
+
+            {% if form.deadline.errors %}
+                <div class="error-box">{{ form.deadline.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+        <a href="{% url 'frontend-homework' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

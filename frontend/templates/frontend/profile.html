@@ -1,0 +1,231 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Профиль" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Профиль пользователя" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Основная информация о текущем пользователе." %}
+</p>
+
+<div class="card">
+    <h2>{% trans "Личные данные" %}</h2>
+
+    <table>
+        <tr>
+            <th>{% trans "ФИО" %}</th>
+            <td>{{ profile_user.full_name }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Логин" %}</th>
+            <td>{{ profile_user.username }}</td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td>
+                {% if profile_user.email %}
+                    {{ profile_user.email }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Роль" %}</th>
+            <td>{{ profile_user.get_role_display }}</td>
+        </tr>
+
+        {% if profile_user.role == 'student' %}
+            <tr>
+                <th>{% trans "Группа" %}</th>
+                <td>
+                    {% if profile_user.group %}
+                        {{ profile_user.group.name }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+        {% endif %}
+    </table>
+</div>
+
+{% if user.role == 'admin' %}
+    <div class="grid">
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Пользователей" %}</div>
+            <div class="stat-value">{{ users_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Студентов" %}</div>
+            <div class="stat-value">{{ students_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Преподавателей" %}</div>
+            <div class="stat-value">{{ teachers_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Предметов" %}</div>
+            <div class="stat-value">{{ subjects_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Групп" %}</div>
+            <div class="stat-value">{{ groups_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Кабинетов" %}</div>
+            <div class="stat-value">{{ classrooms_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Назначений" %}</div>
+            <div class="stat-value">{{ assignments_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Оценок" %}</div>
+            <div class="stat-value">{{ grades_count }}</div>
+        </div>
+    </div>
+{% endif %}
+
+{% if user.role == 'teacher' %}
+    <div class="grid">
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Мои группы" %}</div>
+            <div class="stat-value">{{ groups_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Выставленные оценки" %}</div>
+            <div class="stat-value">{{ grades_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Средний балл" %}</div>
+            <div class="stat-value">{{ average }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>{% trans "Мои назначения" %}</h2>
+
+        {% if assignments %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Предмет" %}</th>
+                        <th>{% trans "Группа" %}</th>
+                        <th>{% trans "Кабинет" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for assignment in assignments %}
+                        <tr>
+                            <td>{{ assignment.subject.name }}</td>
+                            <td>{{ assignment.group.name }}</td>
+                            <td>
+                                {% if assignment.classroom %}
+                                    {{ assignment.classroom.number }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty">{% trans "Назначений пока нет." %}</div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if user.role == 'student' or user.role == 'teacher' %}
+    <div class="grid">
+        <div class="stat-card">
+            <div class="stat-title">
+                {% if user.role == 'student' %}
+                    {% trans "Мои оценки" %}
+                {% else %}
+                    {% trans "Выставленные оценки" %}
+                {% endif %}
+            </div>
+            <div class="stat-value">{{ grades_count }}</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">{% trans "Средний балл" %}</div>
+            <div class="stat-value">{{ average }}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>{% trans "Последние оценки" %}</h2>
+
+        {% if recent_grades %}
+            <table>
+                <thead>
+                    <tr>
+                        {% if user.role == 'teacher' %}
+                            <th>{% trans "Ученик" %}</th>
+                        {% endif %}
+
+                        <th>{% trans "Предмет" %}</th>
+                        <th>{% trans "Оценка" %}</th>
+                        <th>{% trans "Пояснение" %}</th>
+                        <th>{% trans "Дата и время" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for grade in recent_grades %}
+                        <tr>
+                            {% if user.role == 'teacher' %}
+                                <td>{{ grade.student.full_name }}</td>
+                            {% endif %}
+
+                            <td>{{ grade.subject.name }}</td>
+
+                            <td>
+                                {% if grade.value >= 5 %}
+                                    <span class="badge badge-green">{{ grade.value }}</span>
+                                {% elif grade.value == 4 %}
+                                    <span class="badge badge-blue">{{ grade.value }}</span>
+                                {% elif grade.value == 3 %}
+                                    <span class="badge badge-yellow">{{ grade.value }}</span>
+                                {% else %}
+                                    <span class="badge badge-red">{{ grade.value }}</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if grade.comment %}
+                                    {{ grade.comment }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>{{ grade.date|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty">{% trans "Оценок пока нет." %}</div>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

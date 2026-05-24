@@ -1,0 +1,99 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Расписание" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Расписание занятий" %}</h1>
+
+<p class="page-subtitle">
+    {% if user.role == 'admin' %}
+        {% trans "Полное расписание занятий по группам, предметам и преподавателям." %}
+    {% elif user.role == 'teacher' %}
+        {% trans "Ваше расписание занятий." %}
+    {% else %}
+        {% trans "Расписание занятий вашей группы." %}
+    {% endif %}
+</p>
+
+{% if user.role == 'admin' %}
+    <p>
+        <a href="{% url 'frontend-schedule-create' %}" class="btn">
+            {% trans "Добавить занятие" %}
+        </a>
+    </p>
+{% endif %}
+
+<div class="card">
+    {% if schedule_items %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "День недели" %}</th>
+                    <th>{% trans "Время" %}</th>
+                    <th>{% trans "Пара/урок" %}</th>
+                    <th>{% trans "Предмет" %}</th>
+                    <th>{% trans "Группа" %}</th>
+                    <th>{% trans "Преподаватель" %}</th>
+                    <th>{% trans "Кабинет" %}</th>
+
+                    {% if user.role == 'admin' %}
+                        <th>{% trans "Действия" %}</th>
+                    {% endif %}
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in schedule_items %}
+                    <tr>
+                        <td>{{ item.get_day_display }}</td>
+
+                        <td>
+                            {{ item.start_time|time:"H:i" }} —
+                            {{ item.end_time|time:"H:i" }}
+                        </td>
+
+                        <td>
+                            {% if item.lesson_number %}
+                                {{ item.lesson_number }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        <td>{{ item.assignment.subject.name }}</td>
+                        <td>{{ item.assignment.group.name }}</td>
+                        <td>{{ item.assignment.teacher.full_name }}</td>
+
+                        <td>
+                            {% if item.assignment.classroom %}
+                                {{ item.assignment.classroom.number }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+
+                        {% if user.role == 'admin' %}
+                            <td>
+                                <div class="actions">
+                                    <a href="{% url 'frontend-schedule-edit' item.id %}" class="btn btn-small">
+                                        {% trans "Изменить" %}
+                                    </a>
+
+                                    <a href="{% url 'frontend-schedule-delete' item.id %}" class="btn btn-danger btn-small">
+                                        {% trans "Удалить" %}
+                                    </a>
+                                </div>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">
+            {% trans "Расписание пока не заполнено." %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

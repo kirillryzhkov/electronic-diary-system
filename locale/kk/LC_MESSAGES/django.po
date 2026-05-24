@@ -1,0 +1,1428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Electronic Diary\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-04 21:59+0500\n"
+"PO-Revision-Date: 2026-04-26 22:50+0500\n"
+"Last-Translator: Kirill\n"
+"Language-Team: Kazakh\n"
+"Language: kk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\academic\models.py:114
+msgid "Понедельник"
+msgstr "Дүйсенбі"
+
+#: .\academic\models.py:115
+msgid "Вторник"
+msgstr "Сейсенбі"
+
+#: .\academic\models.py:116
+msgid "Среда"
+msgstr "Сәрсенбі"
+
+#: .\academic\models.py:117
+msgid "Четверг"
+msgstr "Бейсенбі"
+
+#: .\academic\models.py:118
+msgid "Пятница"
+msgstr "Жұма"
+
+#: .\academic\models.py:119
+msgid "Суббота"
+msgstr "Сенбі"
+
+#: .\academic\models.py:170
+msgid "Присутствовал"
+msgstr "Қатысты"
+
+#: .\academic\models.py:171
+msgid "Отсутствовал"
+msgstr "Қатыспады"
+
+#: .\academic\models.py:172
+msgid "Опоздал"
+msgstr "Кешікті"
+
+#: .\academic\models.py:173
+msgid "Уважительная причина"
+msgstr "Дәлелді себеп"
+
+#: .\diary_project\settings.py:156
+msgid "Русский"
+msgstr "Орысша"
+
+#: .\diary_project\settings.py:157
+msgid "Қазақша"
+msgstr "Қазақша"
+
+#: .\diary_project\settings.py:158
+msgid "English"
+msgstr "Ағылшынша"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:4
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:7
+msgid "Удалить назначение"
+msgstr "Тағайындауды жою"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:4
+#: .\frontend\templates\frontend\assignment_form.html:10
+#: .\frontend\templates\frontend\assignments.html:4
+#: .\frontend\templates\frontend\attendance.html:4
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:4
+#: .\frontend\templates\frontend\attendance_form.html:10
+#: .\frontend\templates\frontend\base.html:7
+#: .\frontend\templates\frontend\base.html:811
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:4
+#: .\frontend\templates\frontend\classroom_form.html:10
+#: .\frontend\templates\frontend\classrooms.html:4
+#: .\frontend\templates\frontend\dashboard.html:4
+#: .\frontend\templates\frontend\grade_confirm_delete.html:4
+#: .\frontend\templates\frontend\grade_form.html:10
+#: .\frontend\templates\frontend\grade_journal.html:4
+#: .\frontend\templates\frontend\grade_summary_report.html:4
+#: .\frontend\templates\frontend\grades.html:4
+#: .\frontend\templates\frontend\group_confirm_delete.html:4
+#: .\frontend\templates\frontend\group_form.html:10
+#: .\frontend\templates\frontend\group_grade_entry.html:4
+#: .\frontend\templates\frontend\groups.html:4
+#: .\frontend\templates\frontend\home.html:4
+#: .\frontend\templates\frontend\home.html:8
+#: .\frontend\templates\frontend\homework.html:4
+#: .\frontend\templates\frontend\homework_confirm_delete.html:4
+#: .\frontend\templates\frontend\homework_form.html:10
+#: .\frontend\templates\frontend\login.html:4
+#: .\frontend\templates\frontend\profile.html:4
+#: .\frontend\templates\frontend\schedule.html:4
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:4
+#: .\frontend\templates\frontend\schedule_form.html:10
+#: .\frontend\templates\frontend\stats.html:4
+#: .\frontend\templates\frontend\subject_confirm_delete.html:4
+#: .\frontend\templates\frontend\subject_form.html:10
+#: .\frontend\templates\frontend\subjects.html:4
+#: .\frontend\templates\frontend\teacher_group_detail.html:5
+#: .\frontend\templates\frontend\teacher_groups.html:4
+msgid "Электронный дневник"
+msgstr "Электронды күнделік"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:10
+msgid "Подтвердите удаление назначения преподавателя."
+msgstr "Оқытушы тағайындауын жоюды растаңыз."
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:15
+msgid "Вы действительно хотите удалить это назначение?"
+msgstr "Бұл тағайындауды шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:20
+#: .\frontend\templates\frontend\assignment_form.html:37
+#: .\frontend\templates\frontend\assignments.html:26
+#: .\frontend\templates\frontend\attendance.html:92
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:40
+#: .\frontend\templates\frontend\grade_confirm_delete.html:26
+#: .\frontend\templates\frontend\grade_summary_report.html:46
+#: .\frontend\templates\frontend\grades.html:109
+#: .\frontend\templates\frontend\homework.html:48
+#: .\frontend\templates\frontend\homework_confirm_delete.html:35
+#: .\frontend\templates\frontend\schedule.html:37
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:43
+msgid "Преподаватель"
+msgstr "Оқытушы"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:25
+#: .\frontend\templates\frontend\assignment_form.html:46
+#: .\frontend\templates\frontend\assignments.html:27
+#: .\frontend\templates\frontend\attendance.html:88
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:30
+#: .\frontend\templates\frontend\dashboard.html:55
+#: .\frontend\templates\frontend\grade_confirm_delete.html:32
+#: .\frontend\templates\frontend\grade_journal.html:198
+#: .\frontend\templates\frontend\grade_journal.html:316
+#: .\frontend\templates\frontend\grade_summary_report.html:41
+#: .\frontend\templates\frontend\grades.html:104
+#: .\frontend\templates\frontend\group_grade_entry.html:61
+#: .\frontend\templates\frontend\homework.html:37
+#: .\frontend\templates\frontend\homework_confirm_delete.html:25
+#: .\frontend\templates\frontend\profile.html:127
+#: .\frontend\templates\frontend\profile.html:185
+#: .\frontend\templates\frontend\schedule.html:35
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:33
+#: .\frontend\templates\frontend\stats.html:18
+#: .\frontend\templates\frontend\teacher_group_detail.html:39
+#: .\frontend\templates\frontend\teacher_group_detail.html:98
+msgid "Предмет"
+msgstr "Пән"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:30
+#: .\frontend\templates\frontend\assignment_form.html:55
+#: .\frontend\templates\frontend\assignments.html:28
+#: .\frontend\templates\frontend\attendance.html:89
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:35
+#: .\frontend\templates\frontend\grade_journal.html:187
+#: .\frontend\templates\frontend\grade_summary_report.html:36
+#: .\frontend\templates\frontend\grades.html:101
+#: .\frontend\templates\frontend\group_confirm_delete.html:20
+#: .\frontend\templates\frontend\group_grade_entry.html:56
+#: .\frontend\templates\frontend\groups.html:26
+#: .\frontend\templates\frontend\homework.html:42
+#: .\frontend\templates\frontend\homework_confirm_delete.html:30
+#: .\frontend\templates\frontend\profile.html:45
+#: .\frontend\templates\frontend\profile.html:128
+#: .\frontend\templates\frontend\schedule.html:36
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:38
+#: .\frontend\templates\frontend\teacher_group_detail.html:5
+#: .\frontend\templates\frontend\teacher_group_detail.html:9
+#: .\frontend\templates\frontend\teacher_groups.html:17
+msgid "Группа"
+msgstr "Топ"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:35
+#: .\frontend\templates\frontend\assignment_form.html:64
+#: .\frontend\templates\frontend\assignments.html:29
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:20
+#: .\frontend\templates\frontend\classrooms.html:26
+#: .\frontend\templates\frontend\dashboard.html:4
+#: .\frontend\templates\frontend\group_grade_entry.html:66
+#: .\frontend\templates\frontend\profile.html:129
+#: .\frontend\templates\frontend\schedule.html:38
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:48
+#: .\frontend\templates\frontend\teacher_group_detail.html:40
+msgid "Кабинет"
+msgstr "Кабинет"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:47
+msgid ""
+"Внимание: после удаления назначения преподаватель потеряет доступ к этой "
+"группе и предмету."
+msgstr ""
+"Назар аударыңыз: тағайындау жойылғаннан кейін оқытушы осы топ пен пәнге "
+"қолжетімділігін жоғалтады."
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:52
+#: .\frontend\templates\frontend\assignments.html:59
+#: .\frontend\templates\frontend\attendance.html:147
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:63
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:42
+#: .\frontend\templates\frontend\classrooms.html:56
+#: .\frontend\templates\frontend\grade_confirm_delete.html:60
+#: .\frontend\templates\frontend\grades.html:180
+#: .\frontend\templates\frontend\group_confirm_delete.html:53
+#: .\frontend\templates\frontend\groups.html:65
+#: .\frontend\templates\frontend\homework.html:62
+#: .\frontend\templates\frontend\homework_confirm_delete.html:52
+#: .\frontend\templates\frontend\schedule.html:84
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:61
+#: .\frontend\templates\frontend\subject_confirm_delete.html:42
+#: .\frontend\templates\frontend\subjects.html:57
+msgid "Удалить"
+msgstr "Жою"
+
+#: .\frontend\templates\frontend\assignment_confirm_delete.html:54
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:65
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:44
+#: .\frontend\templates\frontend\grade_confirm_delete.html:62
+#: .\frontend\templates\frontend\group_confirm_delete.html:55
+#: .\frontend\templates\frontend\homework_confirm_delete.html:54
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:63
+#: .\frontend\templates\frontend\subject_confirm_delete.html:44
+msgid "Отмена"
+msgstr "Бас тарту"
+
+#: .\frontend\templates\frontend\assignment_form.html:6
+#: .\frontend\templates\frontend\assignment_form.html:16
+msgid "Редактировать назначение"
+msgstr "Тағайындауды өңдеу"
+
+#: .\frontend\templates\frontend\assignment_form.html:8
+#: .\frontend\templates\frontend\assignment_form.html:18
+#: .\frontend\templates\frontend\assignments.html:16
+msgid "Добавить назначение"
+msgstr "Тағайындау қосу"
+
+#: .\frontend\templates\frontend\assignment_form.html:23
+msgid "Назначение связывает преподавателя, предмет, группу и кабинет."
+msgstr "Тағайындау оқытушыны, пәнді, топты және кабинетті байланыстырады."
+
+#: .\frontend\templates\frontend\assignment_form.html:72
+#: .\frontend\templates\frontend\attendance_form.html:81
+#: .\frontend\templates\frontend\classroom_form.html:54
+#: .\frontend\templates\frontend\grade_form.html:50
+#: .\frontend\templates\frontend\group_form.html:64
+#: .\frontend\templates\frontend\homework_form.html:72
+#: .\frontend\templates\frontend\schedule_form.html:81
+#: .\frontend\templates\frontend\subject_form.html:54
+msgid "Сохранить"
+msgstr "Сақтау"
+
+#: .\frontend\templates\frontend\assignment_form.html:74
+#: .\frontend\templates\frontend\attendance_form.html:83
+#: .\frontend\templates\frontend\classroom_form.html:56
+#: .\frontend\templates\frontend\grade_form.html:52
+#: .\frontend\templates\frontend\group_form.html:66
+#: .\frontend\templates\frontend\homework_form.html:74
+#: .\frontend\templates\frontend\schedule_form.html:83
+#: .\frontend\templates\frontend\subject_form.html:56
+msgid "Назад"
+msgstr "Артқа"
+
+#: .\frontend\templates\frontend\assignments.html:4
+#: .\frontend\templates\frontend\base.html:843
+msgid "Назначения"
+msgstr "Тағайындаулар"
+
+#: .\frontend\templates\frontend\assignments.html:7
+msgid "Назначения преподавателей"
+msgstr "Оқытушылардың тағайындаулары"
+
+#: .\frontend\templates\frontend\assignments.html:10
+msgid "Связь преподавателя, предмета, группы и кабинета."
+msgstr "Оқытушы, пән, топ және кабинет арасындағы байланыс."
+
+#: .\frontend\templates\frontend\assignments.html:32
+#: .\frontend\templates\frontend\attendance.html:99
+#: .\frontend\templates\frontend\classrooms.html:30
+#: .\frontend\templates\frontend\grades.html:117
+#: .\frontend\templates\frontend\groups.html:31
+#: .\frontend\templates\frontend\schedule.html:41
+#: .\frontend\templates\frontend\subjects.html:31
+msgid "Действия"
+msgstr "Әрекеттер"
+
+#: .\frontend\templates\frontend\assignments.html:55
+#: .\frontend\templates\frontend\attendance.html:143
+#: .\frontend\templates\frontend\classrooms.html:52
+#: .\frontend\templates\frontend\grades.html:176
+#: .\frontend\templates\frontend\groups.html:61
+#: .\frontend\templates\frontend\homework.html:58
+#: .\frontend\templates\frontend\schedule.html:80
+#: .\frontend\templates\frontend\subjects.html:53
+msgid "Изменить"
+msgstr "Өңдеу"
+
+#: .\frontend\templates\frontend\assignments.html:69
+#: .\frontend\templates\frontend\profile.html:150
+msgid "Назначений пока нет."
+msgstr "Әзірге тағайындаулар жоқ."
+
+#: .\frontend\templates\frontend\attendance.html:4
+#: .\frontend\templates\frontend\attendance.html:7
+#: .\frontend\templates\frontend\base.html:826
+msgid "Посещаемость"
+msgstr "Қатысу"
+
+#: .\frontend\templates\frontend\attendance.html:11
+msgid "Полный журнал посещаемости по всем группам."
+msgstr "Барлық топтар бойынша толық қатысу журналы."
+
+#: .\frontend\templates\frontend\attendance.html:13
+msgid "Журнал посещаемости по вашим группам и предметам."
+msgstr "Сіздің топтарыңыз бен пәндеріңіз бойынша қатысу журналы."
+
+#: .\frontend\templates\frontend\attendance.html:15
+msgid "Ваша посещаемость по предметам."
+msgstr "Пәндер бойынша сіздің қатысуыңыз."
+
+#: .\frontend\templates\frontend\attendance.html:22
+#: .\frontend\templates\frontend\attendance_form.html:8
+#: .\frontend\templates\frontend\attendance_form.html:18
+msgid "Добавить посещаемость"
+msgstr "Қатысуды қосу"
+
+#: .\frontend\templates\frontend\attendance.html:25
+#: .\frontend\templates\frontend\grade_journal.html:156
+#: .\frontend\templates\frontend\grade_summary_report.html:24
+#: .\frontend\templates\frontend\grades.html:24
+#: .\frontend\templates\frontend\grades.html:38
+msgid "Экспорт в Excel"
+msgstr "Excel-ге экспорттау"
+
+#: .\frontend\templates\frontend\attendance.html:34
+#: .\frontend\templates\frontend\grades.html:63
+msgid "Фильтр по группе"
+msgstr "Топ бойынша сүзгі"
+
+#: .\frontend\templates\frontend\attendance.html:36
+#: .\frontend\templates\frontend\grade_journal.html:189
+#: .\frontend\templates\frontend\grades.html:65
+msgid "Все группы"
+msgstr "Барлық топтар"
+
+#: .\frontend\templates\frontend\attendance.html:48
+#: .\frontend\templates\frontend\grades.html:77
+msgid "Фильтр по предмету"
+msgstr "Пән бойынша сүзгі"
+
+#: .\frontend\templates\frontend\attendance.html:50
+#: .\frontend\templates\frontend\grade_journal.html:200
+#: .\frontend\templates\frontend\grades.html:79
+msgid "Все предметы"
+msgstr "Барлық пәндер"
+
+#: .\frontend\templates\frontend\attendance.html:61
+msgid "Фильтр по статусу"
+msgstr "Күй бойынша сүзгі"
+
+#: .\frontend\templates\frontend\attendance.html:63
+msgid "Все статусы"
+msgstr "Барлық күйлер"
+
+#: .\frontend\templates\frontend\attendance.html:73
+#: .\frontend\templates\frontend\grade_journal.html:235
+#: .\frontend\templates\frontend\grades.html:89
+msgid "Применить"
+msgstr "Қолдану"
+
+#: .\frontend\templates\frontend\attendance.html:75
+#: .\frontend\templates\frontend\grade_journal.html:236
+#: .\frontend\templates\frontend\grades.html:91
+msgid "Сбросить"
+msgstr "Тазарту"
+
+#: .\frontend\templates\frontend\attendance.html:84
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:20
+#: .\frontend\templates\frontend\attendance_form.html:37
+#: .\frontend\templates\frontend\grade_journal.html:211
+#: .\frontend\templates\frontend\grade_journal.html:314
+#: .\frontend\templates\frontend\grade_summary_report.html:58
+#: .\frontend\templates\frontend\group_grade_entry.html:90
+#: .\frontend\templates\frontend\teacher_group_detail.html:97
+msgid "Студент"
+msgstr "Студент"
+
+#: .\frontend\templates\frontend\attendance.html:87
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:25
+#: .\frontend\templates\frontend\attendance_form.html:55
+msgid "Дата"
+msgstr "Күні"
+
+#: .\frontend\templates\frontend\attendance.html:95
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:45
+#: .\frontend\templates\frontend\attendance_form.html:64
+msgid "Статус"
+msgstr "Күйі"
+
+#: .\frontend\templates\frontend\attendance.html:96
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:50
+#: .\frontend\templates\frontend\attendance_form.html:73
+#: .\frontend\templates\frontend\grade_journal.html:320
+#: .\frontend\templates\frontend\group_grade_entry.html:93
+msgid "Комментарий"
+msgstr "Пікір"
+
+#: .\frontend\templates\frontend\attendance.html:158
+msgid "Записей посещаемости пока нет."
+msgstr "Әзірге қатысу жазбалары жоқ."
+
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:4
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:7
+msgid "Удалить посещаемость"
+msgstr "Қатысуды жою"
+
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:10
+msgid "Подтвердите удаление записи посещаемости."
+msgstr "Қатысу жазбасын жоюды растаңыз."
+
+#: .\frontend\templates\frontend\attendance_confirm_delete.html:15
+msgid "Вы действительно хотите удалить эту запись посещаемости?"
+msgstr "Бұл қатысу жазбасын шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\attendance_form.html:6
+#: .\frontend\templates\frontend\attendance_form.html:16
+msgid "Редактировать посещаемость"
+msgstr "Қатысуды өңдеу"
+
+#: .\frontend\templates\frontend\attendance_form.html:23
+#: .\frontend\templates\frontend\homework_form.html:23
+msgid "Форма доступна администратору и преподавателю."
+msgstr "Бұл форма әкімші мен оқытушыға қолжетімді."
+
+#: .\frontend\templates\frontend\attendance_form.html:46
+#: .\frontend\templates\frontend\homework_form.html:37
+#: .\frontend\templates\frontend\schedule_form.html:37
+msgid "Назначение"
+msgstr "Тағайындау"
+
+#: .\frontend\templates\frontend\base.html:812
+msgid "Образовательная платформа"
+msgstr "Білім беру платформасы"
+
+#: .\frontend\templates\frontend\base.html:817
+msgid "Меню"
+msgstr "Мәзір"
+
+#: .\frontend\templates\frontend\base.html:824
+#: .\frontend\templates\frontend\dashboard.html:7
+msgid "Личный кабинет"
+msgstr "Жеке кабинет"
+
+#: .\frontend\templates\frontend\base.html:825
+#: .\frontend\templates\frontend\schedule.html:4
+msgid "Расписание"
+msgstr "Кесте"
+
+#: .\frontend\templates\frontend\base.html:827
+#: .\frontend\templates\frontend\homework.html:4
+#: .\frontend\templates\frontend\homework.html:7
+msgid "Домашние задания"
+msgstr "Үй тапсырмалары"
+
+#: .\frontend\templates\frontend\base.html:828
+#: .\frontend\templates\frontend\grades.html:4
+#: .\frontend\templates\frontend\grades.html:7
+msgid "Оценки"
+msgstr "Бағалар"
+
+#: .\frontend\templates\frontend\base.html:831
+#: .\frontend\templates\frontend\profile.html:105
+#: .\frontend\templates\frontend\teacher_groups.html:4
+#: .\frontend\templates\frontend\teacher_groups.html:7
+msgid "Мои группы"
+msgstr "Менің топтарым"
+
+#: .\frontend\templates\frontend\base.html:835
+msgid "Ещё"
+msgstr "Тағы"
+
+#: .\frontend\templates\frontend\base.html:838
+#: .\frontend\templates\frontend\profile.html:4
+msgid "Профиль"
+msgstr "Профиль"
+
+#: .\frontend\templates\frontend\base.html:839
+#: .\frontend\templates\frontend\subjects.html:4
+#: .\frontend\templates\frontend\subjects.html:7
+msgid "Предметы"
+msgstr "Пәндер"
+
+#: .\frontend\templates\frontend\base.html:844
+#: .\frontend\templates\frontend\groups.html:4
+msgid "Группы"
+msgstr "Топтар"
+
+#: .\frontend\templates\frontend\base.html:845
+#: .\frontend\templates\frontend\classrooms.html:4
+#: .\frontend\templates\frontend\classrooms.html:7
+msgid "Кабинеты"
+msgstr "Кабинеттер"
+
+#: .\frontend\templates\frontend\base.html:849
+#: .\frontend\templates\frontend\stats.html:4
+msgid "Статистика"
+msgstr "Статистика"
+
+#: .\frontend\templates\frontend\base.html:853
+msgid "Админка"
+msgstr "Әкімші панелі"
+
+#: .\frontend\templates\frontend\base.html:863
+#: .\frontend\templates\frontend\base.html:893
+msgid "Тема"
+msgstr "Тақырып"
+
+#: .\frontend\templates\frontend\base.html:880
+msgid "Выйти"
+msgstr "Шығу"
+
+#: .\frontend\templates\frontend\base.html:886
+#: .\frontend\templates\frontend\login.html:34
+msgid "Войти"
+msgstr "Кіру"
+
+#: .\frontend\templates\frontend\base.html:925
+msgid "Дипломный проект"
+msgstr "Дипломдық жоба"
+
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:4
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:7
+msgid "Удалить кабинет"
+msgstr "Кабинетті жою"
+
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:10
+msgid "Подтвердите удаление кабинета."
+msgstr "Кабинетті жоюды растаңыз."
+
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:15
+msgid "Вы действительно хотите удалить кабинет?"
+msgstr "Кабинетті шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:25
+#: .\frontend\templates\frontend\classroom_form.html:46
+#: .\frontend\templates\frontend\classrooms.html:27
+#: .\frontend\templates\frontend\group_confirm_delete.html:36
+#: .\frontend\templates\frontend\group_form.html:55
+#: .\frontend\templates\frontend\groups.html:28
+#: .\frontend\templates\frontend\subject_confirm_delete.html:25
+#: .\frontend\templates\frontend\subjects.html:28
+msgid "Описание"
+msgstr "Сипаттама"
+
+#: .\frontend\templates\frontend\classroom_confirm_delete.html:37
+msgid "Внимание: у связанных назначений преподавателей кабинет будет очищен."
+msgstr ""
+"Назар аударыңыз: байланысты оқытушы тағайындауларында кабинет өрісі "
+"тазаланады."
+
+#: .\frontend\templates\frontend\classroom_form.html:6
+#: .\frontend\templates\frontend\classroom_form.html:16
+msgid "Редактировать кабинет"
+msgstr "Кабинетті өңдеу"
+
+#: .\frontend\templates\frontend\classroom_form.html:8
+#: .\frontend\templates\frontend\classroom_form.html:18
+#: .\frontend\templates\frontend\classrooms.html:16
+msgid "Добавить кабинет"
+msgstr "Кабинет қосу"
+
+#: .\frontend\templates\frontend\classroom_form.html:23
+#: .\frontend\templates\frontend\group_form.html:23
+#: .\frontend\templates\frontend\schedule_form.html:23
+#: .\frontend\templates\frontend\subject_form.html:23
+msgid "Форма доступна только администратору."
+msgstr "Бұл форма тек әкімшіге қолжетімді."
+
+#: .\frontend\templates\frontend\classroom_form.html:37
+msgid "Номер кабинета"
+msgstr "Кабинет нөмірі"
+
+#: .\frontend\templates\frontend\classrooms.html:10
+msgid "Список учебных кабинетов."
+msgstr "Оқу кабинеттерінің тізімі."
+
+#: .\frontend\templates\frontend\classrooms.html:66
+msgid "Кабинетов пока нет."
+msgstr "Әзірге кабинеттер жоқ."
+
+#: .\frontend\templates\frontend\dashboard.html:10
+msgid "Вы вошли как:"
+msgstr "Сіз кірдіңіз:"
+
+#: .\frontend\templates\frontend\dashboard.html:12
+msgid "Администратор"
+msgstr "Әкімші"
+
+#: .\frontend\templates\frontend\dashboard.html:14
+msgid "Учитель"
+msgstr "Мұғалім"
+
+#: .\frontend\templates\frontend\dashboard.html:16
+#: .\frontend\templates\frontend\dashboard.html:53
+#: .\frontend\templates\frontend\grade_confirm_delete.html:20
+#: .\frontend\templates\frontend\grades.html:100
+#: .\frontend\templates\frontend\profile.html:182
+msgid "Ученик"
+msgstr "Оқушы"
+
+#: .\frontend\templates\frontend\dashboard.html:22
+#: .\frontend\templates\frontend\stats.html:19
+msgid "Количество оценок"
+msgstr "Бағалар саны"
+
+#: .\frontend\templates\frontend\dashboard.html:27
+msgid "Количество предметов"
+msgstr "Пәндер саны"
+
+#: .\frontend\templates\frontend\dashboard.html:34
+msgid "Средний балл по моим оценкам"
+msgstr "Мен қойған бағалардың орташа балы"
+
+#: .\frontend\templates\frontend\dashboard.html:36
+msgid "Средний балл по системе"
+msgstr "Жүйе бойынша орташа балл"
+
+#: .\frontend\templates\frontend\dashboard.html:38
+msgid "Мой средний балл"
+msgstr "Менің орташа балым"
+
+#: .\frontend\templates\frontend\dashboard.html:46
+#: .\frontend\templates\frontend\profile.html:175
+msgid "Последние оценки"
+msgstr "Соңғы бағалар"
+
+#: .\frontend\templates\frontend\dashboard.html:56
+#: .\frontend\templates\frontend\grade_confirm_delete.html:37
+#: .\frontend\templates\frontend\grade_journal.html:319
+#: .\frontend\templates\frontend\grades.html:112
+#: .\frontend\templates\frontend\group_grade_entry.html:92
+#: .\frontend\templates\frontend\profile.html:186
+#: .\frontend\templates\frontend\teacher_group_detail.html:99
+msgid "Оценка"
+msgstr "Баға"
+
+#: .\frontend\templates\frontend\dashboard.html:57
+#: .\frontend\templates\frontend\grade_confirm_delete.html:42
+#: .\frontend\templates\frontend\grades.html:113
+#: .\frontend\templates\frontend\profile.html:187
+#: .\frontend\templates\frontend\teacher_group_detail.html:100
+msgid "Пояснение"
+msgstr "Түсініктеме"
+
+#: .\frontend\templates\frontend\dashboard.html:58
+#: .\frontend\templates\frontend\grade_confirm_delete.html:53
+#: .\frontend\templates\frontend\grades.html:114
+#: .\frontend\templates\frontend\profile.html:188
+#: .\frontend\templates\frontend\teacher_group_detail.html:101
+msgid "Дата и время"
+msgstr "Күні мен уақыты"
+
+#: .\frontend\templates\frontend\dashboard.html:96
+#: .\frontend\templates\frontend\grade_journal.html:376
+#: .\frontend\templates\frontend\grade_summary_report.html:96
+#: .\frontend\templates\frontend\profile.html:227
+msgid "Оценок пока нет."
+msgstr "Әзірге бағалар жоқ."
+
+#: .\frontend\templates\frontend\grade_confirm_delete.html:4
+#: .\frontend\templates\frontend\grade_confirm_delete.html:7
+msgid "Удалить оценку"
+msgstr "Бағаны жою"
+
+#: .\frontend\templates\frontend\grade_confirm_delete.html:10
+msgid "Подтвердите удаление оценки."
+msgstr "Бағаны жоюды растаңыз."
+
+#: .\frontend\templates\frontend\grade_confirm_delete.html:15
+msgid "Вы действительно хотите удалить эту оценку?"
+msgstr "Бұл бағаны шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\grade_form.html:6
+#: .\frontend\templates\frontend\grade_form.html:16
+msgid "Редактировать оценку"
+msgstr "Бағаны өңдеу"
+
+#: .\frontend\templates\frontend\grade_form.html:8
+#: .\frontend\templates\frontend\grade_form.html:18
+#: .\frontend\templates\frontend\grades.html:12
+msgid "Добавить оценку"
+msgstr "Баға қосу"
+
+#: .\frontend\templates\frontend\grade_form.html:23
+msgid "Форма доступна только пользователю с ролью учителя."
+msgstr "Бұл форма тек мұғалім рөліндегі пайдаланушыға қолжетімді."
+
+#: .\frontend\templates\frontend\grade_journal.html:4
+msgid "Журнал оценок"
+msgstr "Бағалар журналы"
+
+#: .\frontend\templates\frontend\grade_journal.html:144
+msgid "Журнал оценок по дням"
+msgstr "Күндер бойынша бағалар журналы"
+
+#: .\frontend\templates\frontend\grade_journal.html:147
+msgid ""
+"Здесь оценки сгруппированы по датам, чтобы было удобно смотреть, когда и что "
+"было выставлено."
+msgstr ""
+"Мұнда бағалар күндер бойынша топтастырылған, сондықтан қашан және қандай "
+"баға қойылғанын ыңғайлы көруге болады."
+
+#: .\frontend\templates\frontend\grade_journal.html:152
+#: .\frontend\templates\frontend\group_grade_entry.html:45
+msgid "Назад к оценкам"
+msgstr "Бағаларға оралу"
+
+#: .\frontend\templates\frontend\grade_journal.html:162
+#: .\frontend\templates\frontend\grade_journal.html:226
+msgid "Все типы"
+msgstr "Барлық түрлер"
+
+#: .\frontend\templates\frontend\grade_journal.html:166
+#: .\frontend\templates\frontend\grade_journal.html:276 .\grades\models.py:13
+msgid "Текущая оценка"
+msgstr "Ағымдағы баға"
+
+#: .\frontend\templates\frontend\grade_journal.html:170
+#: .\frontend\templates\frontend\grade_journal.html:280 .\grades\models.py:14
+msgid "Месячная аттестация"
+msgstr "Айлық аттестация"
+
+#: .\frontend\templates\frontend\grade_journal.html:174
+#: .\frontend\templates\frontend\grade_journal.html:284 .\grades\models.py:15
+msgid "Полугодовая сессия"
+msgstr "Жартыжылдық сессия"
+
+#: .\frontend\templates\frontend\grade_journal.html:178
+#: .\frontend\templates\frontend\grade_journal.html:288 .\grades\models.py:16
+msgid "Экзамен"
+msgstr "Емтихан"
+
+#: .\frontend\templates\frontend\grade_journal.html:213
+msgid "Все студенты"
+msgstr "Барлық студенттер"
+
+#: .\frontend\templates\frontend\grade_journal.html:224
+#: .\frontend\templates\frontend\grade_journal.html:317
+#: .\frontend\templates\frontend\grades.html:105
+#: .\frontend\templates\frontend\group_grade_entry.html:28
+msgid "Тип оценки"
+msgstr "Баға түрі"
+
+#: .\frontend\templates\frontend\grade_journal.html:242
+#: .\frontend\templates\frontend\grade_summary_report.html:70
+msgid "Всего оценок"
+msgstr "Барлық бағалар"
+
+#: .\frontend\templates\frontend\grade_journal.html:247
+msgid "Дней в журнале"
+msgstr "Журналдағы күндер"
+
+#: .\frontend\templates\frontend\grade_journal.html:252
+#: .\frontend\templates\frontend\profile.html:115
+#: .\frontend\templates\frontend\profile.html:169
+#: .\frontend\templates\frontend\stats.html:20
+#: .\frontend\templates\frontend\teacher_group_detail.html:27
+msgid "Средний балл"
+msgstr "Орташа балл"
+
+#: .\frontend\templates\frontend\grade_journal.html:257
+msgid "Активный фильтр"
+msgstr "Белсенді сүзгі"
+
+#: .\frontend\templates\frontend\grade_journal.html:268
+msgid "Без фильтра"
+msgstr "Сүзгісіз"
+
+#: .\frontend\templates\frontend\grade_journal.html:301
+msgid "Все оценки, выставленные в этот день"
+msgstr "Осы күні қойылған барлық бағалар"
+
+#: .\frontend\templates\frontend\grade_journal.html:306
+#: .\frontend\templates\frontend\profile.html:96
+#: .\frontend\templates\frontend\teacher_group_detail.html:22
+msgid "Оценок"
+msgstr "Бағалар"
+
+#: .\frontend\templates\frontend\grade_journal.html:318
+#: .\frontend\templates\frontend\grades.html:106
+msgid "Период"
+msgstr "Кезең"
+
+#: .\frontend\templates\frontend\grade_journal.html:321
+#: .\frontend\templates\frontend\schedule.html:33
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:25
+msgid "Время"
+msgstr "Уақыт"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:4
+#: .\frontend\templates\frontend\grades.html:28
+#: .\frontend\templates\frontend\grades.html:43
+msgid "Итоговый отчёт"
+msgstr "Қорытынды есеп"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:7
+msgid "Итоговый отчёт по группе"
+msgstr "Топ бойынша қорытынды есеп"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:10
+msgid ""
+"Выберите группу и предмет, чтобы посмотреть сводную ведомость и "
+"экспортировать её в Excel."
+msgstr "Жиынтық ведомосты көру және оны Excel-ге экспорттау үшін топ пен пәнді таңдаңыз."
+
+#: .\frontend\templates\frontend\grade_summary_report.html:16
+#: .\frontend\templates\frontend\group_grade_entry.html:23
+msgid "Группа и предмет"
+msgstr "Топ және пән"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:20
+msgid "Показать отчёт"
+msgstr "Есепті көрсету"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:32
+msgid "Информация"
+msgstr "Ақпарат"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:59
+msgid "Средний текущий балл"
+msgstr "Ағымдағы орташа балл"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:65
+msgid "Сессия 1"
+msgstr ""
+
+#: .\frontend\templates\frontend\grade_summary_report.html:66
+#, fuzzy
+#| msgid "Экзамен"
+msgid "Экзамен 1"
+msgstr "Емтихан"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:67
+msgid "Сессия 2"
+msgstr ""
+
+#: .\frontend\templates\frontend\grade_summary_report.html:68
+#, fuzzy
+#| msgid "Экзамен"
+msgid "Экзамен 2"
+msgstr "Емтихан"
+
+#: .\frontend\templates\frontend\grade_summary_report.html:69
+msgid "Общий средний балл"
+msgstr "Жалпы орташа балл"
+
+#: .\frontend\templates\frontend\grades.html:16
+msgid "Выставить оценки группе"
+msgstr "Топқа баға қою"
+
+#: .\frontend\templates\frontend\grades.html:20
+#: .\frontend\templates\frontend\grades.html:34
+#: .\frontend\templates\frontend\group_grade_entry.html:142
+msgid "Журнал по дням"
+msgstr "Күндер бойынша журнал"
+
+#: .\frontend\templates\frontend\grades.html:51
+msgid "Список всех оценок в системе."
+msgstr "Жүйедегі барлық бағалар тізімі."
+
+#: .\frontend\templates\frontend\grades.html:53
+msgid "Список оценок, которые вы выставили."
+msgstr "Сіз қойған бағалар тізімі."
+
+#: .\frontend\templates\frontend\grades.html:55
+msgid "Ваши оценки по предметам."
+msgstr "Пәндер бойынша сіздің бағаларыңыз."
+
+#: .\frontend\templates\frontend\grades.html:190
+msgid "Оценки не найдены."
+msgstr "Бағалар табылмады."
+
+#: .\frontend\templates\frontend\group_confirm_delete.html:4
+#: .\frontend\templates\frontend\group_confirm_delete.html:7
+msgid "Удалить группу"
+msgstr "Топты жою"
+
+#: .\frontend\templates\frontend\group_confirm_delete.html:10
+msgid "Подтвердите удаление учебной группы."
+msgstr "Оқу тобын жоюды растаңыз."
+
+#: .\frontend\templates\frontend\group_confirm_delete.html:15
+msgid "Вы действительно хотите удалить группу?"
+msgstr "Бұл топты шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\group_confirm_delete.html:25
+#: .\frontend\templates\frontend\group_form.html:46
+#: .\frontend\templates\frontend\groups.html:27
+msgid "Куратор"
+msgstr "Куратор"
+
+#: .\frontend\templates\frontend\group_confirm_delete.html:48
+msgid ""
+"Внимание: при удалении группы у студентов этой группы может очиститься поле "
+"группы, а связанные назначения преподавателей будут удалены."
+msgstr ""
+"Назар аударыңыз: топты жойған кезде осы топтағы студенттердің топ өрісі "
+"тазалануы мүмкін, ал байланысты оқытушы тағайындаулары жойылады."
+
+#: .\frontend\templates\frontend\group_form.html:6
+#: .\frontend\templates\frontend\group_form.html:16
+msgid "Редактировать группу"
+msgstr "Топты өңдеу"
+
+#: .\frontend\templates\frontend\group_form.html:8
+#: .\frontend\templates\frontend\group_form.html:18
+#: .\frontend\templates\frontend\groups.html:16
+msgid "Добавить группу"
+msgstr "Топ қосу"
+
+#: .\frontend\templates\frontend\group_form.html:37
+msgid "Название группы"
+msgstr "Топ атауы"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:4
+#: .\frontend\templates\frontend\group_grade_entry.html:7
+msgid "Выставление оценок группе"
+msgstr "Топқа баға қою"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:10
+msgid ""
+"Выберите группу, предмет и тип оценки, затем выставьте оценки сразу "
+"нескольким студентам."
+msgstr ""
+"Топты, пәнді және баға түрін таңдаңыз, содан кейін бірнеше студентке бірден "
+"баға қойыңыз."
+
+#: .\frontend\templates\frontend\group_grade_entry.html:33
+msgid "Месяц аттестации"
+msgstr "Аттестация айы"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:38
+msgid "Полугодие"
+msgstr "Жартыжылдық"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:44
+msgid "Показать студентов"
+msgstr "Студенттерді көрсету"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:52
+msgid "Информация о выбранном назначении"
+msgstr "Таңдалған тағайындау туралы ақпарат"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:91
+msgid "Последняя оценка по предмету"
+msgstr "Пән бойынша соңғы баға"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:132
+msgid "Комментарий к оценке"
+msgstr "Бағаға пікір"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:141
+msgid "Сохранить оценки"
+msgstr "Бағаларды сақтау"
+
+#: .\frontend\templates\frontend\group_grade_entry.html:145
+#, fuzzy
+#| msgid "В группе пока нет студентов."
+msgid "В этой группе пока нет студентов."
+msgstr "Бұл топта әзірге студенттер жоқ."
+
+#: .\frontend\templates\frontend\groups.html:7
+msgid "Учебные группы"
+msgstr "Оқу топтары"
+
+#: .\frontend\templates\frontend\groups.html:10
+msgid "Список учебных групп в системе."
+msgstr "Жүйедегі оқу топтарының тізімі."
+
+#: .\frontend\templates\frontend\groups.html:75
+msgid "Групп пока нет."
+msgstr "Әзірге топтар жоқ."
+
+#: .\frontend\templates\frontend\home.html:4
+msgid "Главная"
+msgstr "Басты бет"
+
+#: .\frontend\templates\frontend\home.html:11
+msgid ""
+"Система для учёта учеников, предметов и оценок с разделением ролей для "
+"администраторов, преподавателей и учеников."
+msgstr ""
+"Әкімшілер, оқытушылар және оқушылар рөлдерін бөлу арқылы оқушыларды, "
+"пәндерді және бағаларды есепке алу жүйесі."
+
+#: .\frontend\templates\frontend\home.html:16
+msgid "Перейти в кабинет"
+msgstr "Кабинетке өту"
+
+#: .\frontend\templates\frontend\home.html:20
+msgid "Войти в систему"
+msgstr "Жүйеге кіру"
+
+#: .\frontend\templates\frontend\home.html:31
+msgid "Роли"
+msgstr "Рөлдер"
+
+#: .\frontend\templates\frontend\home.html:33
+msgid "Администратор, преподаватель и ученик с разными правами доступа."
+msgstr "Әкімші, оқытушы және оқушы әртүрлі қолжетімділік құқықтарымен."
+
+#: .\frontend\templates\frontend\home.html:39
+msgid "Проект имеет REST API и Swagger-документацию."
+msgstr "Жобада REST API және Swagger құжаттамасы бар."
+
+#: .\frontend\templates\frontend\home.html:43
+msgid "Тесты"
+msgstr "Тесттер"
+
+#: .\frontend\templates\frontend\home.html:45
+msgid "Основная логика проекта покрыта автоматическими тестами."
+msgstr "Жобаның негізгі логикасы автоматты тесттермен қамтылған."
+
+#: .\frontend\templates\frontend\homework.html:11
+msgid "Список всех домашних заданий в системе."
+msgstr "Жүйедегі барлық үй тапсырмаларының тізімі."
+
+#: .\frontend\templates\frontend\homework.html:13
+msgid "Домашние задания, которые вы добавили для своих групп."
+msgstr "Сіз өз топтарыңызға қосқан үй тапсырмалары."
+
+#: .\frontend\templates\frontend\homework.html:15
+msgid "Домашние задания вашей группы."
+msgstr "Сіздің тобыңыздың үй тапсырмалары."
+
+#: .\frontend\templates\frontend\homework.html:22
+#: .\frontend\templates\frontend\homework_form.html:8
+#: .\frontend\templates\frontend\homework_form.html:18
+msgid "Добавить домашнее задание"
+msgstr "Үй тапсырмасын қосу"
+
+#: .\frontend\templates\frontend\homework.html:70
+#: .\frontend\templates\frontend\homework_confirm_delete.html:40
+#: .\frontend\templates\frontend\homework_form.html:64
+msgid "Срок сдачи"
+msgstr "Тапсыру мерзімі"
+
+#: .\frontend\templates\frontend\homework.html:74
+msgid "Дата создания"
+msgstr "Жасалған күні"
+
+#: .\frontend\templates\frontend\homework.html:79
+#: .\frontend\templates\frontend\homework_confirm_delete.html:45
+#: .\frontend\templates\frontend\homework_form.html:55
+msgid "Описание задания"
+msgstr "Тапсырма сипаттамасы"
+
+#: .\frontend\templates\frontend\homework.html:88
+msgid "Домашних заданий пока нет."
+msgstr "Әзірге үй тапсырмалары жоқ."
+
+#: .\frontend\templates\frontend\homework_confirm_delete.html:4
+#: .\frontend\templates\frontend\homework_confirm_delete.html:7
+msgid "Удалить домашнее задание"
+msgstr "Үй тапсырмасын жою"
+
+#: .\frontend\templates\frontend\homework_confirm_delete.html:10
+msgid "Подтвердите удаление домашнего задания."
+msgstr "Үй тапсырмасын жоюды растаңыз."
+
+#: .\frontend\templates\frontend\homework_confirm_delete.html:15
+msgid "Вы действительно хотите удалить это домашнее задание?"
+msgstr "Бұл үй тапсырмасын шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\homework_confirm_delete.html:20
+#: .\frontend\templates\frontend\homework_form.html:46
+msgid "Тема задания"
+msgstr "Тапсырма тақырыбы"
+
+#: .\frontend\templates\frontend\homework_form.html:6
+#: .\frontend\templates\frontend\homework_form.html:16
+msgid "Редактировать домашнее задание"
+msgstr "Үй тапсырмасын өңдеу"
+
+#: .\frontend\templates\frontend\login.html:4
+#: .\frontend\templates\frontend\login.html:8
+msgid "Вход"
+msgstr "Кіру"
+
+#: .\frontend\templates\frontend\login.html:11
+msgid "Введите логин и пароль для входа в систему."
+msgstr "Жүйеге кіру үшін логин мен құпиясөзді енгізіңіз."
+
+#: .\frontend\templates\frontend\login.html:16
+msgid "Неверный логин или пароль."
+msgstr "Логин немесе құпиясөз қате."
+
+#: .\frontend\templates\frontend\login.html:24
+#: .\frontend\templates\frontend\profile.html:23
+msgid "Логин"
+msgstr "Логин"
+
+#: .\frontend\templates\frontend\login.html:29
+msgid "Пароль"
+msgstr "Құпиясөз"
+
+#: .\frontend\templates\frontend\login.html:39
+msgid "Демо-аккаунты:"
+msgstr "Демо аккаунттар:"
+
+#: .\frontend\templates\frontend\login.html:40
+msgid "Администратор:"
+msgstr "Әкімші:"
+
+#: .\frontend\templates\frontend\login.html:41
+msgid "Учитель:"
+msgstr "Мұғалім:"
+
+#: .\frontend\templates\frontend\login.html:42
+msgid "Ученик:"
+msgstr "Оқушы:"
+
+#: .\frontend\templates\frontend\profile.html:7
+msgid "Профиль пользователя"
+msgstr "Пайдаланушы профилі"
+
+#: .\frontend\templates\frontend\profile.html:10
+msgid "Основная информация о текущем пользователе."
+msgstr "Ағымдағы пайдаланушы туралы негізгі ақпарат."
+
+#: .\frontend\templates\frontend\profile.html:14
+msgid "Личные данные"
+msgstr "Жеке деректер"
+
+#: .\frontend\templates\frontend\profile.html:18
+#: .\frontend\templates\frontend\teacher_group_detail.html:71
+msgid "ФИО"
+msgstr "Аты-жөні"
+
+#: .\frontend\templates\frontend\profile.html:39
+msgid "Роль"
+msgstr "Рөл"
+
+#: .\frontend\templates\frontend\profile.html:61
+msgid "Пользователей"
+msgstr "Пайдаланушылар"
+
+#: .\frontend\templates\frontend\profile.html:66
+#: .\frontend\templates\frontend\teacher_group_detail.html:17
+msgid "Студентов"
+msgstr "Студенттер"
+
+#: .\frontend\templates\frontend\profile.html:71
+msgid "Преподавателей"
+msgstr "Оқытушылар"
+
+#: .\frontend\templates\frontend\profile.html:76
+msgid "Предметов"
+msgstr "Пәндер"
+
+#: .\frontend\templates\frontend\profile.html:81
+msgid "Групп"
+msgstr "Топтар"
+
+#: .\frontend\templates\frontend\profile.html:86
+msgid "Кабинетов"
+msgstr "Кабинеттер"
+
+#: .\frontend\templates\frontend\profile.html:91
+msgid "Назначений"
+msgstr "Тағайындаулар"
+
+#: .\frontend\templates\frontend\profile.html:110
+#: .\frontend\templates\frontend\profile.html:162
+msgid "Выставленные оценки"
+msgstr "Қойылған бағалар"
+
+#: .\frontend\templates\frontend\profile.html:121
+msgid "Мои назначения"
+msgstr "Менің тағайындауларым"
+
+#: .\frontend\templates\frontend\profile.html:160
+msgid "Мои оценки"
+msgstr "Менің бағаларым"
+
+#: .\frontend\templates\frontend\schedule.html:7
+msgid "Расписание занятий"
+msgstr "Сабақ кестесі"
+
+#: .\frontend\templates\frontend\schedule.html:11
+msgid "Полное расписание занятий по группам, предметам и преподавателям."
+msgstr "Топтар, пәндер және оқытушылар бойынша толық сабақ кестесі."
+
+#: .\frontend\templates\frontend\schedule.html:13
+msgid "Ваше расписание занятий."
+msgstr "Сіздің сабақ кестеңіз."
+
+#: .\frontend\templates\frontend\schedule.html:15
+msgid "Расписание занятий вашей группы."
+msgstr "Сіздің тобыңыздың сабақ кестесі."
+
+#: .\frontend\templates\frontend\schedule.html:22
+#: .\frontend\templates\frontend\schedule_form.html:8
+#: .\frontend\templates\frontend\schedule_form.html:18
+msgid "Добавить занятие"
+msgstr "Сабақ қосу"
+
+#: .\frontend\templates\frontend\schedule.html:32
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:20
+#: .\frontend\templates\frontend\schedule_form.html:46
+msgid "День недели"
+msgstr "Апта күні"
+
+#: .\frontend\templates\frontend\schedule.html:34
+msgid "Пара/урок"
+msgstr "Жұп/сабақ"
+
+#: .\frontend\templates\frontend\schedule.html:95
+msgid "Расписание пока не заполнено."
+msgstr "Кесте әзірге толтырылмаған."
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:4
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:7
+msgid "Удалить занятие"
+msgstr "Сабақты жою"
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:10
+msgid "Подтвердите удаление занятия из расписания."
+msgstr "Сабақты кестеден жоюды растаңыз."
+
+#: .\frontend\templates\frontend\schedule_confirm_delete.html:15
+msgid "Вы действительно хотите удалить это занятие из расписания?"
+msgstr "Бұл сабақты кестеден шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\schedule_form.html:6
+#: .\frontend\templates\frontend\schedule_form.html:16
+msgid "Редактировать занятие"
+msgstr "Сабақты өңдеу"
+
+#: .\frontend\templates\frontend\schedule_form.html:55
+msgid "Номер пары/урока"
+msgstr "Жұп/сабақ нөмірі"
+
+#: .\frontend\templates\frontend\schedule_form.html:64
+msgid "Время начала"
+msgstr "Басталу уақыты"
+
+#: .\frontend\templates\frontend\schedule_form.html:73
+msgid "Время окончания"
+msgstr "Аяқталу уақыты"
+
+#: .\frontend\templates\frontend\stats.html:7
+msgid "Статистика по предметам"
+msgstr "Пәндер бойынша статистика"
+
+#: .\frontend\templates\frontend\stats.html:10
+msgid ""
+"Страница отображает количество оценок и средний балл по каждому предмету."
+msgstr "Бұл бет әр пән бойынша бағалар санын және орташа балды көрсетеді."
+
+#: .\frontend\templates\frontend\stats.html:42
+msgid "Статистика пока недоступна."
+msgstr "Статистика әзірге қолжетімді емес."
+
+#: .\frontend\templates\frontend\subject_confirm_delete.html:4
+#: .\frontend\templates\frontend\subject_confirm_delete.html:7
+msgid "Удалить предмет"
+msgstr "Пәнді жою"
+
+#: .\frontend\templates\frontend\subject_confirm_delete.html:10
+msgid "Подтвердите удаление предмета."
+msgstr "Пәнді жоюды растаңыз."
+
+#: .\frontend\templates\frontend\subject_confirm_delete.html:15
+msgid "Вы действительно хотите удалить предмет?"
+msgstr "Бұл пәнді шынымен жойғыңыз келе ме?"
+
+#: .\frontend\templates\frontend\subject_confirm_delete.html:20
+#: .\frontend\templates\frontend\subjects.html:27
+msgid "Название"
+msgstr "Атауы"
+
+#: .\frontend\templates\frontend\subject_confirm_delete.html:37
+msgid ""
+"Внимание: при удалении предмета могут быть удалены связанные с ним оценки и "
+"назначения преподавателей."
+msgstr ""
+"Назар аударыңыз: пәнді жойған кезде оған байланысты бағалар мен оқытушы "
+"тағайындаулары жойылуы мүмкін."
+
+#: .\frontend\templates\frontend\subject_form.html:6
+#: .\frontend\templates\frontend\subject_form.html:16
+msgid "Редактировать предмет"
+msgstr "Пәнді өңдеу"
+
+#: .\frontend\templates\frontend\subject_form.html:8
+#: .\frontend\templates\frontend\subject_form.html:18
+#: .\frontend\templates\frontend\subjects.html:12
+msgid "Добавить предмет"
+msgstr "Пән қосу"
+
+#: .\frontend\templates\frontend\subject_form.html:37
+msgid "Название предмета"
+msgstr "Пән атауы"
+
+#: .\frontend\templates\frontend\subject_form.html:46
+msgid "Описание предмета"
+msgstr "Пән сипаттамасы"
+
+#: .\frontend\templates\frontend\subjects.html:18
+msgid "Список учебных предметов в системе."
+msgstr "Жүйедегі оқу пәндерінің тізімі."
+
+#: .\frontend\templates\frontend\subjects.html:67
+msgid "Предметов пока нет."
+msgstr "Әзірге пәндер жоқ."
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:12
+msgid "Подробная информация по группе, которую ведёт преподаватель."
+msgstr "Оқытушы жүргізетін топ туралы толық ақпарат."
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:33
+msgid "Назначенные предметы"
+msgstr "Тағайындалған пәндер"
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:60
+msgid "Назначений нет."
+msgstr "Тағайындаулар жоқ."
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:65
+msgid "Студенты группы"
+msgstr "Топ студенттері"
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:86
+msgid "В группе пока нет студентов."
+msgstr "Бұл топта әзірге студенттер жоқ."
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:91
+msgid "Оценки по группе"
+msgstr "Топ бойынша бағалар"
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:137
+msgid "Оценок по этой группе пока нет."
+msgstr "Бұл топ бойынша әзірге бағалар жоқ."
+
+#: .\frontend\templates\frontend\teacher_group_detail.html:142
+msgid "Назад к группам"
+msgstr "Топтарға оралу"
+
+#: .\frontend\templates\frontend\teacher_groups.html:10
+msgid ""
+"Здесь отображаются группы, предметы и кабинеты, которые закреплены за вами."
+msgstr "Мұнда сізге бекітілген топтар, пәндер және кабинеттер көрсетіледі."
+
+#: .\frontend\templates\frontend\teacher_groups.html:21
+msgid "Студентов:"
+msgstr "Студенттер:"
+
+#: .\frontend\templates\frontend\teacher_groups.html:22
+msgid "Оценок:"
+msgstr "Бағалар:"
+
+#: .\frontend\templates\frontend\teacher_groups.html:23
+msgid "Средний балл:"
+msgstr "Орташа балл:"
+
+#: .\frontend\templates\frontend\teacher_groups.html:27
+msgid "Предметы:"
+msgstr "Пәндер:"
+
+#: .\frontend\templates\frontend\teacher_groups.html:31
+msgid "каб."
+msgstr "каб."
+
+#: .\frontend\templates\frontend\teacher_groups.html:38
+msgid "Открыть группу"
+msgstr "Топты ашу"
+
+#: .\frontend\templates\frontend\teacher_groups.html:46
+msgid "У вас пока нет назначенных групп."
+msgstr "Сізге әзірге топтар тағайындалмаған."
+
+#, fuzzy
+#~| msgid "Статистика по предметам"
+#~ msgid "Поиск по разделам..."
+#~ msgstr "Пәндер бойынша статистика"
+
+#~ msgid "Вы не заполнили ни одной оценки."
+#~ msgstr "Сіз бірде-бір бағаны толтырмадыңыз."
+
+#~ msgid "Для месячной аттестации нужно указать месяц."
+#~ msgstr "Айлық аттестация үшін айды көрсету керек."
+
+#~ msgid "Для полугодовой сессии и экзамена нужно указать полугодие."
+#~ msgstr "Жартыжылдық сессия мен емтихан үшін жартыжылдықты көрсету керек."
+
+#~ msgid "Некорректные оценки у студентов: %(names)s."
+#~ msgstr "Келесі студенттерде қате бағалар бар: %(names)s."
+
+#~ msgid "Некорректные оценки у студентов: {names}."
+#~ msgstr "Келесі студенттерде қате бағалар бар: {names}."
+
+#~ msgid "Сначала выберите группу и предмет."
+#~ msgstr "Алдымен топ пен пәнді таңдаңыз."
+
+#~ msgid "Успешно добавлено оценок: %(count)s."
+#~ msgstr "Бағалар сәтті қосылды: %(count)s."
+
+#~ msgid "Успешно добавлено оценок: {count}."
+#~ msgstr "Бағалар сәтті қосылды: {count}."
+
+
+msgid "Экспорт всей посещаемости"
+msgstr "Барлық қатысуды экспорттау"
+
+msgid "Экспорт моей посещаемости"
+msgstr "Менің қатысуымды экспорттау"
+
+msgid "Экспорт посещаемости преподавателя"
+msgstr "Оқытушы қатысуын экспорттау"

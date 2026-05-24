@@ -1,0 +1,64 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Уведомления" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Уведомления" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Здесь отображаются ваши новые оценки и домашние задания." %}
+</p>
+
+<div class="actions" style="margin-bottom: 16px;">
+    <form method="post" action="{% url 'frontend-notifications-read-all' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-secondary">
+            {% trans "Отметить всё как прочитанное" %}
+        </button>
+    </form>
+</div>
+
+{% if notifications %}
+    <div class="homework-list">
+        {% for notification in notifications %}
+            <div class="card homework-card">
+                <div class="homework-header">
+                    <div>
+                        <h2 class="homework-title">
+                            {{ notification.title }}
+                            {% if not notification.is_read %}
+                                <span class="badge badge-blue">{% trans "Новое" %}</span>
+                            {% endif %}
+                        </h2>
+
+                        <div class="homework-meta">
+                            <span>{{ notification.get_notification_type_display }}</span>
+                            <span>{{ notification.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </div>
+
+                    {% if not notification.is_read %}
+                        <div class="homework-actions">
+                            <form method="post" action="{% url 'frontend-notification-read' notification.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-small">
+                                    {% trans "Прочитано" %}
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="homework-description">
+                    <p>{{ notification.message }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <div class="empty">{% trans "Уведомлений пока нет." %}</div>
+    </div>
+{% endif %}
+{% endblock %}

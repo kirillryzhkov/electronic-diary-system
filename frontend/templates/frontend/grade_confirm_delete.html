@@ -1,0 +1,66 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Удалить оценку" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Удалить оценку" %}</h1>
+
+<p class="page-subtitle">
+    {% trans "Подтвердите удаление оценки." %}
+</p>
+
+<div class="card" style="max-width: 600px;">
+    <p>
+        {% trans "Вы действительно хотите удалить эту оценку?" %}
+    </p>
+
+    <table>
+        <tr>
+            <th>{% trans "Ученик" %}</th>
+            <td>{{ object.student.full_name }}</td>
+        </tr>
+
+        {% if object.teacher %}
+            <tr>
+                <th>{% trans "Преподаватель" %}</th>
+                <td>{{ object.teacher.full_name }}</td>
+            </tr>
+        {% endif %}
+
+        <tr>
+            <th>{% trans "Предмет" %}</th>
+            <td>{{ object.subject.name }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Оценка" %}</th>
+            <td>{{ object.value }}</td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Пояснение" %}</th>
+            <td>
+                {% if object.comment %}
+                    {{ object.comment }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <th>{% trans "Дата и время" %}</th>
+            <td>{{ object.date|date:"d.m.Y H:i" }}</td>
+        </tr>
+    </table>
+
+    <form method="post" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">{% trans "Удалить" %}</button>
+        <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+            {% trans "Отмена" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

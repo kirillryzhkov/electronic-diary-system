@@ -1,0 +1,88 @@
+﻿{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать оценку" %}
+    {% else %}
+        {% trans "Добавить оценку" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if object %}
+        {% trans "Редактировать оценку" %}
+    {% else %}
+        {% trans "Добавить оценку" %}
+    {% endif %}
+</h1>
+
+<p class="page-subtitle">
+    {% trans "Форма доступна только пользователю с ролью учителя." %}
+</p>
+
+<div class="card" style="max-width: 700px;">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group"
+                 {% if field.name == 'month' %}id="month-field"{% endif %}
+                 {% if field.name == 'semester' %}id="semester-field"{% endif %}>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+
+                {% if field.errors %}
+                    <div class="error-box">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="actions">
+            <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+            <a href="{% url 'frontend-grades' %}" class="btn btn-secondary">
+                {% trans "Назад" %}
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleGradeExtraFields() {
+        const gradeType = document.getElementById("id_grade_type");
+        const monthField = document.getElementById("month-field");
+        const semesterField = document.getElementById("semester-field");
+
+        if (!gradeType || !monthField || !semesterField) {
+            return;
+        }
+
+        monthField.style.display = "none";
+        semesterField.style.display = "none";
+
+        if (gradeType.value === "monthly") {
+            monthField.style.display = "block";
+        } else if (gradeType.value === "semester" || gradeType.value === "exam") {
+            semesterField.style.display = "block";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const gradeType = document.getElementById("id_grade_type");
+
+        toggleGradeExtraFields();
+
+        if (gradeType) {
+            gradeType.addEventListener("change", toggleGradeExtraFields);
+        }
+    });
+</script>
+{% endblock %}

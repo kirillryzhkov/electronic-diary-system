@@ -1,0 +1,651 @@
+openapi: 3.0.3
+info:
+  title: Electronic Diary System API
+  version: 1.0.0
+  description: REST API для дипломного проекта "Electronic Diary System". API включает
+    работу с предметами, оценками, статистикой и JWT-аутентификацией.
+paths:
+  /api/v1/average/:
+    get:
+      operationId: v1_average_retrieve
+      description: Возвращает средний балл текущего авторизованного студента.
+      summary: Получить средний балл
+      tags:
+      - Статистика
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAverage'
+          description: ''
+  /api/v1/grades/:
+    get:
+      operationId: v1_grades_list
+      description: Учитель видит все оценки. Ученик видит только свои оценки.
+      summary: Получить список оценок
+      parameters:
+      - in: query
+        name: ordering
+        schema:
+          type: string
+        description: 'Сортировка: date, -date, value, -value'
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Поиск по логину ученика или названию предмета
+      - in: query
+        name: subject
+        schema:
+          type: integer
+        description: ID предмета для фильтрации
+      tags:
+      - Оценки
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedGradeList'
+          description: ''
+  /api/v1/grades/{id}/:
+    get:
+      operationId: v1_grades_retrieve
+      description: Возвращает одну оценку по её ID.
+      summary: Получить оценку
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Оценки
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+    put:
+      operationId: v1_grades_update
+      description: Полностью обновляет оценку. Доступно преподавателю.
+      summary: Полностью обновить оценку
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Оценки
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Grade'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Grade'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Grade'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+    patch:
+      operationId: v1_grades_partial_update
+      description: Частично обновляет оценку. Доступно преподавателю.
+      summary: Частично обновить оценку
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Оценки
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedGrade'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedGrade'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedGrade'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grade'
+          description: ''
+    delete:
+      operationId: v1_grades_destroy
+      description: Удаляет оценку. Доступно преподавателю.
+      summary: Удалить оценку
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - Оценки
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/grades/create/:
+    post:
+      operationId: v1_grades_create_create
+      description: Создаёт новую оценку для студента. Доступно только преподавателю.
+      summary: Создать оценку
+      tags:
+      - Оценки
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GradeCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GradeCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/GradeCreate'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeCreate'
+          description: ''
+  /api/v1/subjects/:
+    get:
+      operationId: v1_subjects_list
+      description: Возвращает список всех предметов.
+      summary: Получить список предметов
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - Предметы
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubjectList'
+          description: ''
+    post:
+      operationId: v1_subjects_create
+      description: Создаёт новый предмет. Доступно только преподавателю.
+      summary: Создать предмет
+      tags:
+      - Предметы
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Subject'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Subject'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Subject'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subject'
+          description: ''
+  /api/v1/subjects/stats/:
+    get:
+      operationId: v1_subjects_stats_retrieve
+      description: Возвращает количество оценок и средний балл по каждому предмету.
+      summary: Статистика по предметам
+      tags:
+      - Статистика
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectStatistics'
+          description: ''
+  /api/v1/token/:
+    post:
+      operationId: v1_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /api/v1/token/refresh/:
+    post:
+      operationId: v1_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+components:
+  schemas:
+    CustomTokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    Grade:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/Subject'
+          readOnly: true
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        comment:
+          type: string
+          nullable: true
+        grade_type:
+          allOf:
+          - $ref: '#/components/schemas/GradeTypeEnum'
+          title: Тип оценки
+        month:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Месяц аттестации
+        semester:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Полугодие
+        period_label:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата и время выставления
+      required:
+      - date
+      - id
+      - period_label
+      - student
+      - subject
+      - value
+    GradeCreate:
+      type: object
+      properties:
+        student:
+          type: integer
+        subject:
+          type: integer
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        comment:
+          type: string
+          nullable: true
+        grade_type:
+          allOf:
+          - $ref: '#/components/schemas/GradeTypeEnum'
+          title: Тип оценки
+        month:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Месяц аттестации
+        semester:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Полугодие
+      required:
+      - student
+      - subject
+      - value
+    GradeTypeEnum:
+      enum:
+      - current
+      - monthly
+      - semester
+      - exam
+      type: string
+      description: |-
+        * `current` - Текущая оценка
+        * `monthly` - Месячная аттестация
+        * `semester` - Полугодовая сессия
+        * `exam` - Экзамен
+    PaginatedGradeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Grade'
+    PaginatedSubjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+    PatchedGrade:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/Subject'
+          readOnly: true
+        value:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        comment:
+          type: string
+          nullable: true
+        grade_type:
+          allOf:
+          - $ref: '#/components/schemas/GradeTypeEnum'
+          title: Тип оценки
+        month:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Месяц аттестации
+        semester:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 0
+          format: int64
+          nullable: true
+          title: Полугодие
+        period_label:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата и время выставления
+    RoleEnum:
+      enum:
+      - admin
+      - teacher
+      - student
+      type: string
+      description: |-
+        * `admin` - Администратор
+        * `teacher` - Учитель
+        * `student` - Ученик
+    StudentAverage:
+      type: object
+      properties:
+        average:
+          type: number
+          format: double
+      required:
+      - average
+    Subject:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          title: Название предмета
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+          title: Описание
+      required:
+      - id
+      - name
+    SubjectStatistics:
+      type: object
+      properties:
+        subject:
+          type: string
+        total_grades:
+          type: integer
+        average:
+          type: number
+          format: double
+      required:
+      - average
+      - subject
+      - total_grades
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Имя пользователя
+          description: Обязательное поле. Не более 150 символов. Только буквы, цифры
+            и символы @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          title: Имя
+          maxLength: 150
+        last_name:
+          type: string
+          title: Фамилия
+          maxLength: 150
+        full_name:
+          type: string
+          readOnly: true
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 254
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Роль
+      required:
+      - full_name
+      - id
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+- name: Auth
+  description: JWT авторизация и обновление токена
+- name: Предметы
+  description: Работа со списком предметов
+- name: Оценки
+  description: Создание, просмотр, изменение и удаление оценок
+- name: Статистика
+  description: Средний балл и статистика по предметам

@@ -1,0 +1,60 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Редактировать кабинет" %}
+    {% else %}
+        {% trans "Добавить кабинет" %}
+    {% endif %}
+    — {% trans "Электронный дневник" %}
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">
+    {% if object %}
+        {% trans "Редактировать кабинет" %}
+    {% else %}
+        {% trans "Добавить кабинет" %}
+    {% endif %}
+</h1>
+
+<p class="page-subtitle">
+    {% trans "Форма доступна только администратору." %}
+</p>
+
+<div class="card" style="max-width: 650px;">
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.number.id_for_label }}">{% trans "Номер кабинета" %}</label>
+            {{ form.number }}
+
+            {% if form.number.errors %}
+                <div class="error-box">{{ form.number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">{% trans "Описание" %}</label>
+            {{ form.description }}
+
+            {% if form.description.errors %}
+                <div class="error-box">{{ form.description.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">{% trans "Сохранить" %}</button>
+        <a href="{% url 'frontend-classrooms' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
+    </form>
+</div>
+{% endblock %}
