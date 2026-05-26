@@ -317,114 +317,11 @@
             background: var(--table-hover-bg);
         }
 
-        .schedule-week {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
+        
 
-        .schedule-filter-card {
-            margin-bottom: 24px;
-        }
-
-        .schedule-filter-form {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(160px, 1fr));
-            gap: 16px;
-            align-items: end;
-        }
-
-        .schedule-filter-form .form-group {
-            margin-bottom: 0;
-        }
-
-        .schedule-filter-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .schedule-week {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        .schedule-day-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .schedule-day-header {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .schedule-day-header h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .schedule-day-body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .schedule-lesson-card {
-            display: grid;
-            grid-template-columns: 190px 1fr auto;
-            gap: 20px;
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border-color);
-            align-items: center;
-        }
-
-        .schedule-lesson-card:last-child {
-            border-bottom: none;
-        }
-
-        .schedule-lesson-left {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .schedule-pair-number {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .schedule-time {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .schedule-lesson-center {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .schedule-subject {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .schedule-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 22px;
+        .btn-small {
+            padding: 8px 12px;
             font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .schedule-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
         }
 
         .btn-small {
@@ -432,167 +329,6 @@
             font-size: 14px;
         }
 
-        @media (max-width: 1100px) {
-            .schedule-filter-form {
-                grid-template-columns: repeat(2, minmax(160px, 1fr));
-            }
-        }
-
-        @media (max-width: 900px) {
-            .schedule-lesson-card {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-
-            .schedule-actions {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .schedule-filter-form {
-                grid-template-columns: 1fr;
-            }
-
-            .schedule-day-header {
-                padding: 16px;
-            }
-
-            .schedule-day-header h2 {
-                font-size: 22px;
-            }
-
-            .schedule-lesson-card {
-                padding: 16px;
-            }
-
-            .schedule-subject {
-                font-size: 18px;
-            }
-
-            .schedule-meta {
-                flex-direction: column;
-                gap: 6px;
-            }
-        }
-
-        .schedule-day-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .schedule-day-header {
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .schedule-day-header h2 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .schedule-day-body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .schedule-lesson-card {
-            display: grid;
-            grid-template-columns: 190px 1fr auto;
-            gap: 20px;
-            padding: 18px 22px;
-            border-bottom: 1px solid var(--border-color);
-            align-items: center;
-        }
-
-        .schedule-lesson-card:last-child {
-            border-bottom: none;
-        }
-
-        .schedule-lesson-left {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .schedule-pair-number {
-            font-size: 17px;
-            font-weight: 700;
-        }
-
-        .schedule-time {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .schedule-lesson-center {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .schedule-subject {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .schedule-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 22px;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .schedule-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 14px;
-        }
-
-        @media (max-width: 900px) {
-            .schedule-lesson-card {
-                grid-template-columns: 1fr;
-                gap: 14px;
-            }
-
-            .schedule-actions {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .schedule-day-header {
-                padding: 16px;
-            }
-
-            .schedule-day-header h2 {
-                font-size: 22px;
-            }
-
-            .schedule-lesson-card {
-                padding: 16px;
-            }
-
-            .schedule-subject {
-                font-size: 18px;
-            }
-
-            .schedule-meta {
-                flex-direction: column;
-                gap: 6px;
-            }
-        }
 
         /* BASE LAYOUT */
 
@@ -1102,6 +838,728 @@
                 text-align: center;
             }
         }
+
+        /* =========================
+        MOBILE APP OPTIMIZATION
+        ========================= */
+
+        @media (max-width: 768px) {
+            html,
+            body {
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            body {
+                font-size: 15px;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 100%;
+                margin: 14px auto;
+                padding: 0 10px;
+            }
+
+            .page-title {
+                font-size: 24px;
+                line-height: 1.2;
+                margin: 8px 0 8px;
+            }
+
+            .page-subtitle {
+                font-size: 14px;
+                line-height: 1.45;
+                margin-bottom: 16px;
+            }
+
+            .card,
+            .stat-card {
+                padding: 15px;
+                border-radius: 16px;
+                margin-bottom: 14px;
+                box-shadow: 0 4px 16px var(--shadow-color);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-value {
+                font-size: 26px;
+            }
+
+            .btn,
+            button.btn,
+            a.btn {
+                width: 100%;
+                text-align: center;
+                padding: 12px 14px;
+                font-size: 15px;
+                border-radius: 12px;
+                margin-bottom: 6px;
+            }
+
+            .btn-small {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .actions,
+            .page-actions,
+            .homework-actions,
+            .schedule-actions {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            input,
+            select,
+            textarea {
+                font-size: 16px;
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            .form-inline {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .form-inline select,
+            .form-inline input,
+            .form-inline button,
+            .form-inline a {
+                width: 100%;
+            }
+        }
+
+        /* MOBILE TABLES */
+
+        @media (max-width: 768px) {
+            .card table {
+                min-width: 0;
+            }
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+                width: 100%;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                background: var(--card-bg);
+                border: 1px solid var(--border-color);
+                border-radius: 14px;
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+
+            td {
+                border-bottom: 1px solid var(--border-color);
+                padding: 10px 0;
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                text-align: right;
+                font-size: 14px;
+            }
+
+            td:last-child {
+                border-bottom: none;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--muted-color);
+                text-align: left;
+                min-width: 110px;
+            }
+
+            td .btn {
+                margin-bottom: 6px;
+            }
+        }
+
+        /* MOBILE NAVBAR */
+
+        @media (max-width: 768px) {
+            .navbar {
+                position: sticky;
+                top: 0;
+            }
+
+            .navbar-shell {
+                padding: 8px 10px;
+            }
+
+            .navbar-brand {
+                max-width: calc(100% - 90px);
+            }
+
+            .brand-title {
+                font-size: 15px;
+            }
+
+            .brand-subtitle {
+                display: none;
+            }
+
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+                font-size: 11px;
+            }
+
+            .navbar-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                margin-left: auto;
+                padding: 9px 11px;
+                border-radius: 12px;
+            }
+
+            .navbar-menu {
+                max-height: calc(100vh - 58px);
+                overflow-y: auto;
+                padding-bottom: 12px;
+            }
+
+            .nav-links {
+                grid-template-columns: 1fr;
+                gap: 7px;
+            }
+
+            .nav-link,
+            .nav-more summary {
+                padding: 12px;
+                font-size: 14px;
+                border-radius: 12px;
+            }
+
+            .nav-dropdown {
+                border-radius: 14px;
+                padding: 8px;
+            }
+
+            .nav-dropdown a {
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .navbar-actions {
+                gap: 8px;
+            }
+
+            .language-select,
+            .theme-btn,
+            .logout-btn,
+            .user-pill {
+                width: 100%;
+                min-height: 42px;
+            }
+        }
+
+        /* MOBILE HOMEWORK */
+
+        @media (max-width: 768px) {
+            .homework-list {
+                gap: 14px;
+            }
+
+            .homework-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .homework-title {
+                font-size: 19px;
+                line-height: 1.3;
+            }
+
+            .homework-meta {
+                flex-direction: column;
+                gap: 6px;
+                font-size: 14px;
+            }
+
+            .homework-dates {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge {
+                width: fit-content;
+                max-width: 100%;
+                font-size: 12px;
+                line-height: 1.3;
+            }
+
+            .homework-description {
+                padding-top: 12px;
+            }
+
+            .homework-description p {
+                font-size: 14px;
+                line-height: 1.55;
+            }
+
+            .homework-submission-box {
+                margin-top: 14px;
+                padding-top: 14px;
+            }
+        }
+
+        /* MOBILE HOMEWORK */
+
+        @media (max-width: 768px) {
+            .homework-list {
+                gap: 14px;
+            }
+
+            .homework-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .homework-title {
+                font-size: 19px;
+                line-height: 1.3;
+            }
+
+            .homework-meta {
+                flex-direction: column;
+                gap: 6px;
+                font-size: 14px;
+            }
+
+            .homework-dates {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge {
+                width: fit-content;
+                max-width: 100%;
+                font-size: 12px;
+                line-height: 1.3;
+            }
+
+            .homework-description {
+                padding-top: 12px;
+            }
+
+            .homework-description p {
+                font-size: 14px;
+                line-height: 1.55;
+            }
+
+            .homework-submission-box {
+                margin-top: 14px;
+                padding-top: 14px;
+            }
+        }
+
+        /* MOBILE JOURNAL / LISTS */
+
+        @media (max-width: 768px) {
+            .journal-day,
+            .grade-day,
+            .notification-card {
+                border-radius: 16px;
+                padding: 14px;
+            }
+
+            .grade-item,
+            .attendance-item,
+            .notification-item {
+                padding: 12px;
+                border-radius: 14px;
+                margin-bottom: 10px;
+            }
+
+            .message-card {
+                margin: 0 0 12px;
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .empty {
+                padding: 22px 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* SCHEDULE */
+
+        .schedule-filter-card {
+            margin-bottom: 24px;
+        }
+
+        .schedule-filter-form {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(160px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+
+        .schedule-filter-form .form-group {
+            margin-bottom: 0;
+        }
+
+        .schedule-filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .schedule-week {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .schedule-day-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .schedule-day-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .schedule-day-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .schedule-day-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .schedule-lesson-card {
+            display: grid;
+            grid-template-columns: 190px 1fr auto;
+            gap: 20px;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .schedule-lesson-card:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-lesson-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-pair-number {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .schedule-time {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .schedule-lesson-center {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-subject {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .schedule-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+/* FIX BURGER MENU FOR SMALL PHONES */
+
+.burger-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.burger-text {
+    display: inline;
+}
+
+@media (max-width: 430px) {
+    .navbar-shell {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+    }
+
+    .navbar-brand {
+        flex: 1;
+        min-width: 0;
+        max-width: none;
+        overflow: hidden;
+    }
+
+    .brand-mark {
+        width: 30px;
+        height: 30px;
+        min-width: 30px;
+        border-radius: 9px;
+        font-size: 10px;
+    }
+
+    .brand-text {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .brand-title {
+        display: block;
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+
+    .navbar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 42px;
+        height: 38px;
+        margin-left: 0;
+        padding: 0;
+        border-radius: 11px;
+        font-size: 0;
+    }
+
+    .burger-text {
+        display: none;
+    }
+
+    .burger-icon {
+        display: inline-block;
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .navbar-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: calc(100vh - 56px);
+        overflow-y: auto;
+        padding: 12px;
+        background: var(--navbar-bg);
+        border-top: 1px solid var(--nav-border);
+    }
+
+    .navbar-menu.is-open {
+        display: flex;
+    }
+}
+
+@media (max-width: 360px) {
+    .brand-title {
+        font-size: 13px;
+    }
+
+    .navbar-shell {
+         padding-left: 8px;
+        padding-right: 8px;
+        }
+
+    .navbar-toggle {
+            width: 40px;
+            height: 36px;
+    }
+}
+
+    /* =========================
+    FIX MOBILE TABLE ALIGNMENT
+    ========================= */
+
+    @media (max-width: 768px) {
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+            display: block;
+            width: 100%;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        td {
+            display: block;
+            width: 100%;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left !important;
+            font-size: 14px;
+            line-height: 1.45;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            color: var(--text-color);
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        td::before {
+            content: attr(data-label);
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 700;
+            color: var(--muted-color);
+            text-align: left;
+            font-size: 12px;
+            line-height: 1.3;
+        }
+
+        td .btn,
+        td a.btn {
+            width: 100%;
+            margin-top: 6px;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .card {
+            overflow-x: visible;
+        }
+    }
+
+    /* =========================
+    FIX MOBILE GRADE JOURNAL
+    ========================= */
+
+        @media (max-width: 768px) {
+            .journal-day,
+            .grade-day,
+            .journal-day-card,
+            .grade-journal-day {
+                padding: 14px;
+                border-radius: 16px;
+                text-align: left;
+            }
+
+            .grade-item,
+            .journal-grade-item,
+            .grade-row {
+                text-align: left !important;
+                padding: 12px;
+                border-radius: 14px;
+                margin-bottom: 10px;
+                word-break: break-word;
+                overflow-wrap: anywhere;
+            }
+
+            .grade-item *,
+            .journal-grade-item *,
+            .grade-row * {
+                text-align: left !important;
+            }
+
+            .grade-meta,
+            .journal-meta,
+            .grade-info {
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+
+            .badge {
+                white-space: normal;
+                text-align: left;
+                line-height: 1.35;
+            }
+        }
+        @media (max-width: 768px) {
+        .attendance-table,
+        .attendance-table *,
+        .attendance-records,
+        .attendance-records *,
+        table,
+        table * {
+            color: var(--text-color);
+        }
+
+        .card table {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
+
+        .card {
+            max-width: 100%;
+        }
+    }
+
     </style>
 </head>
 <body>
@@ -1116,8 +1574,9 @@
             </span>
         </a>
 
-        <button type="button" class="navbar-toggle" onclick="toggleMenu()">
-            ☰ {% trans "Меню" %}
+        <button type="button" class="navbar-toggle" onclick="toggleMenu()" aria-label="{% trans 'Меню' %}">
+            <span class="burger-icon">☰</span>
+            <span class="burger-text">{% trans "Меню" %}</span>
         </button>
 
         <div class="navbar-menu" id="mainMenu">
