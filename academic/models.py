@@ -258,3 +258,96 @@ class Homework(models.Model):
         verbose_name = 'Домашнее задание'
         verbose_name_plural = 'Домашние задания'
         ordering = ['-created_at']
+
+class HomeworkSubmission(models.Model):
+    STATUS_CHOICES = (
+        ('submitted', _('Сдано')),
+        ('checked', _('Проверено')),
+        ('returned', _('Возвращено на доработку')),
+    )
+
+    homework = models.ForeignKey(
+        Homework,
+        on_delete=models.CASCADE,
+        related_name='submissions',
+        verbose_name='Домашнее задание'
+    )
+
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'role': 'student'},
+        related_name='homework_submissions',
+        verbose_name='Студент'
+    )
+
+    answer_text = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Текстовый ответ'
+    )
+
+    file = models.FileField(
+        upload_to='homework_submissions/%Y/%m/%d/',
+        blank=True,
+        null=True,
+        verbose_name='Файл с работой'
+    )
+
+    submitted_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата отправки'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='submitted',
+        verbose_name='Статус проверки'
+    )
+
+    grade_value = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        verbose_name='Оценка за домашнее задание'
+    )
+
+    teacher_comment = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='Комментарий преподавателя'
+    )
+
+    checked_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name='Дата проверки'
+    )
+
+    grade = models.OneToOneField(
+        'grades.Grade',
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name='homework_submission',
+        verbose_name='Оценка в журнале'
+    )
+
+    def __str__(self):
+        return f'{self.student.full_name} — {self.homework.title}'
+
+    @property
+    def is_checked(self):
+        return self.status == 'checked'
+
+    class Meta:
+        db_table = 'homework_submissions'
+        verbose_name = 'Сданное домашнее задание'
+        verbose_name_plural = 'Сданные домашние задания'
+        ordering = ['-submitted_at']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['homework', 'student'],
+                name='unique_homework_student_submission'
+            )
+        ]

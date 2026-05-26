@@ -1,0 +1,73 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Сдать домашнее задание" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Сдать домашнее задание" %}</h1>
+
+<p class="page-subtitle">
+    {{ homework.assignment.subject.name }} — {{ homework.title }}
+</p>
+
+<div class="card" style="max-width: 760px;">
+    <div class="homework-description">
+        <b>{% trans "Описание задания" %}:</b>
+        <p>{{ homework.description }}</p>
+    </div>
+
+    <p>
+        <b>{% trans "Срок сдачи" %}:</b>
+        {{ homework.deadline|date:"d.m.Y" }}
+    </p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.answer_text.id_for_label }}">
+                {% trans "Текстовый ответ" %}
+            </label>
+            {{ form.answer_text }}
+
+            {% if form.answer_text.errors %}
+                <div class="error-box">{{ form.answer_text.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.file.id_for_label }}">
+                {% trans "Файл с домашним заданием" %}
+            </label>
+            {{ form.file }}
+
+            {% if submission and submission.file %}
+                <p>
+                    {% trans "Текущий файл" %}:
+                    <a href="{{ submission.file.url }}" target="_blank">
+                        {{ submission.file.name }}
+                    </a>
+                </p>
+            {% endif %}
+
+            {% if form.file.errors %}
+                <div class="error-box">{{ form.file.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">
+            {% trans "Отправить преподавателю" %}
+        </button>
+
+        <a href="{% url 'frontend-homework' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

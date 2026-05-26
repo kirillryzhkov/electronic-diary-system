@@ -11,7 +11,7 @@ from django import forms
 from users.models import User
 from subjects.models import Subject
 from grades.models import Grade
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework, HomeworkSubmission
 
 class UserFullNameChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
@@ -567,3 +567,82 @@ class GroupSummaryReportForm(forms.Form):
         classroom = obj.classroom.number if obj.classroom else 'без кабинета'
         teacher_name = obj.teacher.full_name if obj.teacher else '—'
         return f'{obj.group.name} — {obj.subject.name} — {teacher_name} — каб. {classroom}'
+    
+
+class HomeworkSubmissionForm(forms.ModelForm):
+    """Форма для сдачи домашнего задания студентом.
+
+    Студент может отправить текстовый ответ, прикрепить файл или использовать оба варианта.
+    """
+
+    class Meta:
+        model = HomeworkSubmission
+        fields = ['answer_text', 'file']
+
+        labels = {
+            'answer_text': 'Текстовый ответ',
+            'file': 'Файл с домашним заданием',
+        }
+
+        widgets = {
+            'answer_text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 6,
+                'placeholder': 'Напишите ответ или комментарий к выполненной работе'
+            }),
+            'file': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        answer_text = cleaned_data.get('answer_text')
+        file = cleaned_data.get('file')
+
+        if not answer_text and not file:
+            raise forms.ValidationError(
+                'Нужно написать текстовый ответ или прикрепить файл.'
+            )
+
+        return cleaned_data
+
+
+class HomeworkSubmissionReviewForm(forms.ModelForm):
+    """Форма проверки домашнего задания преподавателем."""
+
+    class Meta:
+        model = HomeworkSubmission
+        fields = ['grade_value', 'teacher_comment', 'status']
+
+        labels = {
+            'grade_value': 'Оценка',
+            'teacher_comment': 'Комментарий преподавателя',
+            'status': 'Статус',
+        }
+
+        widgets = {
+            'grade_value': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'max': 5,
+                'placeholder': 'Оценка от 1 до 5'
+            }),
+            'teacher_comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 5,
+                'placeholder': 'Напишите комментарий к работе студента'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+    def clean_grade_value(self):
+        value = self.cleaned_data.get('grade_value')
+
+        if value is not None and (value < 1 or value > 5):
+            raise forms.ValidationError('Оценка должна быть от 1 до 5.')
+
+        return value

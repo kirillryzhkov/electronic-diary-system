@@ -28,8 +28,6 @@ from users.models import User
 from grades.models import Grade
 from subjects.models import Subject
 
-from datetime import datetime
-
 from django.http import HttpResponse
 from django.views import View
 
@@ -40,7 +38,10 @@ from statistics import mean
 from urllib.parse import urlencode
 from notifications_app.models import Notification
 
-from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework
+from collections import OrderedDict
+from datetime import datetime, date, timedelta
+
+from academic.models import StudyGroup, Classroom, TeachingAssignment, Schedule, Attendance, Homework, HomeworkSubmission
 
 from .forms import (
     GradeForm,
@@ -51,6 +52,8 @@ from .forms import (
     ScheduleForm,
     AttendanceForm,
     HomeworkForm,
+    HomeworkSubmissionForm,
+    HomeworkSubmissionReviewForm,
     BulkGradeAssignmentForm,
     GroupSummaryReportForm,
 )
@@ -624,6 +627,79 @@ class ScheduleListView(LoginRequiredMixin, ListView):
     template_name = 'frontend/schedule.html'
     context_object_name = 'schedule_items'
 
+    LESSON_DURATION_MINUTES = 80
+
+    DAY_NAMES = {
+        '1': 'Понедельник',
+        '2': 'Вторник',
+        '3': 'Среда',
+        '4': 'Четверг',
+        '5': 'Пятница',
+        '6': 'Суббота',
+
+        1: 'Понедельник',
+        2: 'Вторник',
+        3: 'Среда',
+        4: 'Четверг',
+        5: 'Пятница',
+        6: 'Суббота',
+
+        'monday': 'Понедельник',
+        'tuesday': 'Вторник',
+        'wednesday': 'Среда',
+        'thursday': 'Четверг',
+        'friday': 'Пятница',
+        'saturday': 'Суббота',
+
+        'Понедельник': 'Понедельник',
+        'Вторник': 'Вторник',
+        'Среда': 'Среда',
+        'Четверг': 'Четверг',
+        'Пятница': 'Пятница',
+        'Суббота': 'Суббота',
+    }
+
+    DAY_ORDER = {
+        '1': 1,
+        1: 1,
+        'monday': 1,
+        'Понедельник': 1,
+
+        '2': 2,
+        2: 2,
+        'tuesday': 2,
+        'Вторник': 2,
+
+        '3': 3,
+        3: 3,
+        'wednesday': 3,
+        'Среда': 3,
+
+        '4': 4,
+        4: 4,
+        'thursday': 4,
+        'Четверг': 4,
+
+        '5': 5,
+        5: 5,
+        'friday': 5,
+        'Пятница': 5,
+
+        '6': 6,
+        6: 6,
+        'saturday': 6,
+        'Суббота': 6,
+    }
+
+    DAY_FILTER_CHOICES = [
+        ('1', 'Понедельник'),
+        ('2', 'Вторник'),
+        ('3', 'Среда'),
+        ('4', 'Четверг'),
+        ('5', 'Пятница'),
+        ('6', 'Суббота'),
+    ]
+
     def get_queryset(self):
         user = self.request.user
 
@@ -644,7 +720,138 @@ class ScheduleListView(LoginRequiredMixin, ListView):
             else:
                 queryset = queryset.none()
 
+        group_id = self.request.GET.get('group')
+        if group_id and user.role != 'student':
+            queryset = queryset.filter(assignment__group_id=group_id)
+
+        subject_id = self.request.GET.get('subject')
+        if subject_id:
+            queryset = queryset.filter(assignment__subject_id=subject_id)
+
+        teacher_id = self.request.GET.get('teacher')
+        if teacher_id and user.role == 'admin':
+            queryset = queryset.filter(assignment__teacher_id=teacher_id)
+
+        day = self.request.GET.get('day')
+        if day:
+            queryset = queryset.filter(day=day)
+
         return queryset
+
+    def get_lesson_end_time(self, start_time):
+        if not start_time:
+            return None
+
+        start_datetime = datetime.combine(date.today(), start_time)
+        end_datetime = start_datetime + timedelta(minutes=self.LESSON_DURATION_MINUTES)
+
+        return end_datetime.time()
+
+    def get_groups_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'admin':
+            return StudyGroup.objects.all().order_by('name')
+
+        if user.role == 'teacher':
+            group_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('group_id', flat=True).distinct()
+
+            return StudyGroup.objects.filter(
+                id__in=group_ids
+            ).order_by('name')
+
+        return StudyGroup.objects.none()
+
+    def get_subjects_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'admin':
+            return Subject.objects.all().order_by('name')
+
+        if user.role == 'teacher':
+            subject_ids = TeachingAssignment.objects.filter(
+                teacher=user
+            ).values_list('subject_id', flat=True).distinct()
+
+            return Subject.objects.filter(
+                id__in=subject_ids
+            ).order_by('name')
+
+        if user.role == 'student' and user.group:
+            subject_ids = TeachingAssignment.objects.filter(
+                group=user.group
+            ).values_list('subject_id', flat=True).distinct()
+
+            return Subject.objects.filter(
+                id__in=subject_ids
+            ).order_by('name')
+
+        return Subject.objects.none()
+
+    def get_teachers_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'admin':
+            teacher_ids = TeachingAssignment.objects.values_list(
+                'teacher_id',
+                flat=True
+            ).distinct()
+
+            return User.objects.filter(
+                id__in=teacher_ids,
+                role='teacher'
+            ).order_by('last_name', 'first_name', 'username')
+
+        return User.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        schedule_items = list(self.get_queryset())
+
+        for item in schedule_items:
+            item.calculated_end_time = self.get_lesson_end_time(item.start_time)
+            item.day_title = self.DAY_NAMES.get(item.day, str(item.day))
+            item.day_sort = self.DAY_ORDER.get(item.day, 99)
+
+        schedule_items.sort(
+            key=lambda item: (
+                item.day_sort,
+                item.start_time,
+                item.lesson_number
+            )
+        )
+
+        grouped_schedule = OrderedDict()
+
+        for item in schedule_items:
+            day_key = item.day
+            day_title = item.day_title
+
+            if day_key not in grouped_schedule:
+                grouped_schedule[day_key] = {
+                    'title': day_title,
+                    'items': []
+                }
+
+            grouped_schedule[day_key]['items'].append(item)
+
+        context['grouped_schedule'] = grouped_schedule.values()
+        context['lesson_duration_minutes'] = self.LESSON_DURATION_MINUTES
+
+        context['groups'] = self.get_groups_for_filter()
+        context['subjects'] = self.get_subjects_for_filter()
+        context['teachers'] = self.get_teachers_for_filter()
+        context['day_filter_choices'] = self.DAY_FILTER_CHOICES
+
+        context['selected_group'] = self.request.GET.get('group', '')
+        context['selected_subject'] = self.request.GET.get('subject', '')
+        context['selected_teacher'] = self.request.GET.get('teacher', '')
+        context['selected_day'] = self.request.GET.get('day', '')
+
+        return context
 
 
 class ScheduleCreateView(AdminRequiredMixin, CreateView):
@@ -867,6 +1074,8 @@ class HomeworkListView(LoginRequiredMixin, ListView):
             'assignment__subject',
             'assignment__group',
             'assignment__classroom',
+        ).prefetch_related(
+            'submissions'
         ).order_by('-created_at')
 
         if user.role == 'teacher':
@@ -879,6 +1088,29 @@ class HomeworkListView(LoginRequiredMixin, ListView):
                 queryset = queryset.none()
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        homeworks = list(context['homeworks'])
+        user = self.request.user
+
+        if user.role == 'student':
+            submissions = HomeworkSubmission.objects.filter(
+                student=user,
+                homework__in=homeworks
+            )
+
+            submissions_map = {
+                submission.homework_id: submission
+                for submission in submissions
+            }
+
+            for homework in homeworks:
+                homework.my_submission = submissions_map.get(homework.id)
+
+        context['homeworks'] = homeworks
+        return context
 
 
 class HomeworkCreateView(LoginRequiredMixin, CreateView):
@@ -989,6 +1221,219 @@ class HomeworkDeleteView(LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Домашнее задание удалено.')
+        return super().form_valid(form)
+    
+
+class HomeworkSubmitView(LoginRequiredMixin, TemplateView):
+    """Страница сдачи домашнего задания студентом."""
+
+    template_name = 'frontend/homework_submit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'student':
+            raise PermissionDenied('Только студент может сдавать домашние задания.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_homework(self):
+        return get_object_or_404(
+            Homework.objects.select_related(
+                'assignment',
+                'assignment__teacher',
+                'assignment__subject',
+                'assignment__group',
+                'assignment__classroom',
+            ),
+            pk=self.kwargs['pk'],
+            assignment__group=self.request.user.group
+        )
+
+    def get_submission(self, homework):
+        return HomeworkSubmission.objects.filter(
+            homework=homework,
+            student=self.request.user
+        ).first()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        homework = self.get_homework()
+        submission = self.get_submission(homework)
+
+        form = HomeworkSubmissionForm(instance=submission)
+
+        context['homework'] = homework
+        context['submission'] = submission
+        context['form'] = form
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        homework = self.get_homework()
+        submission = self.get_submission(homework)
+
+        form = HomeworkSubmissionForm(
+            request.POST,
+            request.FILES,
+            instance=submission
+        )
+
+        if not form.is_valid():
+            return self.render_to_response({
+                'homework': homework,
+                'submission': submission,
+                'form': form,
+            })
+
+        submission = form.save(commit=False)
+        submission.homework = homework
+        submission.student = request.user
+        submission.status = 'submitted'
+        submission.grade_value = None
+        submission.teacher_comment = ''
+        submission.checked_at = None
+        submission.save()
+
+        Notification.objects.create(
+            user=homework.assignment.teacher,
+            notification_type='homework',
+            title='Студент сдал домашнее задание',
+            message=(
+                f'{request.user.full_name} сдал(а) домашнее задание '
+                f'"{homework.title}" по предмету "{homework.assignment.subject.name}".'
+            )
+        )
+
+        messages.success(request, 'Домашнее задание успешно отправлено преподавателю.')
+        return redirect('frontend-homework')
+
+
+class HomeworkSubmissionsListView(LoginRequiredMixin, ListView):
+    """Список сданных домашних заданий для преподавателя."""
+
+    model = HomeworkSubmission
+    template_name = 'frontend/homework_submissions.html'
+    context_object_name = 'submissions'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role not in ['admin', 'teacher']:
+            raise PermissionDenied('Эта страница доступна только администратору и преподавателю.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+
+        queryset = HomeworkSubmission.objects.select_related(
+            'homework',
+            'homework__assignment',
+            'homework__assignment__teacher',
+            'homework__assignment__subject',
+            'homework__assignment__group',
+            'student',
+            'grade',
+        ).order_by('-submitted_at')
+
+        if user.role == 'teacher':
+            queryset = queryset.filter(homework__assignment__teacher=user)
+
+        group_id = self.request.GET.get('group')
+        if group_id:
+            queryset = queryset.filter(homework__assignment__group_id=group_id)
+
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset
+
+    def get_groups_for_filter(self):
+        user = self.request.user
+
+        if user.role == 'admin':
+            return StudyGroup.objects.all().order_by('name')
+
+        group_ids = TeachingAssignment.objects.filter(
+            teacher=user
+        ).values_list('group_id', flat=True).distinct()
+
+        return StudyGroup.objects.filter(
+            id__in=group_ids
+        ).order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['groups'] = self.get_groups_for_filter()
+        context['status_choices'] = HomeworkSubmission.STATUS_CHOICES
+        context['selected_group'] = self.request.GET.get('group', '')
+        context['selected_status'] = self.request.GET.get('status', '')
+
+        return context
+
+
+class HomeworkSubmissionReviewView(LoginRequiredMixin, UpdateView):
+    """Проверка домашнего задания и выставление оценки преподавателем."""
+
+    model = HomeworkSubmission
+    form_class = HomeworkSubmissionReviewForm
+    template_name = 'frontend/homework_submission_review.html'
+    success_url = reverse_lazy('frontend-homework-submissions')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.role != 'teacher':
+            raise PermissionDenied('Только преподаватель может проверять домашние задания.')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return HomeworkSubmission.objects.select_related(
+            'homework',
+            'homework__assignment',
+            'homework__assignment__teacher',
+            'homework__assignment__subject',
+            'homework__assignment__group',
+            'student',
+            'grade',
+        ).filter(
+            homework__assignment__teacher=self.request.user
+        )
+
+    def form_valid(self, form):
+        submission = form.save(commit=False)
+        submission.checked_at = datetime.now()
+        submission.save()
+
+        if submission.grade_value:
+            grade_comment = submission.teacher_comment or ''
+            full_comment = f'Домашнее задание: {submission.homework.title}. {grade_comment}'.strip()
+
+            if submission.grade:
+                grade = submission.grade
+                grade.value = submission.grade_value
+                grade.comment = full_comment
+                grade.save(update_fields=['value', 'comment'])
+            else:
+                grade = Grade.objects.create(
+                    student=submission.student,
+                    teacher=self.request.user,
+                    subject=submission.homework.assignment.subject,
+                    value=submission.grade_value,
+                    comment=full_comment,
+                    grade_type='current'
+                )
+
+                submission.grade = grade
+                submission.save(update_fields=['grade'])
+
+            Notification.objects.create(
+                user=submission.student,
+                notification_type='grade',
+                title='Домашнее задание проверено',
+                message=(
+                    f'Ваше домашнее задание "{submission.homework.title}" проверено. '
+                    f'Оценка: {submission.grade_value}.'
+                )
+            )
+
+        messages.success(self.request, 'Домашнее задание успешно проверено.')
         return super().form_valid(form)
     
 

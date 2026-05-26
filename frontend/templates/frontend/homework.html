@@ -12,14 +12,18 @@
     {% elif user.role == 'teacher' %}
         {% trans "Домашние задания, которые вы добавили для своих групп." %}
     {% else %}
-        {% trans "Домашние задания вашей группы." %}
+        {% trans "Домашние задания вашей группы. Здесь можно сдать работу преподавателю." %}
     {% endif %}
 </p>
 
 {% if user.role == 'admin' or user.role == 'teacher' %}
-    <p>
+    <p class="actions">
         <a href="{% url 'frontend-homework-create' %}" class="btn">
             {% trans "Добавить домашнее задание" %}
+        </a>
+
+        <a href="{% url 'frontend-homework-submissions' %}" class="btn btn-secondary">
+            {% trans "Проверить сданные работы" %}
         </a>
     </p>
 {% endif %}
@@ -79,6 +83,44 @@
                     <b>{% trans "Описание задания" %}:</b>
                     <p>{{ homework.description }}</p>
                 </div>
+
+                {% if user.role == 'student' %}
+                    <div class="homework-submission-box">
+                        {% if homework.my_submission %}
+                            <p>
+                                <b>{% trans "Статус сдачи" %}:</b>
+                                {{ homework.my_submission.get_status_display }}
+                            </p>
+
+                            <p>
+                                <b>{% trans "Дата отправки" %}:</b>
+                                {{ homework.my_submission.submitted_at|date:"d.m.Y H:i" }}
+                            </p>
+
+                            {% if homework.my_submission.grade_value %}
+                                <p>
+                                    <b>{% trans "Оценка" %}:</b>
+                                    <span class="badge badge-green">{{ homework.my_submission.grade_value }}</span>
+                                </p>
+                            {% endif %}
+
+                            {% if homework.my_submission.teacher_comment %}
+                                <p>
+                                    <b>{% trans "Комментарий преподавателя" %}:</b>
+                                    {{ homework.my_submission.teacher_comment }}
+                                </p>
+                            {% endif %}
+
+                            <a href="{% url 'frontend-homework-submit' homework.id %}" class="btn btn-secondary">
+                                {% trans "Изменить отправленную работу" %}
+                            </a>
+                        {% else %}
+                            <a href="{% url 'frontend-homework-submit' homework.id %}" class="btn">
+                                {% trans "Сдать работу" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     </div>

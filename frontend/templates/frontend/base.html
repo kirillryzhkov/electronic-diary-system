@@ -317,6 +317,283 @@
             background: var(--table-hover-bg);
         }
 
+        .schedule-week {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .schedule-filter-card {
+            margin-bottom: 24px;
+        }
+
+        .schedule-filter-form {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(160px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+
+        .schedule-filter-form .form-group {
+            margin-bottom: 0;
+        }
+
+        .schedule-filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .schedule-week {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .schedule-day-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .schedule-day-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .schedule-day-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .schedule-day-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .schedule-lesson-card {
+            display: grid;
+            grid-template-columns: 190px 1fr auto;
+            gap: 20px;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .schedule-lesson-card:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-lesson-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-pair-number {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .schedule-time {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .schedule-lesson-center {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-subject {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .schedule-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1100px) {
+            .schedule-filter-form {
+                grid-template-columns: repeat(2, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .schedule-lesson-card {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .schedule-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .schedule-filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-day-header {
+                padding: 16px;
+            }
+
+            .schedule-day-header h2 {
+                font-size: 22px;
+            }
+
+            .schedule-lesson-card {
+                padding: 16px;
+            }
+
+            .schedule-subject {
+                font-size: 18px;
+            }
+
+            .schedule-meta {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+
+        .schedule-day-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .schedule-day-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .schedule-day-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .schedule-day-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .schedule-lesson-card {
+            display: grid;
+            grid-template-columns: 190px 1fr auto;
+            gap: 20px;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        .schedule-lesson-card:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-lesson-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-pair-number {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .schedule-time {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .schedule-lesson-center {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .schedule-subject {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .schedule-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 22px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .schedule-lesson-card {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .schedule-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .schedule-day-header {
+                padding: 16px;
+            }
+
+            .schedule-day-header h2 {
+                font-size: 22px;
+            }
+
+            .schedule-lesson-card {
+                padding: 16px;
+            }
+
+            .schedule-subject {
+                font-size: 18px;
+            }
+
+            .schedule-meta {
+                flex-direction: column;
+                gap: 6px;
+            }
+        }
+
         /* BASE LAYOUT */
 
         .container {
@@ -799,6 +1076,32 @@
                 text-align: center;
             }
         }
+        .homework-submission-box {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .homework-submission-box p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .submission-answer {
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--table-head-bg);
+            border: 1px solid var(--border-color);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+            .homework-submission-box .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -843,7 +1146,11 @@
                                     {% endif %}
                                 </a>
                                 <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
-                                
+                                {% if user.role == 'teacher' or user.role == 'admin' %}
+                                    <a href="{% url 'frontend-homework-submissions' %}">
+                                        {% trans "Проверка ДЗ" %}
+                                    </a>
+                                {% endif %}
 
                                 {% if user.role == 'admin' %}
                                     <a href="{% url 'frontend-assignments' %}">{% trans "Назначения" %}</a>

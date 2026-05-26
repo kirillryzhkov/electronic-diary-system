@@ -1,0 +1,99 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Проверка домашнего задания" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">{% trans "Проверка домашнего задания" %}</h1>
+
+<p class="page-subtitle">
+    {{ object.student.full_name }} — {{ object.homework.title }}
+</p>
+
+<div class="card" style="max-width: 820px;">
+    <p>
+        <b>{% trans "Студент" %}:</b>
+        {{ object.student.full_name }}
+    </p>
+
+    <p>
+        <b>{% trans "Группа" %}:</b>
+        {{ object.homework.assignment.group.name }}
+    </p>
+
+    <p>
+        <b>{% trans "Предмет" %}:</b>
+        {{ object.homework.assignment.subject.name }}
+    </p>
+
+    <p>
+        <b>{% trans "Дата сдачи" %}:</b>
+        {{ object.submitted_at|date:"d.m.Y H:i" }}
+    </p>
+
+    <div class="homework-description">
+        <b>{% trans "Ответ студента" %}:</b>
+        <p>{{ object.answer_text|default:"Текстовый ответ не указан." }}</p>
+    </div>
+
+    {% if object.file %}
+        <p>
+            <b>{% trans "Файл студента" %}:</b>
+            <a href="{{ object.file.url }}" target="_blank" class="btn btn-secondary">
+                {% trans "Открыть файл" %}
+            </a>
+        </p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="error-box">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.grade_value.id_for_label }}">
+                {% trans "Оценка" %}
+            </label>
+            {{ form.grade_value }}
+
+            {% if form.grade_value.errors %}
+                <div class="error-box">{{ form.grade_value.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.teacher_comment.id_for_label }}">
+                {% trans "Комментарий преподавателя" %}
+            </label>
+            {{ form.teacher_comment }}
+
+            {% if form.teacher_comment.errors %}
+                <div class="error-box">{{ form.teacher_comment.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.status.id_for_label }}">
+                {% trans "Статус" %}
+            </label>
+            {{ form.status }}
+
+            {% if form.status.errors %}
+                <div class="error-box">{{ form.status.errors }}</div>
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn">
+            {% trans "Сохранить проверку" %}
+        </button>
+
+        <a href="{% url 'frontend-homework-submissions' %}" class="btn btn-secondary">
+            {% trans "Назад" %}
+        </a>
+    </form>
+</div>
+{% endblock %}

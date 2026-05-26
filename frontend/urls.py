@@ -57,6 +57,9 @@ from .views import (
     HomeworkCreateView,
     HomeworkUpdateView,
     HomeworkDeleteView,
+    HomeworkSubmitView,
+    HomeworkSubmissionsListView,
+    HomeworkSubmissionReviewView,
 
     GroupGradeEntryView,
 
@@ -121,6 +124,10 @@ urlpatterns = [
     path('homework/create/', HomeworkCreateView.as_view(), name='frontend-homework-create'),
     path('homework/<int:pk>/edit/', HomeworkUpdateView.as_view(), name='frontend-homework-edit'),
     path('homework/<int:pk>/delete/', HomeworkDeleteView.as_view(), name='frontend-homework-delete'),
+    
+    path('homework/<int:pk>/submit/', HomeworkSubmitView.as_view(), name='frontend-homework-submit'),
+    path('homework/submissions/', HomeworkSubmissionsListView.as_view(), name='frontend-homework-submissions'),
+    path('homework/submissions/<int:pk>/review/', HomeworkSubmissionReviewView.as_view(), name='frontend-homework-submission-review'),
 
     path('grades/group-entry/', GroupGradeEntryView.as_view(), name='frontend-group-grade-entry'),
 
