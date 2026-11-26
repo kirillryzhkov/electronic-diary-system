@@ -55,6 +55,107 @@
     </table>
 </div>
 
+<div class="card" id="tg-settings-card">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;">
+        <h2 style="margin:0;">{% trans "Уведомления в Telegram" %}</h2>
+        <span id="tg-bot-badge" class="badge badge-blue" style="font-size:12px;">Загрузка...</span>
+    </div>
+    <p style="font-size:13px;color:var(--muted-color);margin-top:0;margin-bottom:14px;">
+        {% trans "Получайте мгновенные уведомления о новых оценках, пропусках и проверке домашних заданий." %}
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+        <div style="flex:1 1 240px;">
+            <label for="tg-chat-id" style="display:block;font-size:12px;color:var(--muted-color);margin-bottom:4px;">
+                Telegram Chat ID
+            </label>
+            <input id="tg-chat-id" type="text" placeholder="Например: 673739010"
+                   style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--input-text);font-size:14px;" />
+        </div>
+        <label style="display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--border-color);background:var(--bg-color);font-size:13px;font-weight:600;cursor:pointer;">
+            <input id="tg-enabled" type="checkbox" />
+            <span>{% trans "Включить отправку" %}</span>
+        </label>
+        <button type="button" id="tg-save-btn" class="btn btn-small">{% trans "Сохранить" %}</button>
+        <button type="button" id="tg-test-btn" class="btn btn-secondary btn-small">{% trans "Отправить тест" %}</button>
+    </div>
+    <div id="tg-status-msg" style="margin-top:10px;font-size:13px;display:none;"></div>
+</div>
+
+<script>
+(function () {
+    const $ = (id) => document.getElementById(id);
+    function getCsrfToken() {
+        const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+    function setMsg(text, isError) {
+        const el = $('tg-status-msg');
+        el.textContent = text;
+        el.style.color = isError ? '#ef4444' : '#16a34a';
+        el.style.display = 'block';
+    }
+    async function loadTelegramSettings() {
+        try {
+            const res = await fetch('/api/v1/profile/telegram/', { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Не удалось загрузить настройки Telegram');
+            const data = await res.json();
+            $('tg-chat-id').value = data.telegram_chat_id || '';
+            $('tg-enabled').checked = !!data.telegram_notifications_enabled;
+            const badge = $('tg-bot-badge');
+            badge.textContent = data.bot_configured ? 'Бот настроен на сервере' : 'Токен бота не задан (.env)';
+            badge.className = 'badge ' + (data.bot_configured ? 'badge-green' : 'badge-yellow');
+        } catch (err) {
+            $('tg-bot-badge').textContent = 'Недоступно';
+            setMsg(err.message, true);
+        }
+    }
+    $('tg-save-btn').addEventListener('click', async () => {
+        const btn = $('tg-save-btn');
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/v1/profile/telegram/', {
+                method: 'PATCH',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    telegram_chat_id: $('tg-chat-id').value.trim(),
+                    telegram_notifications_enabled: $('tg-enabled').checked,
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || `Ошибка сохранения (${res.status})`);
+            setMsg('Настройки Telegram сохранены', false);
+        } catch (err) {
+            setMsg(err.message, true);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+    $('tg-test-btn').addEventListener('click', async () => {
+        const btn = $('tg-test-btn');
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/v1/profile/telegram/test/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-CSRFToken': getCsrfToken() },
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || `Ошибка отправки (${res.status})`);
+            setMsg(data.detail || 'Тестовое уведомление отправлено!', false);
+        } catch (err) {
+            setMsg(err.message, true);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+    loadTelegramSettings();
+})();
+</script>
+
 {% if user.role == 'admin' %}
     <div class="grid">
         <div class="stat-card">
