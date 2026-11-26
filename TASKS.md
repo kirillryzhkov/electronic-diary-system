@@ -117,12 +117,12 @@
 ## Задачи и статусы
 
 ### Codex — ветка `feat/journal-backend` (`grades/`, `api/`)
-- [ ] Добавить в `grades.Grade` опциональные поля `assignment` (`ForeignKey` на `academic.TeachingAssignment`, `null=True, blank=True`) и `lesson_date` (`DateField`, `null=True, blank=True`) + модель `GradeAuditLog` + миграцию.
-- [ ] Реализовать эндпоинты `/api/v1/journal/assignments/`, `/api/v1/journal/`, `/api/v1/journal/cell/`, `/api/v1/journal/grades/<grade_id>/history/` с проверкой прав доступа (`teacher` только свои назначения и студентов своей группы, `admin` — все, `student` — 403).
-- [ ] Написать автотесты (права доступа, раздельное хранение оценки и посещаемости «н», запись `GradeAuditLog` при правке оценки с 4 на 5, пересчёт `avg_grade` и `attendance_rate`) и прогнать через `D:\Projects\electronic-diary-system\.venv\Scripts\python.exe manage.py test`.
+- [x] Добавить в `grades.Grade` опциональные поля `assignment` (`ForeignKey` на `academic.TeachingAssignment`, `null=True, blank=True`) и `lesson_date` (`DateField`, `null=True, blank=True`) + модель `GradeAuditLog` + миграцию.
+- [x] Реализовать эндпоинты `/api/v1/journal/assignments/`, `/api/v1/journal/`, `/api/v1/journal/cell/`, `/api/v1/journal/grades/<grade_id>/history/` с проверкой прав доступа (`teacher` только свои назначения и студентов своей группы, `admin` — все, `student` — 403).
+- [x] Написать автотесты (права доступа, раздельное хранение оценки и посещаемости «н», запись `GradeAuditLog` при правке оценки с 4 на 5, пересчёт `avg_grade` и `attendance_rate`) и прогнать через `D:\Projects\electronic-diary-system\.venv\Scripts\python.exe manage.py test`.
 
 ### Antigravity — ветка `feat/journal-ui` (`frontend/`)
-- [ ] Добавить страницу `/journal/` (`InteractiveJournalView`) и ссылку в навигацию `base.html` для преподавателей и администраторов (не ломая старый `/grades/journal/`).
-- [ ] Реализовать `frontend/templates/frontend/interactive_journal.html`: выбор назначения, переключение недель, интерактивная сетка «студенты × дни», раздельные бейджи посещаемости и оценки, маркер правок, автоподсчёт среднего балла и % посещаемости.
-- [ ] Реализовать модалку/поповер ячейки: быстрый ввод оценки `1..5`, статуса `П/Н/О/У`, комментария, причины правки, сохранение через `fetch` + CSRF без перезагрузки и просмотр «Истории правок» прямо в модалке.
-- [ ] После мёржа веток — прогнать все тесты и проверить сценарий в браузере.
+- [x] Добавить страницу `/journal/` (`InteractiveJournalView`) и ссылку в навигацию `base.html` для преподавателей и администраторов (не ломая старый `/grades/journal/`).
+- [x] Реализовать `frontend/templates/frontend/interactive_journal.html`: выбор назначения, переключение недель, интерактивная сетка «студенты × дни», раздельные бейджи посещаемости и оценки, маркер правок, автоподсчёт среднего балла и % посещаемости.
+- [x] Реализовать модалку/поповер ячейки: быстрый ввод оценки `1..5`, статуса `П/Н/О/У`, комментария, причины правки, сохранение через `fetch` + CSRF без перезагрузки и просмотр «Истории правок» прямо в модалке.
+- [x] После мёржа веток — прогнать все тесты и проверить сквозной сценарий.
