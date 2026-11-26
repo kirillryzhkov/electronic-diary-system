@@ -17,7 +17,13 @@ from .journal_export import JournalExportView
 from .analytics import AnalyticsOverviewView
 from .telegram import TelegramProfileView, TelegramTestView
 
+from .attendance_qr import QRCheckinView, QRCloseView, QRCreateView, QRStatusView
+
 urlpatterns = [
+    path('attendance/qr/create/', QRCreateView.as_view(), name='attendance-qr-create'),
+    path('attendance/qr/<str:token>/status/', QRStatusView.as_view(), name='attendance-qr-status'),
+    path('attendance/qr/<str:token>/close/', QRCloseView.as_view(), name='attendance-qr-close'),
+    path('attendance/qr/<str:token>/checkin/', QRCheckinView.as_view(), name='attendance-qr-checkin'),
     path('profile/telegram/', TelegramProfileView.as_view(), name='telegram-profile'),
     path('profile/telegram/test/', TelegramTestView.as_view(), name='telegram-test'),
     path('analytics/overview/', AnalyticsOverviewView.as_view(), name='analytics-overview'),

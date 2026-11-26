@@ -224,6 +224,27 @@ class Attendance(models.Model):
             )
         ]
 
+class AttendanceQRSession(models.Model):
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    assignment = models.ForeignKey(
+        TeachingAssignment, on_delete=models.CASCADE, related_name='qr_sessions'
+    )
+    date = models.DateField()
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['assignment', 'date'],
+                condition=models.Q(is_active=True),
+                name='unique_active_attendance_qr_per_day',
+            )
+        ]
+
+
 class Homework(models.Model):
     assignment = models.ForeignKey(
         TeachingAssignment,
