@@ -1589,6 +1589,10 @@
                         <a href="{% url 'frontend-homework' %}" class="nav-link">{% trans "Домашние задания" %}</a>
                         <a href="{% url 'frontend-grades' %}" class="nav-link">{% trans "Оценки" %}</a>
 
+                        {% if user.role == 'teacher' or user.role == 'admin' %}
+                            <a href="{% url 'frontend-interactive-journal' %}" class="nav-link">{% trans "Журнал" %}</a>
+                        {% endif %}
+
                         {% if user.role == 'teacher' %}
                             <a href="{% url 'frontend-teacher-groups' %}" class="nav-link">{% trans "Мои группы" %}</a>
                         {% endif %}
