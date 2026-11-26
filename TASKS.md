@@ -65,13 +65,13 @@
 ### Задачи Спринта v3
 
 #### Codex — ветка `feat/v3-backend`
-- [ ] Добавить в `users.User` поля `telegram_chat_id`, `telegram_notifications_enabled` + миграцию; в `notifications_app` добавить тип `'attendance'` и сервис `notify_user(...)` (пишет `Notification` в БД и при включённом Telegram + заданном `TELEGRAM_BOT_TOKEN` безопасно шлёт сообщение в Telegram без падения при сетевой ошибке).
-- [ ] Подключить `notify_user` в `api/v1/journal.py` (новая/изменённая оценка, пропуск `absent`) и `api/v1/homework.py` (проверка/возврат ДЗ).
-- [ ] Реализовать `/api/v1/profile/telegram/`, `/api/v1/profile/telegram/test/` и `/api/v1/analytics/overview/`.
-- [ ] Добавить `Dockerfile`, `docker-compose.yml` (Django + Gunicorn + PostgreSQL 16), `.env.example` и чтение env-настроек (`POSTGRES_*`, `TELEGRAM_BOT_TOKEN`, `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`) в `diary_project/settings.py` с дефолтным fallback на SQLite.
-- [ ] Добавить автотесты (уведомления при оценке/пропуске/ДЗ, мок отправки в Telegram, `/api/v1/profile/telegram/*`, `/api/v1/analytics/overview/` для всех 3 ролей) и прогнать через `.venv\Scripts\python.exe manage.py test`.
+- [x] Добавить в `users.User` поля `telegram_chat_id`, `telegram_notifications_enabled` + миграцию; в `notifications_app` добавить тип `'attendance'` и сервис `notify_user(...)` (пишет `Notification` в БД и при включённом Telegram + заданном `TELEGRAM_BOT_TOKEN` безопасно шлёт сообщение в Telegram без падения при сетевой ошибке).
+- [x] Подключить `notify_user` в `api/v1/journal.py` (новая/изменённая оценка, пропуск `absent`) и `api/v1/homework.py` (проверка/возврат ДЗ).
+- [x] Реализовать `/api/v1/profile/telegram/`, `/api/v1/profile/telegram/test/` и `/api/v1/analytics/overview/`.
+- [x] Добавить `Dockerfile`, `docker-compose.yml` (Django + Gunicorn + PostgreSQL 16), `.env.example` и чтение env-настроек (`POSTGRES_*`, `TELEGRAM_BOT_TOKEN`, `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`) в `diary_project/settings.py` с дефолтным fallback на SQLite.
+- [x] Добавить автотесты (уведомления при оценке/пропуске/ДЗ, мок отправки в Telegram, `/api/v1/profile/telegram/*`, `/api/v1/analytics/overview/` для всех 3 ролей) и прогнать через `.venv\Scripts\python.exe manage.py test`.
 
 #### Antigravity — ветка `feat/v3-frontend` (`frontend/`)
-- [ ] Добавить блок настройки Telegram-уведомлений в `frontend/templates/frontend/profile.html` (`GET/PATCH /api/v1/profile/telegram/` + кнопка «Отправить тест»).
-- [ ] Добавить блок «Аналитика и группа риска» в `frontend/templates/frontend/dashboard.html` (`GET /api/v1/analytics/overview/` — для преподавателя/админа и для студента).
-- [ ] После мёржа веток — накатить миграции, прогнать все тесты и запушить на GitHub.
+- [x] Добавить блок настройки Telegram-уведомлений в `frontend/templates/frontend/profile.html` (`GET/PATCH /api/v1/profile/telegram/` + кнопка «Отправить тест»).
+- [x] Добавить блок «Аналитика и группа риска» в `frontend/templates/frontend/dashboard.html` (`GET /api/v1/analytics/overview/` — для преподавателя/админа и для студента).
+- [x] После мёржа веток — накатить миграции, прогнать все тесты и запушить на GitHub.
