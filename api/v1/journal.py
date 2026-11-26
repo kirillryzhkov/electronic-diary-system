@@ -135,6 +135,18 @@ def save_grade(grades, assignment, student, actor, data):
     if (grade.value, old_comment) == (new_value, new_comment):
         return
 
+    record_grade_change(grade, assignment, actor, new_value, new_comment, data.get('audit_reason', ''))
+    if delete_grade:
+        grade.delete()
+    else:
+        grade.value = new_value
+        grade.comment = new_comment
+        grade.save(update_fields=['value', 'comment', 'updated_at'])
+
+
+def record_grade_change(grade, assignment, actor, new_value, new_comment, reason):
+    """Record a grade edit or deletion before changing the original row."""
+    old_comment = grade.comment or ''
     GradeAuditLog.objects.create(
         grade_id=grade.pk,
         assignment=assignment,
@@ -144,14 +156,8 @@ def save_grade(grades, assignment, student, actor, data):
         new_value=new_value,
         old_comment=old_comment,
         new_comment=new_comment,
-        reason=data.get('audit_reason', ''),
+        reason=reason,
     )
-    if delete_grade:
-        grade.delete()
-    else:
-        grade.value = new_value
-        grade.comment = new_comment
-        grade.save(update_fields=['value', 'comment', 'updated_at'])
 
 
 class CanAccessJournal(BasePermission):
@@ -179,7 +185,11 @@ class JournalAssignmentsView(JournalView):
 class JournalGridView(JournalView):
     @extend_schema(parameters=[JournalQuerySerializer], responses=OpenApiTypes.OBJECT)
     def get(self, request):
-        query = JournalQuerySerializer(data=request.query_params)
+        return Response(self.week_data(request.query_params))
+
+    def week_data(self, query_params):
+        """Build the shared weekly data for the JSON grid and spreadsheet."""
+        query = JournalQuerySerializer(data=query_params)
         query.is_valid(raise_exception=True)
         assignment = get_object_or_404(
             self.assignments().select_related('group', 'subject', 'teacher'),
@@ -223,7 +233,7 @@ class JournalGridView(JournalView):
 
         assignment_details = assignment_data(assignment)
         assignment_details.pop('teacher_id')
-        return Response({
+        return {
             'assignment': assignment_details,
             'week_start': start.isoformat(),
             'week_end': end.isoformat(),
@@ -246,7 +256,7 @@ class JournalGridView(JournalView):
                 }
                 for student in students
             ],
-        })
+        }
 
 
 class JournalCellView(JournalView):

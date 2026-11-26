@@ -12,7 +12,17 @@ from .views import (
 
 from .journal import JournalAssignmentsView, JournalCellView, JournalGradeHistoryView, JournalGridView
 
+from .homework import HomeworkSubmissionsView, HomeworkSubmissionReviewView
+from .journal_export import JournalExportView
+
 urlpatterns = [
+    path('homework/submissions/', HomeworkSubmissionsView.as_view(), name='homework-submissions'),
+    path(
+        'homework/submissions/<int:submission_id>/review/',
+        HomeworkSubmissionReviewView.as_view(),
+        name='homework-submission-review',
+    ),
+    path('journal/export/', JournalExportView.as_view(), name='journal-export'),
     path('journal/assignments/', JournalAssignmentsView.as_view(), name='journal-assignments'),
     path('journal/', JournalGridView.as_view(), name='journal-grid'),
     path('journal/cell/', JournalCellView.as_view(), name='journal-cell'),
