@@ -2698,3 +2698,14 @@ class HomeworkReviewQueueView(LoginRequiredMixin, TemplateView):
             messages.warning(request, 'Очередь проверки ДЗ доступна только преподавателям и администраторам.')
             return redirect('frontend-homework')
         return super().dispatch(request, *args, **kwargs)
+
+
+class QRCheckinView(LoginRequiredMixin, TemplateView):
+    """Mobile-friendly student QR attendance check-in page."""
+
+    template_name = 'frontend/qr_checkin.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['qr_token'] = self.kwargs.get('token', '')
+        return context

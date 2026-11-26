@@ -75,6 +75,7 @@ from .views import (
     NotificationMarkAllReadView,
     InteractiveJournalView,
     HomeworkReviewQueueView,
+    QRCheckinView,
 )
 
 urlpatterns = [
@@ -141,6 +142,7 @@ urlpatterns = [
     path('grades/report/excel/', GradeSummaryExcelExportView.as_view(), name='frontend-grade-summary-excel'),
 
     path('attendance/export/excel/', AttendanceExportExcelView.as_view(), name='frontend-attendance-export-excel'),
+    path('attendance/qr/checkin/<str:token>/', QRCheckinView.as_view(), name='frontend-qr-checkin'),
 
     path('notifications/', NotificationListView.as_view(), name='frontend-notifications'),
     path('notifications/<int:pk>/read/', NotificationMarkReadView.as_view(), name='frontend-notification-read'),
