@@ -435,6 +435,36 @@
         color: var(--muted-color);
         font-size: 14px;
     }
+
+    @media (max-width: 640px) {
+        .ij-select {
+            min-width: 0;
+            width: 100%;
+        }
+
+        .ij-col-student {
+            min-width: 150px;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .ij-modal-backdrop {
+            align-items: flex-end;
+            padding: 0;
+        }
+
+        .ij-modal {
+            max-width: 100%;
+            border-radius: 20px 20px 0 0;
+            max-height: 88vh;
+            padding: 18px 16px 24px;
+        }
+
+        .ij-pick-btn {
+            flex: 1 1 auto;
+            text-align: center;
+            padding: 10px 10px;
+        }
+    }
 </style>
 
 <div class="ij-header">
@@ -1034,8 +1064,12 @@
         if (e.target === $('ij-modal-backdrop')) closeCellModal();
     });
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && $('ij-modal-backdrop').classList.contains('is-open')) {
+        if (!$('ij-modal-backdrop').classList.contains('is-open')) return;
+        if (e.key === 'Escape') {
             closeCellModal();
+        } else if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT') {
+            e.preventDefault();
+            saveCellModal();
         }
     });
 
