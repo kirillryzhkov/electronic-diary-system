@@ -42,6 +42,197 @@
     </div>
 </div>
 
+<!-- Analytics Overview Widget -->
+<div class="card" id="analytics-card" style="margin-top: 22px;">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;">
+        <h2 style="margin:0;">{% trans "Аналитика и контроль" %}</h2>
+        <div class="actions">
+            {% if user.role == 'teacher' or user.role == 'admin' %}
+                <a href="{% url 'frontend-interactive-journal' %}" class="btn btn-small">{% trans "Интерактивный журнал" %}</a>
+                <a href="{% url 'frontend-homework-review-queue' %}" class="btn btn-secondary btn-small">
+                    {% trans "Очередь ДЗ" %} (<span id="an-pending-hw-badge">0</span>)
+                </a>
+            {% else %}
+                <a href="{% url 'profile' %}" class="btn btn-secondary btn-small">{% trans "Уведомления в Telegram" %}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="an-summary-grid" class="grid" style="margin-bottom:18px;"></div>
+
+    <div id="an-risk-section" style="display:none;margin-bottom:18px;">
+        <h3 style="font-size:15px;margin:0 0 10px 0;">{% trans "Студенты в группе риска" %}</h3>
+        <div id="an-risk-container"></div>
+    </div>
+
+    <div id="an-subjects-section" style="display:none;">
+        <h3 style="font-size:15px;margin:0 0 10px 0;">{% trans "Средний балл по предметам" %}</h3>
+        <div id="an-subjects-container" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+
+    <div id="an-loading" style="font-size:13px;color:var(--muted-color);">{% trans "Загрузка аналитики..." %}</div>
+</div>
+
+<script>
+(function () {
+    const $ = (id) => document.getElementById(id);
+
+    function createStatBox(label, value, highlightColor) {
+        const box = document.createElement('div');
+        box.style.background = 'var(--bg-color)';
+        box.style.border = '1px solid var(--border-color)';
+        box.style.borderRadius = '12px';
+        box.style.padding = '14px';
+
+        const t = document.createElement('div');
+        t.style.fontSize = '12px';
+        t.style.color = 'var(--muted-color)';
+        t.textContent = label;
+
+        const v = document.createElement('div');
+        v.style.fontSize = '24px';
+        v.style.fontWeight = '800';
+        v.style.marginTop = '4px';
+        if (highlightColor) v.style.color = highlightColor;
+        v.textContent = value;
+
+        box.appendChild(t);
+        box.appendChild(v);
+        return box;
+    }
+
+    function renderSubjects(subjects) {
+        const sec = $('an-subjects-section');
+        const box = $('an-subjects-container');
+        box.innerHTML = '';
+        if (!subjects || !subjects.length) {
+            sec.style.display = 'none';
+            return;
+        }
+        sec.style.display = 'block';
+        subjects.forEach((s) => {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.flexDirection = 'column';
+            row.style.gap = '4px';
+
+            const head = document.createElement('div');
+            head.style.display = 'flex';
+            head.style.justifyContent = 'space-between';
+            head.style.fontSize = '13px';
+
+            const name = document.createElement('span');
+            name.style.fontWeight = '600';
+            name.textContent = s.subject_name;
+
+            const val = document.createElement('span');
+            val.style.color = 'var(--muted-color)';
+            val.textContent = s.avg_grade !== null && s.avg_grade !== undefined
+                ? `${Number(s.avg_grade).toFixed(2)} (${s.grades_count} оц.)`
+                : '—';
+
+            head.appendChild(name);
+            head.appendChild(val);
+
+            const track = document.createElement('div');
+            track.style.height = '8px';
+            track.style.borderRadius = '999px';
+            track.style.background = 'var(--bg-color)';
+            track.style.overflow = 'hidden';
+
+            const fill = document.createElement('div');
+            const pct = s.avg_grade ? Math.min(100, Math.max(0, (Number(s.avg_grade) / 5) * 100)) : 0;
+            fill.style.width = `${pct}%`;
+            fill.style.height = '100%';
+            fill.style.background = pct >= 80 ? '#16a34a' : (pct >= 70 ? '#2563eb' : '#ef4444');
+            track.appendChild(fill);
+
+            row.appendChild(head);
+            row.appendChild(track);
+            box.appendChild(row);
+        });
+    }
+
+    function renderRiskStudents(list) {
+        const sec = $('an-risk-section');
+        const box = $('an-risk-container');
+        box.innerHTML = '';
+        sec.style.display = 'block';
+        if (!list || !list.length) {
+            const ok = document.createElement('div');
+            ok.style.fontSize = '13px';
+            ok.style.color = '#16a34a';
+            ok.textContent = 'Студентов в группе риска сейчас нет.';
+            box.appendChild(ok);
+            return;
+        }
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        const trH = document.createElement('tr');
+        ['Студент', 'Группа', 'Ср. балл', 'Посещаемость', 'Причины'].forEach((h) => {
+            const th = document.createElement('th');
+            th.textContent = h;
+            trH.appendChild(th);
+        });
+        thead.appendChild(trH);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        list.forEach((st) => {
+            const tr = document.createElement('tr');
+            const vals = [
+                st.student_name,
+                st.group_name || '—',
+                st.avg_grade !== null && st.avg_grade !== undefined ? Number(st.avg_grade).toFixed(2) : '—',
+                st.attendance_rate !== null && st.attendance_rate !== undefined ? `${Math.round(Number(st.attendance_rate))}%` : '—',
+                (st.reasons || []).join(', ') || '—',
+            ];
+            vals.forEach((txt) => {
+                const td = document.createElement('td');
+                td.textContent = txt;
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        box.appendChild(table);
+    }
+
+    async function loadAnalytics() {
+        try {
+            const res = await fetch('/api/v1/analytics/overview/', { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Аналитика недоступна (${res.status})`);
+            const data = await res.json();
+            $('an-loading').style.display = 'none';
+
+            const grid = $('an-summary-grid');
+            grid.innerHTML = '';
+            const s = data.summary || {};
+
+            if (data.role === 'student') {
+                grid.appendChild(createStatBox('Мой средний балл', s.avg_grade !== null && s.avg_grade !== undefined ? Number(s.avg_grade).toFixed(2) : '—'));
+                grid.appendChild(createStatBox('Посещаемость', s.attendance_rate !== null && s.attendance_rate !== undefined ? `${Math.round(Number(s.attendance_rate))}%` : '—'));
+                grid.appendChild(createStatBox('Новых уведомлений', String(s.unread_notifications ?? 0)));
+                grid.appendChild(createStatBox('ДЗ к сдаче', String(s.pending_homework ?? 0)));
+            } else {
+                const hwBadge = $('an-pending-hw-badge');
+                if (hwBadge) hwBadge.textContent = String(s.pending_homework ?? 0);
+                grid.appendChild(createStatBox('Студентов', String(s.students_count ?? 0)));
+                grid.appendChild(createStatBox('Группа риска', String(s.risk_count ?? 0), (s.risk_count || 0) > 0 ? '#ef4444' : '#16a34a'));
+                grid.appendChild(createStatBox('ДЗ на проверке', String(s.pending_homework ?? 0)));
+                grid.appendChild(createStatBox('Средний балл', s.avg_grade !== null && s.avg_grade !== undefined ? Number(s.avg_grade).toFixed(2) : '—'));
+                renderRiskStudents(data.risk_students || []);
+            }
+            renderSubjects(data.subjects || []);
+        } catch (err) {
+            $('an-loading').textContent = err.message;
+        }
+    }
+
+    loadAnalytics();
+})();
+</script>
+
 <div class="card">
     <h2>{% trans "Последние оценки" %}</h2>
 
