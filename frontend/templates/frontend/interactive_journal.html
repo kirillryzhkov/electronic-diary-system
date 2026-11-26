@@ -1,0 +1,968 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Интерактивный журнал" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<style>
+    .ij-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .ij-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-bottom: 18px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .ij-select {
+        min-width: 280px;
+        flex: 1 1 280px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--input-text);
+        font-size: 14px;
+    }
+
+    .ij-week-nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .ij-week-label {
+        font-size: 14px;
+        font-weight: 700;
+        padding: 0 8px;
+        min-width: 170px;
+        text-align: center;
+    }
+
+    .ij-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 12px;
+        color: var(--muted-color);
+        margin-bottom: 14px;
+        align-items: center;
+    }
+
+    .ij-legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .ij-table-wrap {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        box-shadow: 0 8px 24px var(--shadow-color);
+        overflow-x: auto;
+    }
+
+    .ij-table {
+        width: 100%;
+        min-width: 780px;
+        border-collapse: collapse;
+    }
+
+    .ij-table th,
+    .ij-table td {
+        border-bottom: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .ij-table th:last-child,
+    .ij-table td:last-child {
+        border-right: none;
+    }
+
+    .ij-table thead th {
+        background: var(--table-head-bg);
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .ij-th-lesson {
+        background: var(--primary-soft) !important;
+        border-bottom: 2px solid var(--primary) !important;
+    }
+
+    .ij-lesson-time {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--muted-color);
+        margin-top: 2px;
+    }
+
+    .ij-col-student {
+        text-align: left !important;
+        min-width: 210px;
+        position: sticky;
+        left: 0;
+        background: var(--card-bg);
+        z-index: 2;
+        font-weight: 600;
+    }
+
+    .ij-table thead .ij-col-student {
+        background: var(--table-head-bg);
+        z-index: 3;
+    }
+
+    .ij-student-sub {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--muted-color);
+        margin-top: 2px;
+    }
+
+    .ij-cell {
+        cursor: pointer;
+        min-width: 92px;
+        height: 58px;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+        position: relative;
+    }
+
+    .ij-cell:hover {
+        background: var(--table-hover-bg);
+        box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    .ij-cell-lesson {
+        background: rgba(37, 99, 235, 0.04);
+    }
+
+    .ij-cell-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 34px;
+    }
+
+    .ij-cell-empty {
+        color: var(--muted-color);
+        opacity: 0.35;
+        font-size: 16px;
+        user-select: none;
+    }
+
+    .ij-grade-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 28px;
+        padding: 0 7px;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 14px;
+        position: relative;
+    }
+
+    .ij-grade-5 { background: rgba(22, 163, 74, 0.18); color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.4); }
+    .ij-grade-4 { background: rgba(37, 99, 235, 0.18); color: #3b82f6; border: 1px solid rgba(37, 99, 235, 0.4); }
+    .ij-grade-3 { background: rgba(217, 119, 6, 0.18); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.4); }
+    .ij-grade-2,
+    .ij-grade-1 { background: rgba(220, 38, 38, 0.18); color: #ef4444; border: 1px solid rgba(220, 38, 38, 0.4); }
+
+    .ij-audit-dot {
+        position: absolute;
+        top: -3px;
+        right: -3px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #f59e0b;
+        border: 1.5px solid var(--card-bg);
+    }
+
+    .ij-att-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 5px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .ij-att-present { background: rgba(22, 163, 74, 0.14); color: #16a34a; }
+    .ij-att-absent { background: rgba(220, 38, 38, 0.16); color: #ef4444; }
+    .ij-att-late { background: rgba(217, 119, 6, 0.16); color: #d97706; }
+    .ij-att-excused { background: rgba(107, 114, 128, 0.18); color: var(--muted-color); }
+
+    .ij-stat-col {
+        font-weight: 700;
+        font-size: 13px;
+        white-space: nowrap;
+        min-width: 78px;
+    }
+
+    /* Modal */
+    .ij-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.62);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .ij-modal-backdrop.is-open {
+        display: flex;
+    }
+
+    .ij-modal {
+        background: var(--card-bg);
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 520px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 22px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .ij-modal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .ij-modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .ij-modal-sub {
+        font-size: 12px;
+        color: var(--muted-color);
+        margin-top: 4px;
+    }
+
+    .ij-close-btn {
+        background: transparent;
+        border: none;
+        color: var(--muted-color);
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 4px;
+    }
+
+    .ij-section {
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .ij-section-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--muted-color);
+        margin: 0 0 10px 0;
+    }
+
+    .ij-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .ij-pick-btn {
+        padding: 8px 13px;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .ij-pick-btn:hover {
+        border-color: var(--primary);
+    }
+
+    .ij-pick-btn.is-active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+    }
+
+    .ij-input {
+        width: 100%;
+        padding: 9px 11px;
+        border-radius: 9px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--input-text);
+        font-size: 13px;
+        font-family: inherit;
+    }
+
+    .ij-field-label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted-color);
+        margin: 8px 0 4px 0;
+    }
+
+    .ij-history-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    .ij-history-item {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 9px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .ij-history-meta {
+        color: var(--muted-color);
+        font-size: 11px;
+        margin-top: 2px;
+    }
+
+    .ij-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 14px;
+    }
+
+    .ij-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 3000;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #111827;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        font-size: 13px;
+        display: none;
+    }
+
+    .ij-toast.is-error {
+        background: #991b1b;
+    }
+
+    .ij-empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--muted-color);
+        font-size: 14px;
+    }
+</style>
+
+<div class="ij-header">
+    <div>
+        <h1 class="page-title" style="margin-bottom: 4px;">{% trans "Интерактивный журнал" %}</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">
+            {% trans "Отмечайте посещаемость и оценки прямо в сетке недели. Посещаемость и балл хранятся раздельно, а все правки оценок пишутся в историю." %}
+        </p>
+    </div>
+    <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary btn-small">
+        {% trans "Классический список оценок" %}
+    </a>
+</div>
+
+<div class="ij-controls">
+    <select id="ij-assignment-select" class="ij-select" aria-label="{% trans 'Назначение' %}">
+        <option value="">{% trans "Загрузка назначений..." %}</option>
+    </select>
+
+    <div class="ij-week-nav">
+        <button type="button" id="ij-prev-week" class="btn btn-secondary btn-small">&larr; {% trans "Пред." %}</button>
+        <span id="ij-week-label" class="ij-week-label">—</span>
+        <button type="button" id="ij-today-week" class="btn btn-secondary btn-small">{% trans "Текущая" %}</button>
+        <button type="button" id="ij-next-week" class="btn btn-secondary btn-small">{% trans "След." %} &rarr;</button>
+    </div>
+</div>
+
+<div class="ij-legend">
+    <span class="ij-legend-item"><span class="ij-att-badge ij-att-present">П</span> {% trans "Присутствовал" %}</span>
+    <span class="ij-legend-item"><span class="ij-att-badge ij-att-absent">Н</span> {% trans "Отсутствовал" %}</span>
+    <span class="ij-legend-item"><span class="ij-att-badge ij-att-late">О</span> {% trans "Опоздал" %}</span>
+    <span class="ij-legend-item"><span class="ij-att-badge ij-att-excused">У</span> {% trans "Уважительная" %}</span>
+    <span class="ij-legend-item"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;"></span> {% trans "Есть история правок оценки" %}</span>
+</div>
+
+<div class="ij-table-wrap">
+    <div id="ij-grid-container" class="ij-empty-state">{% trans "Загрузка журнала..." %}</div>
+</div>
+
+<!-- Cell Editor Modal -->
+<div id="ij-modal-backdrop" class="ij-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="ij-modal">
+        <div class="ij-modal-head">
+            <div>
+                <h2 id="ij-modal-title" class="ij-modal-title">Студент</h2>
+                <div id="ij-modal-sub" class="ij-modal-sub">Дата • Предмет</div>
+            </div>
+            <button type="button" id="ij-modal-close" class="ij-close-btn" aria-label="Закрыть">&times;</button>
+        </div>
+
+        <div class="ij-section">
+            <h3 class="ij-section-title">{% trans "Посещаемость" %}</h3>
+            <div id="ij-att-buttons" class="ij-btn-group">
+                <button type="button" class="ij-pick-btn" data-att="present">П — Присутствовал</button>
+                <button type="button" class="ij-pick-btn" data-att="absent">Н — Отсутствовал</button>
+                <button type="button" class="ij-pick-btn" data-att="late">О — Опоздал</button>
+                <button type="button" class="ij-pick-btn" data-att="excused">У — Уважит.</button>
+                <button type="button" class="ij-pick-btn" data-att="">Сбросить</button>
+            </div>
+            <label class="ij-field-label" for="ij-att-comment">{% trans "Комментарий к посещаемости" %}</label>
+            <input id="ij-att-comment" type="text" class="ij-input" placeholder="Например: справка или опоздание 10 мин" />
+        </div>
+
+        <div class="ij-section">
+            <h3 class="ij-section-title">{% trans "Оценка за занятие" %}</h3>
+            <div id="ij-grade-buttons" class="ij-btn-group">
+                <button type="button" class="ij-pick-btn" data-grade="5">5</button>
+                <button type="button" class="ij-pick-btn" data-grade="4">4</button>
+                <button type="button" class="ij-pick-btn" data-grade="3">3</button>
+                <button type="button" class="ij-pick-btn" data-grade="2">2</button>
+                <button type="button" class="ij-pick-btn" data-grade="1">1</button>
+                <button type="button" class="ij-pick-btn" data-grade="">Без оценки</button>
+            </div>
+            <label class="ij-field-label" for="ij-grade-comment">{% trans "Комментарий к оценке" %}</label>
+            <input id="ij-grade-comment" type="text" class="ij-input" placeholder="Например: ответ у доски / лабораторная" />
+
+            <div id="ij-audit-reason-wrap" style="display: none;">
+                <label class="ij-field-label" for="ij-audit-reason">{% trans "Причина правки оценки (запишется в аудит)" %}</label>
+                <input id="ij-audit-reason" type="text" class="ij-input" placeholder="Например: пересдача или уточнение работы" />
+            </div>
+        </div>
+
+        <div id="ij-history-section" class="ij-section" style="display: none;">
+            <h3 class="ij-section-title">{% trans "История правок оценки" %}</h3>
+            <div id="ij-history-list" class="ij-history-list"></div>
+        </div>
+
+        <div class="ij-modal-footer">
+            <button type="button" id="ij-modal-cancel" class="btn btn-secondary btn-small">{% trans "Отмена" %}</button>
+            <button type="button" id="ij-modal-save" class="btn btn-small">{% trans "Сохранить" %}</button>
+        </div>
+    </div>
+</div>
+
+<div id="ij-toast" class="ij-toast"></div>
+
+<script>
+(function () {
+    const state = {
+        assignments: [],
+        assignmentId: null,
+        weekStart: null,
+        journal: null,
+        modal: {
+            studentId: null,
+            date: null,
+            existingGradeId: null,
+            initialGradeValue: null,
+            initialGradeComment: '',
+            initialAttStatus: null,
+            initialAttComment: '',
+            selectedAtt: null,
+            selectedGrade: null,
+            attTouched: false,
+            gradeTouched: false,
+        },
+    };
+
+    const ATT_SHORT = { present: 'П', absent: 'Н', late: 'О', excused: 'У' };
+
+    const $ = (id) => document.getElementById(id);
+
+    function getCsrfToken() {
+        const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function showToast(msg, isError = false) {
+        const el = $('ij-toast');
+        el.textContent = msg;
+        el.classList.toggle('is-error', isError);
+        el.style.display = 'block';
+        clearTimeout(el._t);
+        el._t = setTimeout(() => { el.style.display = 'none'; }, 3500);
+    }
+
+    function formatDateRu(iso) {
+        if (!iso || iso.length < 10) return iso || '';
+        const [y, m, d] = iso.slice(0, 10).split('-');
+        return `${d}.${m}.${y}`;
+    }
+
+    function formatDateTimeRu(iso) {
+        if (!iso) return '';
+        const dt = new Date(iso);
+        if (Number.isNaN(dt.getTime())) return iso;
+        return dt.toLocaleString('ru-RU', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+        });
+    }
+
+    async function loadAssignments() {
+        const sel = $('ij-assignment-select');
+        try {
+            const res = await fetch('/api/v1/journal/assignments/', { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(`Ошибка загрузки назначений (${res.status})`);
+            const data = await res.json();
+            state.assignments = data.assignments || [];
+            sel.innerHTML = '';
+            if (!state.assignments.length) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Нет доступных назначений';
+                sel.appendChild(opt);
+                $('ij-grid-container').textContent = 'У вас пока нет назначений (группа + предмет).';
+                return;
+            }
+            const savedId = Number(localStorage.getItem('ij.assignmentId')) || null;
+            state.assignments.forEach((a) => {
+                const opt = document.createElement('option');
+                opt.value = String(a.id);
+                opt.textContent = `${a.group_name} — ${a.subject_name} (${a.teacher_name})`;
+                sel.appendChild(opt);
+            });
+            const initial = state.assignments.some((a) => a.id === savedId)
+                ? savedId
+                : state.assignments[0].id;
+            state.assignmentId = initial;
+            sel.value = String(initial);
+            await loadJournal();
+        } catch (err) {
+            $('ij-grid-container').textContent = err.message;
+            showToast(err.message, true);
+        }
+    }
+
+    async function loadJournal() {
+        if (!state.assignmentId) return;
+        const params = new URLSearchParams({ assignment_id: String(state.assignmentId) });
+        if (state.weekStart) params.set('week_start', state.weekStart);
+
+        const box = $('ij-grid-container');
+        box.textContent = 'Загрузка журнала...';
+
+        try {
+            const res = await fetch('/api/v1/journal/?' + params.toString(), { credentials: 'same-origin' });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.detail || `Ошибка загрузки журнала (${res.status})`);
+            }
+            state.journal = await res.json();
+            state.weekStart = state.journal.week_start;
+            $('ij-week-label').textContent = `${formatDateRu(state.journal.week_start)} — ${formatDateRu(state.journal.week_end)}`;
+            renderGrid();
+        } catch (err) {
+            box.textContent = err.message;
+            showToast(err.message, true);
+        }
+    }
+
+    function renderCellContent(td, cell) {
+        td.innerHTML = '';
+        const wrap = document.createElement('div');
+        wrap.className = 'ij-cell-inner';
+
+        const grade = cell && cell.grade;
+        const att = cell && cell.attendance;
+
+        if (!grade && !att) {
+            const dash = document.createElement('span');
+            dash.className = 'ij-cell-empty';
+            dash.textContent = '·';
+            wrap.appendChild(dash);
+        } else {
+            if (grade && grade.value !== null && grade.value !== undefined) {
+                const gEl = document.createElement('span');
+                gEl.className = `ij-grade-badge ij-grade-${grade.value}`;
+                gEl.textContent = String(grade.value);
+                if (grade.comment) gEl.title = grade.comment;
+                if (grade.audit_count > 0) {
+                    const dot = document.createElement('span');
+                    dot.className = 'ij-audit-dot';
+                    dot.title = `Правок оценки: ${grade.audit_count}`;
+                    gEl.appendChild(dot);
+                }
+                wrap.appendChild(gEl);
+            }
+            if (att && att.status) {
+                const aEl = document.createElement('span');
+                aEl.className = `ij-att-badge ij-att-${att.status}`;
+                aEl.textContent = ATT_SHORT[att.status] || att.status;
+                if (att.comment) aEl.title = att.comment;
+                wrap.appendChild(aEl);
+            }
+        }
+        td.appendChild(wrap);
+    }
+
+    function renderGrid() {
+        const box = $('ij-grid-container');
+        const j = state.journal;
+        if (!j || !j.students || !j.students.length) {
+            box.textContent = 'В этой группе пока нет студентов.';
+            return;
+        }
+
+        const table = document.createElement('table');
+        table.className = 'ij-table';
+
+        const thead = document.createElement('thead');
+        const trHead = document.createElement('tr');
+
+        const thStudent = document.createElement('th');
+        thStudent.className = 'ij-col-student';
+        thStudent.textContent = `Студент (${j.students.length})`;
+        trHead.appendChild(thStudent);
+
+        (j.dates || []).forEach((d) => {
+            const th = document.createElement('th');
+            if (d.has_lesson) th.classList.add('ij-th-lesson');
+            th.textContent = d.label || formatDateRu(d.date);
+            if (d.lesson_time) {
+                const tSpan = document.createElement('span');
+                tSpan.className = 'ij-lesson-time';
+                tSpan.textContent = d.lesson_time;
+                th.appendChild(tSpan);
+            }
+            trHead.appendChild(th);
+        });
+
+        const thAvg = document.createElement('th');
+        thAvg.textContent = 'Ср. балл';
+        trHead.appendChild(thAvg);
+
+        const thAtt = document.createElement('th');
+        thAtt.textContent = 'Посещ.';
+        trHead.appendChild(thAtt);
+
+        thead.appendChild(trHead);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        j.students.forEach((st) => {
+            const tr = document.createElement('tr');
+            tr.dataset.studentId = String(st.id);
+
+            const tdName = document.createElement('td');
+            tdName.className = 'ij-col-student';
+            tdName.textContent = st.full_name || st.username;
+            if (st.full_name && st.username) {
+                const sub = document.createElement('span');
+                sub.className = 'ij-student-sub';
+                sub.textContent = st.username;
+                tdName.appendChild(sub);
+            }
+            tr.appendChild(tdName);
+
+            (j.dates || []).forEach((d) => {
+                const td = document.createElement('td');
+                td.className = 'ij-cell' + (d.has_lesson ? ' ij-cell-lesson' : '');
+                td.dataset.studentId = String(st.id);
+                td.dataset.date = d.date;
+                const cell = (st.cells && st.cells[d.date]) || { attendance: null, grade: null };
+                renderCellContent(td, cell);
+                td.addEventListener('click', () => openCellModal(st, d.date));
+                tr.appendChild(td);
+            });
+
+            const tdAvg = document.createElement('td');
+            tdAvg.className = 'ij-stat-col';
+            tdAvg.dataset.statAvg = String(st.id);
+            tdAvg.textContent = st.avg_grade !== null && st.avg_grade !== undefined
+                ? Number(st.avg_grade).toFixed(2)
+                : '—';
+            tr.appendChild(tdAvg);
+
+            const tdAttRate = document.createElement('td');
+            tdAttRate.className = 'ij-stat-col';
+            tdAttRate.dataset.statAtt = String(st.id);
+            tdAttRate.textContent = st.attendance_rate !== null && st.attendance_rate !== undefined
+                ? `${Math.round(Number(st.attendance_rate))}%`
+                : '—';
+            tr.appendChild(tdAttRate);
+
+            tbody.appendChild(tr);
+        });
+
+        table.appendChild(tbody);
+        box.innerHTML = '';
+        box.appendChild(table);
+    }
+
+    function updatePickerHighlights() {
+        document.querySelectorAll('#ij-att-buttons .ij-pick-btn').forEach((btn) => {
+            const val = btn.dataset.att;
+            const cur = state.modal.selectedAtt === null ? '' : state.modal.selectedAtt;
+            btn.classList.toggle('is-active', val === cur);
+        });
+        document.querySelectorAll('#ij-grade-buttons .ij-pick-btn').forEach((btn) => {
+            const val = btn.dataset.grade;
+            const cur = state.modal.selectedGrade === null ? '' : String(state.modal.selectedGrade);
+            btn.classList.toggle('is-active', val === cur);
+        });
+    }
+
+    async function loadGradeHistory(gradeId) {
+        const sec = $('ij-history-section');
+        const list = $('ij-history-list');
+        if (!gradeId) {
+            sec.style.display = 'none';
+            list.innerHTML = '';
+            return;
+        }
+        sec.style.display = 'block';
+        list.textContent = 'Загрузка истории...';
+        try {
+            const res = await fetch(`/api/v1/journal/grades/${gradeId}/history/`, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error('Не удалось загрузить историю');
+            const data = await res.json();
+            const items = data.history || [];
+            list.innerHTML = '';
+            if (!items.length) {
+                const empty = document.createElement('div');
+                empty.className = 'ij-history-meta';
+                empty.textContent = 'Оценка ещё не изменялась.';
+                list.appendChild(empty);
+                return;
+            }
+            items.forEach((h) => {
+                const item = document.createElement('div');
+                item.className = 'ij-history-item';
+                const line = document.createElement('div');
+                const oldV = h.old_value ?? '—';
+                const newV = h.new_value ?? 'удалена';
+                line.textContent = `${oldV} → ${newV}` + (h.reason ? ` • ${h.reason}` : '');
+                const meta = document.createElement('div');
+                meta.className = 'ij-history-meta';
+                meta.textContent = `${h.changed_by_name || 'Система'} • ${formatDateTimeRu(h.changed_at)}`;
+                item.appendChild(line);
+                item.appendChild(meta);
+                list.appendChild(item);
+            });
+        } catch (err) {
+            list.textContent = err.message;
+        }
+    }
+
+    function openCellModal(student, dateStr) {
+        const cell = (student.cells && student.cells[dateStr]) || { attendance: null, grade: null };
+        const att = cell.attendance;
+        const grade = cell.grade;
+
+        state.modal = {
+            studentId: student.id,
+            date: dateStr,
+            existingGradeId: grade ? grade.id : null,
+            initialGradeValue: grade ? grade.value : null,
+            initialGradeComment: (grade && grade.comment) || '',
+            initialAttStatus: att ? att.status : '',
+            initialAttComment: (att && att.comment) || '',
+            selectedAtt: att ? att.status : '',
+            selectedGrade: grade ? grade.value : null,
+            attTouched: false,
+            gradeTouched: false,
+        };
+
+        $('ij-modal-title').textContent = student.full_name || student.username;
+        const subj = state.journal?.assignment?.subject_name || '';
+        $('ij-modal-sub').textContent = `${formatDateRu(dateStr)} • ${subj}`;
+        $('ij-att-comment').value = state.modal.initialAttComment;
+        $('ij-grade-comment').value = state.modal.initialGradeComment;
+        $('ij-audit-reason').value = '';
+        $('ij-audit-reason-wrap').style.display = state.modal.existingGradeId ? 'block' : 'none';
+
+        updatePickerHighlights();
+        loadGradeHistory(state.modal.existingGradeId);
+        $('ij-modal-backdrop').classList.add('is-open');
+    }
+
+    function closeCellModal() {
+        $('ij-modal-backdrop').classList.remove('is-open');
+    }
+
+    async function saveCellModal() {
+        const m = state.modal;
+        const payload = {
+            assignment_id: state.assignmentId,
+            student_id: m.studentId,
+            date: m.date,
+        };
+
+        const attComment = $('ij-att-comment').value.trim();
+        const gradeComment = $('ij-grade-comment').value.trim();
+        const auditReason = $('ij-audit-reason').value.trim();
+
+        if (m.attTouched || attComment !== m.initialAttComment) {
+            payload.attendance_status = m.selectedAtt || '';
+            payload.attendance_comment = attComment;
+        }
+
+        if (m.gradeTouched || gradeComment !== m.initialGradeComment || auditReason) {
+            payload.grade_value = m.selectedGrade;
+            payload.grade_comment = gradeComment;
+            if (auditReason) payload.audit_reason = auditReason;
+        }
+
+        const saveBtn = $('ij-modal-save');
+        saveBtn.disabled = true;
+        try {
+            const res = await fetch('/api/v1/journal/cell/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || `Ошибка сохранения (${res.status})`);
+
+            const st = (state.journal.students || []).find((s) => s.id === m.studentId);
+            if (st) {
+                if (!st.cells) st.cells = {};
+                st.cells[m.date] = data.cell;
+                st.avg_grade = data.avg_grade;
+                st.attendance_rate = data.attendance_rate;
+            }
+
+            const td = document.querySelector(`td.ij-cell[data-student-id="${m.studentId}"][data-date="${m.date}"]`);
+            if (td) renderCellContent(td, data.cell);
+
+            const tdAvg = document.querySelector(`td[data-stat-avg="${m.studentId}"]`);
+            if (tdAvg) {
+                tdAvg.textContent = data.avg_grade !== null && data.avg_grade !== undefined
+                    ? Number(data.avg_grade).toFixed(2)
+                    : '—';
+            }
+            const tdAtt = document.querySelector(`td[data-stat-att="${m.studentId}"]`);
+            if (tdAtt) {
+                tdAtt.textContent = data.attendance_rate !== null && data.attendance_rate !== undefined
+                    ? `${Math.round(Number(data.attendance_rate))}%`
+                    : '—';
+            }
+
+            closeCellModal();
+            showToast('Ячейка сохранена');
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            saveBtn.disabled = false;
+        }
+    }
+
+    // Event bindings
+    $('ij-assignment-select').addEventListener('change', (e) => {
+        state.assignmentId = Number(e.target.value) || null;
+        if (state.assignmentId) localStorage.setItem('ij.assignmentId', String(state.assignmentId));
+        loadJournal();
+    });
+
+    $('ij-prev-week').addEventListener('click', () => {
+        if (state.journal?.prev_week) {
+            state.weekStart = state.journal.prev_week;
+            loadJournal();
+        }
+    });
+
+    $('ij-next-week').addEventListener('click', () => {
+        if (state.journal?.next_week) {
+            state.weekStart = state.journal.next_week;
+            loadJournal();
+        }
+    });
+
+    $('ij-today-week').addEventListener('click', () => {
+        state.weekStart = null;
+        loadJournal();
+    });
+
+    document.querySelectorAll('#ij-att-buttons .ij-pick-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            state.modal.selectedAtt = btn.dataset.att;
+            state.modal.attTouched = true;
+            updatePickerHighlights();
+        });
+    });
+
+    document.querySelectorAll('#ij-grade-buttons .ij-pick-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            state.modal.selectedGrade = btn.dataset.grade ? Number(btn.dataset.grade) : null;
+            state.modal.gradeTouched = true;
+            updatePickerHighlights();
+        });
+    });
+
+    $('ij-modal-close').addEventListener('click', closeCellModal);
+    $('ij-modal-cancel').addEventListener('click', closeCellModal);
+    $('ij-modal-save').addEventListener('click', saveCellModal);
+    $('ij-modal-backdrop').addEventListener('click', (e) => {
+        if (e.target === $('ij-modal-backdrop')) closeCellModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && $('ij-modal-backdrop').classList.contains('is-open')) {
+            closeCellModal();
+        }
+    });
+
+    loadAssignments();
+})();
+</script>
+{% endblock %}

@@ -2674,3 +2674,15 @@ class NotificationMarkAllReadView(LoginRequiredMixin, View):
         ).update(is_read=True)
 
         return redirect('frontend-notifications')
+
+
+class InteractiveJournalView(LoginRequiredMixin, TemplateView):
+    """Interactive weekly journal matrix with attendance, grades and audit history."""
+
+    template_name = 'frontend/interactive_journal.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and getattr(request.user, 'role', None) not in ('teacher', 'admin'):
+            messages.warning(request, 'Интерактивный журнал доступен только преподавателям и администраторам.')
+            return redirect('frontend-grades')
+        return super().dispatch(request, *args, **kwargs)
