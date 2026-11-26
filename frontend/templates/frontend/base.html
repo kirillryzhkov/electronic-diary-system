@@ -1610,8 +1610,11 @@
                                 </a>
                                 <a href="{% url 'frontend-subjects' %}">{% trans "Предметы" %}</a>
                                 {% if user.role == 'teacher' or user.role == 'admin' %}
+                                    <a href="{% url 'frontend-homework-review-queue' %}">
+                                        {% trans "Очередь проверки ДЗ" %}
+                                    </a>
                                     <a href="{% url 'frontend-homework-submissions' %}">
-                                        {% trans "Проверка ДЗ" %}
+                                        {% trans "Проверка ДЗ (архив)" %}
                                     </a>
                                 {% endif %}
 

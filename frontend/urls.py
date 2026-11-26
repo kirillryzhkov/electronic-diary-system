@@ -74,6 +74,7 @@ from .views import (
     NotificationMarkReadView,
     NotificationMarkAllReadView,
     InteractiveJournalView,
+    HomeworkReviewQueueView,
 )
 
 urlpatterns = [
@@ -129,6 +130,7 @@ urlpatterns = [
     path('homework/<int:pk>/submit/', HomeworkSubmitView.as_view(), name='frontend-homework-submit'),
     path('homework/submissions/', HomeworkSubmissionsListView.as_view(), name='frontend-homework-submissions'),
     path('homework/submissions/<int:pk>/review/', HomeworkSubmissionReviewView.as_view(), name='frontend-homework-submission-review'),
+    path('homework/review-queue/', HomeworkReviewQueueView.as_view(), name='frontend-homework-review-queue'),
 
     path('grades/group-entry/', GroupGradeEntryView.as_view(), name='frontend-group-grade-entry'),
 

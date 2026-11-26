@@ -397,6 +397,38 @@
         background: #991b1b;
     }
 
+    .ij-risk-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        background: rgba(220, 38, 38, 0.16);
+        color: #ef4444;
+        border: 1px solid rgba(220, 38, 38, 0.35);
+        margin-left: 6px;
+        vertical-align: middle;
+    }
+
+    .ij-row-risk .ij-col-student {
+        border-left: 3px solid #ef4444;
+    }
+
+    .ij-risk-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        user-select: none;
+    }
+
     .ij-empty-state {
         padding: 40px 20px;
         text-align: center;
@@ -412,15 +444,28 @@
             {% trans "Отмечайте посещаемость и оценки прямо в сетке недели. Посещаемость и балл хранятся раздельно, а все правки оценок пишутся в историю." %}
         </p>
     </div>
-    <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary btn-small">
-        {% trans "Классический список оценок" %}
-    </a>
+    <div class="actions">
+        <button type="button" id="ij-export-excel" class="btn btn-small">
+            {% trans "Ведомость Excel (.xlsx)" %}
+        </button>
+        <a href="{% url 'frontend-homework-review-queue' %}" class="btn btn-secondary btn-small">
+            {% trans "Очередь проверки ДЗ" %}
+        </a>
+        <a href="{% url 'frontend-grade-journal' %}" class="btn btn-secondary btn-small">
+            {% trans "Список оценок" %}
+        </a>
+    </div>
 </div>
 
 <div class="ij-controls">
     <select id="ij-assignment-select" class="ij-select" aria-label="{% trans 'Назначение' %}">
         <option value="">{% trans "Загрузка назначений..." %}</option>
     </select>
+
+    <label class="ij-risk-toggle">
+        <input type="checkbox" id="ij-risk-only" />
+        <span>{% trans "Группа риска" %} (<span id="ij-risk-count">0</span>)</span>
+    </label>
 
     <div class="ij-week-nav">
         <button type="button" id="ij-prev-week" class="btn btn-secondary btn-small">&larr; {% trans "Пред." %}</button>
@@ -652,11 +697,41 @@
         td.appendChild(wrap);
     }
 
+    function getStudentRiskReasons(st) {
+        const reasons = [];
+        if (st.avg_grade !== null && st.avg_grade !== undefined && Number(st.avg_grade) < 3.5) {
+            reasons.push(`средний балл ${Number(st.avg_grade).toFixed(2)} < 3.5`);
+        }
+        if (st.attendance_rate !== null && st.attendance_rate !== undefined && Number(st.attendance_rate) < 75) {
+            reasons.push(`посещаемость ${Math.round(Number(st.attendance_rate))}% < 75%`);
+        }
+        return reasons;
+    }
+
     function renderGrid() {
         const box = $('ij-grid-container');
         const j = state.journal;
         if (!j || !j.students || !j.students.length) {
+            $('ij-risk-count').textContent = '0';
             box.textContent = 'В этой группе пока нет студентов.';
+            return;
+        }
+
+        const riskOnly = $('ij-risk-only').checked;
+        let riskTotal = 0;
+        const studentsWithRisk = j.students.map((st) => {
+            const reasons = getStudentRiskReasons(st);
+            if (reasons.length) riskTotal += 1;
+            return { st, reasons };
+        });
+        $('ij-risk-count').textContent = String(riskTotal);
+
+        const visible = riskOnly
+            ? studentsWithRisk.filter((item) => item.reasons.length > 0)
+            : studentsWithRisk;
+
+        if (!visible.length) {
+            box.textContent = 'Студентов в группе риска нет.';
             return;
         }
 
@@ -668,7 +743,7 @@
 
         const thStudent = document.createElement('th');
         thStudent.className = 'ij-col-student';
-        thStudent.textContent = `Студент (${j.students.length})`;
+        thStudent.textContent = `Студент (${visible.length})`;
         trHead.appendChild(thStudent);
 
         (j.dates || []).forEach((d) => {
@@ -696,13 +771,21 @@
         table.appendChild(thead);
 
         const tbody = document.createElement('tbody');
-        j.students.forEach((st) => {
+        visible.forEach(({ st, reasons }) => {
             const tr = document.createElement('tr');
             tr.dataset.studentId = String(st.id);
+            if (reasons.length) tr.classList.add('ij-row-risk');
 
             const tdName = document.createElement('td');
             tdName.className = 'ij-col-student';
             tdName.textContent = st.full_name || st.username;
+            if (reasons.length) {
+                const riskBadge = document.createElement('span');
+                riskBadge.className = 'ij-risk-badge';
+                riskBadge.textContent = 'Риск';
+                riskBadge.title = reasons.join(', ');
+                tdName.appendChild(riskBadge);
+            }
             if (st.full_name && st.username) {
                 const sub = document.createElement('span');
                 sub.className = 'ij-student-sub';
@@ -883,22 +966,7 @@
                 st.attendance_rate = data.attendance_rate;
             }
 
-            const td = document.querySelector(`td.ij-cell[data-student-id="${m.studentId}"][data-date="${m.date}"]`);
-            if (td) renderCellContent(td, data.cell);
-
-            const tdAvg = document.querySelector(`td[data-stat-avg="${m.studentId}"]`);
-            if (tdAvg) {
-                tdAvg.textContent = data.avg_grade !== null && data.avg_grade !== undefined
-                    ? Number(data.avg_grade).toFixed(2)
-                    : '—';
-            }
-            const tdAtt = document.querySelector(`td[data-stat-att="${m.studentId}"]`);
-            if (tdAtt) {
-                tdAtt.textContent = data.attendance_rate !== null && data.attendance_rate !== undefined
-                    ? `${Math.round(Number(data.attendance_rate))}%`
-                    : '—';
-            }
-
+            renderGrid();
             closeCellModal();
             showToast('Ячейка сохранена');
         } catch (err) {
@@ -932,6 +1000,15 @@
     $('ij-today-week').addEventListener('click', () => {
         state.weekStart = null;
         loadJournal();
+    });
+
+    $('ij-risk-only').addEventListener('change', () => renderGrid());
+
+    $('ij-export-excel').addEventListener('click', () => {
+        if (!state.assignmentId) return showToast('Сначала выберите назначение', true);
+        const params = new URLSearchParams({ assignment_id: String(state.assignmentId) });
+        if (state.weekStart) params.set('week_start', state.weekStart);
+        window.location.href = '/api/v1/journal/export/?' + params.toString();
     });
 
     document.querySelectorAll('#ij-att-buttons .ij-pick-btn').forEach((btn) => {
