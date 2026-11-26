@@ -1,128 +1,90 @@
 # TASKS.md — Координация разработки (Codex + Antigravity)
 
 Проект: `D:\Projects\electronic-diary-system` (Django 5.1 + DRF)
-Основная ветка: `main` (виртуальное окружение `.venv` и локальная `db.sqlite3` находятся в корневой папке).
+Основная ветка: `main`
 
-## Рабочие директории (`git worktree`)
-- **Codex (`feat/journal-backend`):** `D:\Projects\electronic-diary-system-codex` (файлы: `grades/`, `api/`, `diary_project/settings.py` если нужно)
-- **Antigravity (`feat/journal-ui`):** `D:\Projects\electronic-diary-system-agy` (файлы: `frontend/`)
+## Спринт v1 (Завершён и сведён в `main`)
+- [x] Интерактивный журнал-сетка (`/journal/`), API `/api/v1/journal/*`, `GradeAuditLog`, 18/18 тестов `OK`.
 
 ---
 
-## Согласованный API-контракт (Интерактивный журнал + Аудит оценок)
+## Спринт v2: Проверка ДЗ + связь с журналом + Ведомость Excel + Группа риска
 
-Все эндпоинты под `/api/v1/journal/` поддерживают как `SessionAuthentication` (с CSRF для браузера), так и `JWTAuthentication`.
-Доступ: `admin` (все назначения) и `teacher` (только свои `TeachingAssignment`). `student` получает `403 Forbidden`.
+### Рабочие директории (`git worktree`)
+- **Codex (`feat/v2-backend`):** `D:\Projects\electronic-diary-system-codex` (файлы: `api/`, `grades/`, `academic/` при необходимости)
+- **Antigravity (`feat/v2-frontend`):** `D:\Projects\electronic-diary-system-agy` (файлы: `frontend/`)
 
-### 1. `GET /api/v1/journal/assignments/`
-Возвращает список доступных назначений для селектора:
+### Согласованный API-контракт (Спринт v2)
+
+Все эндпоинты поддерживают `SessionAuthentication` (с CSRF) и `JWTAuthentication`.
+Доступ: `admin` (все назначения), `teacher` (только свои `TeachingAssignment`), `student` → `403 Forbidden`.
+
+#### 1. `GET /api/v1/homework/submissions/?status=submitted|checked|returned|all&assignment_id=<id>`
+Параметры `status` (по умолчанию `submitted`) и `assignment_id` опциональны.
+Ответ (`200 OK`):
 ```json
 {
-  "assignments": [
+  "counts": { "submitted": 3, "checked": 5, "returned": 1, "all": 9 },
+  "submissions": [
     {
       "id": 1,
-      "group_id": 1,
-      "group_name": "ИС-21",
-      "subject_id": 1,
-      "subject_name": "Программирование",
-      "teacher_id": 2,
-      "teacher_name": "Иванов И.И."
+      "homework_id": 2,
+      "homework_title": "Лабораторная №1",
+      "deadline": "2026-11-26",
+      "assignment_id": 1,
+      "group_name": "ИС-31",
+      "subject_name": "Информатика",
+      "student_id": 5,
+      "student_name": "Петров П.П.",
+      "answer_text": "Ответ студента...",
+      "file_url": "/media/homework_submissions/...",
+      "file_name": "lab1.pdf",
+      "submitted_at": "2026-11-26T10:00:00Z",
+      "status": "submitted",
+      "grade_value": null,
+      "teacher_comment": "",
+      "checked_at": null,
+      "grade_id": null
     }
   ]
 }
 ```
 
-### 2. `GET /api/v1/journal/?assignment_id=<id>&week_start=YYYY-MM-DD`
-Если `week_start` не передан — берётся понедельник текущей недели.
-Возвращает сетку Пн–Сб (6 дней):
+#### 2. `POST /api/v1/homework/submissions/<submission_id>/review/`
+Request JSON:
 ```json
 {
-  "assignment": { "id": 1, "group_id": 1, "group_name": "...", "subject_id": 1, "subject_name": "...", "teacher_name": "..." },
-  "week_start": "2026-11-23",
-  "week_end": "2026-11-28",
-  "prev_week": "2026-11-16",
-  "next_week": "2026-11-30",
-  "dates": [
-    { "date": "2026-11-23", "weekday": 1, "label": "Пн 23.11", "has_lesson": true, "lesson_time": "08:30–10:00" }
-  ],
-  "students": [
-    {
-      "id": 5,
-      "username": "student1",
-      "full_name": "Петров П.П.",
-      "avg_grade": 4.5,
-      "attendance_rate": 85.0,
-      "cells": {
-        "2026-11-23": {
-          "attendance": { "id": 10, "status": "present", "comment": "" },
-          "grade": { "id": 22, "value": 5, "comment": "Отлично", "teacher_name": "...", "updated_at": "2026-11-23T10:15:00Z", "audit_count": 1 }
-        }
-      }
-    }
-  ]
-}
-```
-Если за дату нет посещаемости или оценки, соответствующее поле — `null`.
-
-### 3. `POST /api/v1/journal/cell/`
-Сохраняет посещаемость и/или оценку для ячейки **раздельно** (если поле не передано в JSON, существующее значение в БД не затирается):
-```json
-{
-  "assignment_id": 1,
-  "student_id": 5,
-  "date": "2026-11-23",
-  "attendance_status": "absent",
-  "attendance_comment": "",
+  "status": "checked",
   "grade_value": 5,
-  "grade_comment": "Исправлено после пересдачи",
-  "audit_reason": "Пересдал лабораторную"
+  "teacher_comment": "Отличная работа",
+  "audit_reason": "Перепроверка ДЗ"
 }
 ```
-- `attendance_status`: `"present" | "absent" | "late" | "excused" | ""` (`""` удаляет отметку посещаемости за дату; если ключ отсутствует в JSON — не трогать).
-- `grade_value`: `1..5 | null` (`null` при явном наличии ключа `grade_value` или не менять, если ключ отсутствует; если `grade_value` передан как `null`, существующая оценка удаляется или если `delete_grade: true` — удаляется с записью в аудит).
-- При изменении существующей оценки (`value` или `comment`) создаётся запись в `GradeAuditLog`.
+- Если `status == "checked"`: `grade_value` обязателен (`1..5`). Создаёт или обновляет `Grade` с `assignment=homework.assignment`, `lesson_date=homework.deadline`, `subject=homework.assignment.subject`, `student=submission.student`, `teacher=request.user`, `value=grade_value`, `comment=teacher_comment`, и сохраняет ссылку в `submission.grade`.
+- Если `submission.grade` уже существовала и изменились `value` или `comment` — обязательно пишется запись в `GradeAuditLog` (с `changed_by=request.user`, `reason=audit_reason`).
+- Если `status == "returned"`: `grade_value` опционален (может быть `null`), обновляется статус и `teacher_comment`.
 - Ответ (`200 OK`):
 ```json
 {
-  "student_id": 5,
-  "date": "2026-11-23",
-  "cell": { "attendance": { ... }, "grade": { ... } },
-  "avg_grade": 4.6,
-  "attendance_rate": 80.0
+  "submission": { "...обновлённый объект submission..." },
+  "counts": { "submitted": 2, "checked": 6, "returned": 1, "all": 9 }
 }
 ```
 
-### 4. `GET /api/v1/journal/grades/<grade_id>/history/`
-Возвращает историю правок оценки (от новых к старым):
-```json
-{
-  "grade_id": 22,
-  "history": [
-    {
-      "id": 1,
-      "changed_by_name": "Иванов И.И.",
-      "old_value": 4,
-      "new_value": 5,
-      "old_comment": "",
-      "new_comment": "Исправлено после пересдачи",
-      "reason": "Пересдал лабораторную",
-      "changed_at": "2026-11-26T14:25:00Z"
-    }
-  ]
-}
-```
+#### 3. `GET /api/v1/journal/export/?assignment_id=<id>&week_start=YYYY-MM-DD`
+- Возвращает Excel-файл `.xlsx` (`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`) с `Content-Disposition: attachment; filename="journal_<assignment_id>_<week_start>.xlsx"`.
+- Таблица в файле: Студент, столбцы дат недели (оценка + посещаемость), Средний балл, Посещаемость %.
 
 ---
 
-## Задачи и статусы
+### Задачи Спринта v2
 
-### Codex — ветка `feat/journal-backend` (`grades/`, `api/`)
-- [x] Добавить в `grades.Grade` опциональные поля `assignment` (`ForeignKey` на `academic.TeachingAssignment`, `null=True, blank=True`) и `lesson_date` (`DateField`, `null=True, blank=True`) + модель `GradeAuditLog` + миграцию.
-- [x] Реализовать эндпоинты `/api/v1/journal/assignments/`, `/api/v1/journal/`, `/api/v1/journal/cell/`, `/api/v1/journal/grades/<grade_id>/history/` с проверкой прав доступа (`teacher` только свои назначения и студентов своей группы, `admin` — все, `student` — 403).
-- [x] Написать автотесты (права доступа, раздельное хранение оценки и посещаемости «н», запись `GradeAuditLog` при правке оценки с 4 на 5, пересчёт `avg_grade` и `attendance_rate`) и прогнать через `D:\Projects\electronic-diary-system\.venv\Scripts\python.exe manage.py test`.
+#### Codex — ветка `feat/v2-backend` (`api/`, `grades/`)
+- [ ] Реализовать `GET /api/v1/homework/submissions/` и `POST /api/v1/homework/submissions/<submission_id>/review/` с проверкой прав, автозаписью/обновлением `Grade` (`assignment`, `lesson_date`) и записью в `GradeAuditLog` при изменении оценки.
+- [ ] Реализовать `GET /api/v1/journal/export/` на базе `openpyxl` (выгрузка ведомости недели в `.xlsx`).
+- [ ] Добавить автотесты (права доступа, проверка ДЗ с появлением оценки в `/api/v1/journal/`, перепроверка ДЗ с записью в `GradeAuditLog`, возврат ДЗ на доработку, экспорт `.xlsx`) и прогнать через `.venv\Scripts\python.exe manage.py test`.
 
-### Antigravity — ветка `feat/journal-ui` (`frontend/`)
-- [x] Добавить страницу `/journal/` (`InteractiveJournalView`) и ссылку в навигацию `base.html` для преподавателей и администраторов (не ломая старый `/grades/journal/`).
-- [x] Реализовать `frontend/templates/frontend/interactive_journal.html`: выбор назначения, переключение недель, интерактивная сетка «студенты × дни», раздельные бейджи посещаемости и оценки, маркер правок, автоподсчёт среднего балла и % посещаемости.
-- [x] Реализовать модалку/поповер ячейки: быстрый ввод оценки `1..5`, статуса `П/Н/О/У`, комментария, причины правки, сохранение через `fetch` + CSRF без перезагрузки и просмотр «Истории правок» прямо в модалке.
-- [x] После мёржа веток — прогнать все тесты и проверить сквозной сценарий.
+#### Antigravity — ветка `feat/v2-frontend` (`frontend/`)
+- [ ] В `interactive_journal.html`: добавить кнопку **«Скачать ведомость (.xlsx)»** (дёргает `/api/v1/journal/export/`), индикатор **«Группа риска»** (`avg_grade < 3.5` или `attendance_rate < 75%`) и переключатель фильтра «Только группа риска».
+- [ ] Добавить интерактивную страницу очереди проверки ДЗ `/homework/review-queue/` (`HomeworkReviewQueueView` + ссылка в шапке/журнале): вкладки `На проверке / Проверено / Возвращено`, фильтр по назначению, быстрая оценка `1..5`, комментарий, причина перепроверки, возврат на доработку и мгновенное обновление без перезагрузки.
+- [ ] После мёржа веток — прогнать все тесты и сквозной smoke-тест.
