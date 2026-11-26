@@ -1,0 +1,154 @@
+{% extends 'frontend/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Отметка по QR" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<style>
+    .qr-checkin-wrap {
+        max-width: 460px;
+        margin: clamp(24px, 8vh, 72px) auto;
+    }
+
+    .qr-checkin-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 32px 26px;
+        text-align: center;
+        box-shadow: 0 18px 45px var(--shadow-lg);
+    }
+
+    .qr-status-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        margin: 0 auto 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 800;
+        background: var(--primary-soft);
+        color: var(--primary);
+    }
+
+    .qr-status-icon.is-ok {
+        background: rgba(22, 163, 74, 0.16);
+        color: #16a34a;
+    }
+
+    .qr-status-icon.is-err {
+        background: rgba(220, 38, 38, 0.16);
+        color: #ef4444;
+    }
+
+    .qr-meta-box {
+        margin: 18px 0 22px;
+        padding: 14px;
+        border-radius: 12px;
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        font-size: 13px;
+        color: var(--muted-color);
+        display: none;
+    }
+
+    .qr-meta-box strong {
+        color: var(--text-color);
+    }
+</style>
+
+<div class="qr-checkin-wrap">
+    <div class="qr-checkin-card">
+        <div id="qr-icon" class="qr-status-icon">QR</div>
+        <h1 id="qr-title" class="page-title" style="font-size: 22px; margin-bottom: 8px;">
+            {% trans "Отмечаем присутствие..." %}
+        </h1>
+        <p id="qr-desc" class="page-subtitle" style="margin-bottom: 16px;">
+            {% trans "Проверяем QR-сессию занятия." %}
+        </p>
+
+        <div id="qr-meta" class="qr-meta-box"></div>
+
+        <div class="actions" style="justify-content: center;">
+            <button type="button" id="qr-retry-btn" class="btn btn-small" style="display: none;">
+                {% trans "Попробовать снова" %}
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary btn-small">
+                {% trans "В личный кабинет" %}
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const token = "{{ qr_token|escapejs }}";
+    const $ = (id) => document.getElementById(id);
+
+    function getCsrfToken() {
+        const m = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+
+    async function doCheckin() {
+        const icon = $('qr-icon');
+        const title = $('qr-title');
+        const desc = $('qr-desc');
+        const meta = $('qr-meta');
+        const retryBtn = $('qr-retry-btn');
+
+        icon.className = 'qr-status-icon';
+        icon.textContent = '...';
+        title.textContent = 'Отмечаем присутствие...';
+        desc.textContent = 'Отправляем подтверждение на сервер.';
+        retryBtn.style.display = 'none';
+
+        try {
+            const res = await fetch(`/api/v1/attendance/qr/${encodeURIComponent(token)}/checkin/`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: '{}',
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.detail || `Не удалось отметиться (${res.status})`);
+            }
+
+            icon.className = 'qr-status-icon is-ok';
+            icon.textContent = '✓';
+            title.textContent = data.already_checked_in
+                ? 'Вы уже отмечены на этой паре'
+                : 'Присутствие отмечено!';
+            desc.textContent = data.detail || 'Статус «Присутствовал» записан в журнал.';
+
+            meta.innerHTML = '';
+            const line1 = document.createElement('div');
+            line1.textContent = `${data.subject_name || ''} • ${data.group_name || ''}`;
+            line1.style.fontWeight = '700';
+            line1.style.color = 'var(--text-color)';
+            const line2 = document.createElement('div');
+            line2.textContent = `Дата занятия: ${data.date || ''}`;
+            line2.style.marginTop = '4px';
+            meta.appendChild(line1);
+            meta.appendChild(line2);
+            meta.style.display = 'block';
+        } catch (err) {
+            icon.className = 'qr-status-icon is-err';
+            icon.textContent = '!';
+            title.textContent = 'Отметка не выполнена';
+            desc.textContent = err.message;
+            retryBtn.style.display = 'inline-flex';
+        }
+    }
+
+    $('qr-retry-btn').addEventListener('click', doCheckin);
+    doCheckin();
+})();
+</script>
+{% endblock %}

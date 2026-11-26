@@ -475,6 +475,9 @@
         </p>
     </div>
     <div class="actions">
+        <button type="button" id="ij-open-qr" class="btn btn-small" style="background: #7c3aed;">
+            {% trans "QR на пару" %}
+        </button>
         <button type="button" id="ij-export-excel" class="btn btn-small">
             {% trans "Ведомость Excel (.xlsx)" %}
         </button>
@@ -572,7 +575,62 @@
     </div>
 </div>
 
+<!-- QR Attendance Modal -->
+<div id="ij-qr-backdrop" class="ij-modal-backdrop" role="dialog" aria-modal="true">
+    <div class="ij-modal" style="max-width: 460px;">
+        <div class="ij-modal-head">
+            <div>
+                <h2 class="ij-modal-title">{% trans "QR-посещаемость на паре" %}</h2>
+                <div id="ij-qr-sub" class="ij-modal-sub">—</div>
+            </div>
+            <button type="button" id="ij-qr-close-x" class="ij-close-btn" aria-label="Закрыть">&times;</button>
+        </div>
+
+        <div class="ij-section" id="ij-qr-setup">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+                <div>
+                    <label class="ij-field-label" for="ij-qr-date" style="margin-top:0;">{% trans "Дата занятия" %}</label>
+                    <input id="ij-qr-date" type="date" class="ij-input" />
+                </div>
+                <div>
+                    <label class="ij-field-label" for="ij-qr-ttl" style="margin-top:0;">{% trans "Время действия" %}</label>
+                    <select id="ij-qr-ttl" class="ij-input">
+                        <option value="3">3 минуты</option>
+                        <option value="5" selected>5 минут</option>
+                        <option value="10">10 минут</option>
+                        <option value="15">15 минут</option>
+                    </select>
+                </div>
+            </div>
+            <button type="button" id="ij-qr-create-btn" class="btn btn-small" style="width:100%;">
+                {% trans "Сгенерировать QR-код" %}
+            </button>
+        </div>
+
+        <div id="ij-qr-live" style="display:none;">
+            <div style="display:flex;justify-content:center;padding:16px;background:#ffffff;border-radius:14px;margin-bottom:12px;">
+                <div id="ij-qr-canvas"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;margin-bottom:10px;">
+                <span>{% trans "Осталось:" %} <span id="ij-qr-timer" style="color:var(--primary);">05:00</span></span>
+                <span>{% trans "Отметились:" %} <span id="ij-qr-count" style="color:#16a34a;">0 / 0</span></span>
+            </div>
+            <div id="ij-qr-students" class="ij-history-list" style="margin-bottom:12px;"></div>
+            <div class="actions" style="justify-content:space-between;">
+                <button type="button" id="ij-qr-copy-link" class="btn btn-secondary btn-small">
+                    {% trans "Копировать ссылку" %}
+                </button>
+                <button type="button" id="ij-qr-finish-btn" class="btn btn-danger btn-small">
+                    {% trans "Завершить приём" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="ij-toast" class="ij-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
 <script>
 (function () {
@@ -1071,6 +1129,172 @@
             e.preventDefault();
             saveCellModal();
         }
+    });
+
+    // --- QR Attendance Modal Logic ---
+    const qrState = {
+        token: null,
+        expiresAtMs: 0,
+        checkinUrl: '',
+        pollTimer: null,
+        tickTimer: null,
+    };
+
+    function stopQrTimers() {
+        if (qrState.pollTimer) { clearInterval(qrState.pollTimer); qrState.pollTimer = null; }
+        if (qrState.tickTimer) { clearInterval(qrState.tickTimer); qrState.tickTimer = null; }
+    }
+
+    function openQrModal() {
+        if (!state.assignmentId) return showToast('Сначала выберите назначение', true);
+        const a = state.journal?.assignment;
+        $('ij-qr-sub').textContent = a ? `${a.group_name} • ${a.subject_name}` : '';
+        const today = new Date();
+        const isoToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        if (!$('ij-qr-date').value) $('ij-qr-date').value = isoToday;
+        $('ij-qr-backdrop').classList.add('is-open');
+    }
+
+    function closeQrModal() {
+        stopQrTimers();
+        $('ij-qr-backdrop').classList.remove('is-open');
+        if (qrState.token) {
+            loadJournal();
+        }
+    }
+
+    function updateQrCountdown() {
+        const diffSec = Math.max(0, Math.floor((qrState.expiresAtMs - Date.now()) / 1000));
+        const mm = String(Math.floor(diffSec / 60)).padStart(2, '0');
+        const ss = String(diffSec % 60).padStart(2, '0');
+        $('ij-qr-timer').textContent = `${mm}:${ss}`;
+        if (diffSec <= 0) {
+            $('ij-qr-timer').textContent = 'Истёк';
+            stopQrTimers();
+        }
+    }
+
+    async function pollQrStatus() {
+        if (!qrState.token) return;
+        try {
+            const res = await fetch(`/api/v1/attendance/qr/${encodeURIComponent(qrState.token)}/status/`, {
+                credentials: 'same-origin',
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            $('ij-qr-count').textContent = `${data.checked_in_count} / ${data.total_students}`;
+            const box = $('ij-qr-students');
+            box.innerHTML = '';
+            const items = data.checked_in_students || [];
+            if (!items.length) {
+                const empty = document.createElement('div');
+                empty.className = 'ij-history-meta';
+                empty.textContent = 'Пока никто не отсканировал QR-код...';
+                box.appendChild(empty);
+            } else {
+                items.forEach((st) => {
+                    const row = document.createElement('div');
+                    row.className = 'ij-history-item';
+                    row.textContent = `✓ ${st.full_name}`;
+                    box.appendChild(row);
+                });
+            }
+            if (!data.is_active || data.is_expired) {
+                $('ij-qr-timer').textContent = data.is_active ? 'Истёк' : 'Закрыт';
+                stopQrTimers();
+            }
+        } catch (_) {}
+    }
+
+    async function createQrSession() {
+        if (!state.assignmentId) return;
+        const dateVal = $('ij-qr-date').value;
+        const ttl = Number($('ij-qr-ttl').value) || 5;
+        const btn = $('ij-qr-create-btn');
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/v1/attendance/qr/create/', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({
+                    assignment_id: state.assignmentId,
+                    date: dateVal,
+                    ttl_minutes: ttl,
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || `Ошибка создания QR (${res.status})`);
+
+            qrState.token = data.token;
+            qrState.expiresAtMs = new Date(data.expires_at).getTime();
+            qrState.checkinUrl = window.location.origin + data.checkin_path;
+
+            const canvasBox = $('ij-qr-canvas');
+            canvasBox.innerHTML = '';
+            if (typeof QRCode !== 'undefined') {
+                new QRCode(canvasBox, {
+                    text: qrState.checkinUrl,
+                    width: 210,
+                    height: 210,
+                    colorDark: '#0f172a',
+                    colorLight: '#ffffff',
+                });
+            } else {
+                const fallback = document.createElement('div');
+                fallback.style.color = '#0f172a';
+                fallback.style.fontSize = '12px';
+                fallback.style.wordBreak = 'break-all';
+                fallback.textContent = qrState.checkinUrl;
+                canvasBox.appendChild(fallback);
+            }
+
+            $('ij-qr-count').textContent = `${data.checked_in_count} / ${data.total_students}`;
+            $('ij-qr-live').style.display = 'block';
+            stopQrTimers();
+            updateQrCountdown();
+            pollQrStatus();
+            qrState.tickTimer = setInterval(updateQrCountdown, 1000);
+            qrState.pollTimer = setInterval(pollQrStatus, 3000);
+            showToast('QR-код создан! Студенты могут отмечаться.');
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function finishQrSession() {
+        if (!qrState.token) return closeQrModal();
+        try {
+            await fetch(`/api/v1/attendance/qr/${encodeURIComponent(qrState.token)}/close/`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'X-CSRFToken': getCsrfToken() },
+            });
+            showToast('Приём отметок по QR завершён');
+        } catch (_) {}
+        closeQrModal();
+    }
+
+    $('ij-open-qr').addEventListener('click', openQrModal);
+    $('ij-qr-close-x').addEventListener('click', closeQrModal);
+    $('ij-qr-create-btn').addEventListener('click', createQrSession);
+    $('ij-qr-finish-btn').addEventListener('click', finishQrSession);
+    $('ij-qr-copy-link').addEventListener('click', async () => {
+        if (!qrState.checkinUrl) return;
+        try {
+            await navigator.clipboard.writeText(qrState.checkinUrl);
+            showToast('Ссылка для отметки скопирована!');
+        } catch (_) {
+            prompt('Скопируйте ссылку для студентов:', qrState.checkinUrl);
+        }
+    });
+    $('ij-qr-backdrop').addEventListener('click', (e) => {
+        if (e.target === $('ij-qr-backdrop')) closeQrModal();
     });
 
     loadAssignments();
