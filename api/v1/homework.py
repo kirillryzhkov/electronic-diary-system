@@ -12,6 +12,7 @@ from rest_framework.response import Response
 
 from academic.models import HomeworkSubmission
 from grades.models import Grade
+from notifications_app.services import notify_user
 from .journal import JournalView, record_grade_change, utc_timestamp
 
 
@@ -94,15 +95,16 @@ def save_submission_grade(submission, assignment, actor, data):
         'comment': comment,
     }
     if submission.grade_id is None:
-        return Grade.objects.create(**fields)
+        return Grade.objects.create(**fields), True
 
     grade = Grade.objects.select_for_update().get(pk=submission.grade_id)
-    if (grade.value, grade.comment or '') != (value, comment):
+    changed = (grade.value, grade.comment or '') != (value, comment)
+    if changed:
         record_grade_change(grade, assignment, actor, value, comment, data['audit_reason'])
     for field, field_value in fields.items():
         setattr(grade, field, field_value)
     grade.save(update_fields=[*fields, 'updated_at'])
-    return grade
+    return grade, changed
 
 
 class HomeworkSubmissionsView(JournalView):
@@ -157,16 +159,28 @@ class HomeworkSubmissionReviewView(JournalView):
             homework__assignment=assignment,
         )
 
+        previous_review = (submission.status, submission.grade_value, submission.teacher_comment or '')
+        grade_changed = False
         submission.status = data['status']
         submission.teacher_comment = data['teacher_comment']
         submission.checked_at = timezone.now()
         if 'grade_value' in data:
             submission.grade_value = data['grade_value']
         if submission.status == 'checked':
-            submission.grade = save_submission_grade(submission, assignment, request.user, data)
+            submission.grade, grade_changed = save_submission_grade(
+                submission, assignment, request.user, data
+            )
         submission.save(update_fields=[
             'status', 'teacher_comment', 'checked_at', 'grade_value', 'grade',
         ])
+        if grade_changed or previous_review != (
+            submission.status, submission.grade_value, submission.teacher_comment
+        ):
+            title = {
+                'checked': 'Домашнее задание проверено',
+                'returned': 'Домашнее задание возвращено на доработку',
+            }[submission.status]
+            notify_user(submission.student, 'homework', title, submission.homework.title)
         return Response({
             'submission': submission_data(submission),
             'counts': submission_counts(submissions),

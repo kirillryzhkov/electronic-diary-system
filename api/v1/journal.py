@@ -13,10 +13,12 @@ from rest_framework.views import APIView
 
 from academic.models import Attendance, TeachingAssignment
 from grades.models import Grade, GradeAuditLog
+from notifications_app.services import notify_user
 from .journal_serializers import JournalCellSerializer, JournalQuerySerializer
 
 
 WEEKDAYS = ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб')
+ATTENDED_STATUSES = ('present', 'late')
 
 
 def assignment_data(assignment):
@@ -65,7 +67,7 @@ def student_stats(assignment, student_ids):
         row['student_id']: round(100 * row['attended'] / row['total'], 2)
         for row in attendance.order_by().values('student_id').annotate(
             total=Count('pk'),
-            attended=Count('pk', filter=Q(status__in=('present', 'late'))),
+            attended=Count('pk', filter=Q(status__in=ATTENDED_STATUSES)),
         )
     }
     return {
@@ -106,7 +108,15 @@ def save_attendance(assignment, student, data):
     defaults = {'status': data['attendance_status']}
     if 'attendance_comment' in data:
         defaults['comment'] = data['attendance_comment']
+    was_absent = (
+        defaults['status'] == 'absent' and records.filter(**lookup, status='absent').exists()
+    )
     records.update_or_create(**lookup, defaults=defaults)
+    if defaults['status'] == 'absent' and not was_absent:
+        notify_user(
+            student, 'attendance', 'Отмечен пропуск',
+            f'{assignment.subject.name}, {data["date"]:%d.%m.%Y}.',
+        )
 
 
 def save_grade(grades, assignment, student, actor, data):
@@ -127,6 +137,10 @@ def save_grade(grades, assignment, student, actor, data):
                 value=data['grade_value'],
                 comment=data.get('grade_comment', ''),
             )
+            notify_user(
+                student, 'grade', 'Новая оценка',
+                f'{assignment.subject.name}: {data["grade_value"]}.',
+            )
         return
 
     old_comment = grade.comment or ''
@@ -142,6 +156,9 @@ def save_grade(grades, assignment, student, actor, data):
         grade.value = new_value
         grade.comment = new_comment
         grade.save(update_fields=['value', 'comment', 'updated_at'])
+        notify_user(
+            student, 'grade', 'Оценка изменена', f'{assignment.subject.name}: {new_value}.',
+        )
 
 
 def record_grade_change(grade, assignment, actor, new_value, new_comment, reason):

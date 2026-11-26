@@ -14,8 +14,13 @@ from .journal import JournalAssignmentsView, JournalCellView, JournalGradeHistor
 
 from .homework import HomeworkSubmissionsView, HomeworkSubmissionReviewView
 from .journal_export import JournalExportView
+from .analytics import AnalyticsOverviewView
+from .telegram import TelegramProfileView, TelegramTestView
 
 urlpatterns = [
+    path('profile/telegram/', TelegramProfileView.as_view(), name='telegram-profile'),
+    path('profile/telegram/test/', TelegramTestView.as_view(), name='telegram-test'),
+    path('analytics/overview/', AnalyticsOverviewView.as_view(), name='analytics-overview'),
     path('homework/submissions/', HomeworkSubmissionsView.as_view(), name='homework-submissions'),
     path(
         'homework/submissions/<int:submission_id>/review/',

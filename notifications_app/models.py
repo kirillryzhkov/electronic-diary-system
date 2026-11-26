@@ -13,6 +13,7 @@ class Notification(models.Model):
     NOTIFICATION_TYPE_CHOICES = (
         ('grade', _('Новая оценка')),
         ('homework', _('Новое домашнее задание')),
+        ('attendance', _('Посещаемость')),
     )
 
     user = models.ForeignKey(

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from datetime import timedelta
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext_lazy as _
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,16 +23,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h#zd17j_^4^fnddx0s(xadubx(1**jn14sy)who!^3=2@-hwpd'
+DEBUG = os.environ.get('DEBUG', os.environ.get('DJANGO_DEBUG', 'True')).strip().lower() in (
+    '1', 'true', 'yes', 'on',
+)
+SECRET_KEY = os.environ.get('SECRET_KEY', '').strip()
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is disabled.')
+    SECRET_KEY = 'django-insecure-local-development-only-keep-out-of-production'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
-
-ALLOWED_HOSTS = os.environ.get(
-    'DJANGO_ALLOWED_HOSTS',
-    '127.0.0.1,localhost,.onrender.com'
-).split(',')
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        'ALLOWED_HOSTS', os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com')
+    ).split(',')
+    if host.strip()
+]
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '').strip()
 
 
 # Application definition
@@ -130,12 +138,25 @@ WSGI_APPLICATION = 'diary_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+POSTGRES_HOST = os.environ.get('POSTGRES_HOST', '').strip()
+if POSTGRES_HOST:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'diary'),
+            'USER': os.environ.get('POSTGRES_USER', 'diary'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': POSTGRES_HOST,
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -184,7 +205,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

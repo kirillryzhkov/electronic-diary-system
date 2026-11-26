@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:-diary}"
+      POSTGRES_USER: "${POSTGRES_USER:-diary}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  web:
+    build: .
+    environment:
+      SECRET_KEY: "${SECRET_KEY:?Set SECRET_KEY in .env}"
+      DEBUG: "${DEBUG:-False}"
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1}"
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "${POSTGRES_DB:-diary}"
+      POSTGRES_USER: "${POSTGRES_USER:-diary}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      TELEGRAM_BOT_TOKEN: "${TELEGRAM_BOT_TOKEN:-}"
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -c
+      - python manage.py migrate --noinput && exec gunicorn diary_project.wsgi:application --bind 0.0.0.0:8000 --workers 2
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - media_data:/app/media
+
+volumes:
+  postgres_data:
+  media_data:

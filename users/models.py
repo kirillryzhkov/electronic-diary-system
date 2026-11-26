@@ -31,6 +31,9 @@ class User(AbstractUser):
         verbose_name='Учебная группа'
     )
 
+    telegram_chat_id = models.CharField(max_length=20, blank=True, default='')
+    telegram_notifications_enabled = models.BooleanField(default=False)
+
     @property
     def full_name(self):
         name = f'{self.last_name} {self.first_name}'.strip()
