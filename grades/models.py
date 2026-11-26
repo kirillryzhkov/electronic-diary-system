@@ -65,6 +65,16 @@ class Grade(models.Model):
         verbose_name='Дата и время выставления'
     )
 
+    assignment = models.ForeignKey(
+        'academic.TeachingAssignment',
+        on_delete=models.SET_NULL,
+        related_name='journal_grades',
+        null=True,
+        blank=True,
+    )
+    lesson_date = models.DateField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     def clean(self):
         if self.value < 1 or self.value > 5:
             raise ValidationError('Оценка должна быть от 1 до 5.')
@@ -111,3 +121,33 @@ class Grade(models.Model):
     class Meta:
         db_table = "grades"
         ordering = ['-date']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['assignment', 'student', 'lesson_date'],
+                name='unique_journal_grade_per_cell',
+            )
+        ]
+
+
+class GradeAuditLog(models.Model):
+    """History of a journal grade, including its deletion."""
+
+    # Store the grade ID independently so deletion preserves the history.
+    grade_id = models.PositiveBigIntegerField()
+    assignment = models.ForeignKey(
+        'academic.TeachingAssignment', on_delete=models.CASCADE
+    )
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    changed_by_name = models.CharField(max_length=301)
+    old_value = models.PositiveSmallIntegerField()
+    new_value = models.PositiveSmallIntegerField(null=True)
+    old_comment = models.TextField(blank=True)
+    new_comment = models.TextField(blank=True)
+    reason = models.TextField(blank=True)
+    changed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-changed_at', '-id']
+        indexes = [
+            models.Index(fields=['assignment', 'grade_id'], name='grade_audit_assignment_idx')
+        ]

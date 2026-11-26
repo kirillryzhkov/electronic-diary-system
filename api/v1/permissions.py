@@ -32,7 +32,8 @@ class IsGradeOwnerOrTeacher(permissions.BasePermission):
 
         # Учитель может просматривать, редактировать и удалять любые оценки.
         if role == 'teacher':
-            return True
+            # Journal writes must use the audited cell endpoint.
+            return obj.lesson_date is None or request.method in permissions.SAFE_METHODS
 
         # Ученик может только просматривать свои оценки.
         if role == 'student':

@@ -10,7 +10,17 @@ from .views import (
     GradeDetailView,
 )
 
+from .journal import JournalAssignmentsView, JournalCellView, JournalGradeHistoryView, JournalGridView
+
 urlpatterns = [
+    path('journal/assignments/', JournalAssignmentsView.as_view(), name='journal-assignments'),
+    path('journal/', JournalGridView.as_view(), name='journal-grid'),
+    path('journal/cell/', JournalCellView.as_view(), name='journal-cell'),
+    path(
+        'journal/grades/<int:grade_id>/history/',
+        JournalGradeHistoryView.as_view(),
+        name='journal-grade-history',
+    ),
     path('subjects/', SubjectListCreateView.as_view(), name='subject-list-create'),
     path('subjects/stats/', SubjectStatisticsView.as_view(), name='subject-stats'),
 
