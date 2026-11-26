@@ -2686,3 +2686,15 @@ class InteractiveJournalView(LoginRequiredMixin, TemplateView):
             messages.warning(request, 'Интерактивный журнал доступен только преподавателям и администраторам.')
             return redirect('frontend-grades')
         return super().dispatch(request, *args, **kwargs)
+
+
+class HomeworkReviewQueueView(LoginRequiredMixin, TemplateView):
+    """Interactive homework review queue linked directly to the grade journal."""
+
+    template_name = 'frontend/homework_review_queue.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and getattr(request.user, 'role', None) not in ('teacher', 'admin'):
+            messages.warning(request, 'Очередь проверки ДЗ доступна только преподавателям и администраторам.')
+            return redirect('frontend-homework')
+        return super().dispatch(request, *args, **kwargs)

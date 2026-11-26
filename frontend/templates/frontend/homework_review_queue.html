@@ -1,0 +1,543 @@
+{% extends "frontend/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Очередь проверки ДЗ" %} — {% trans "Электронный дневник" %}{% endblock %}
+
+{% block content %}
+<style>
+    .hq-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .hq-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .hq-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .hq-tab {
+        padding: 8px 13px;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .hq-tab.is-active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+    }
+
+    .hq-select {
+        min-width: 250px;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--input-text);
+        font-size: 13px;
+    }
+
+    .hq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .hq-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 6px 20px var(--shadow-color);
+    }
+
+    .hq-card-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+    }
+
+    .hq-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .hq-card-meta {
+        font-size: 12px;
+        color: var(--muted-color);
+        margin-top: 4px;
+    }
+
+    .hq-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .hq-status-submitted { background: rgba(217, 119, 6, 0.16); color: #d97706; }
+    .hq-status-checked { background: rgba(22, 163, 74, 0.16); color: #16a34a; }
+    .hq-status-returned { background: rgba(220, 38, 38, 0.16); color: #ef4444; }
+
+    .hq-answer {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        margin-bottom: 12px;
+    }
+
+    .hq-file-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 12px;
+    }
+
+    .hq-review-form {
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hq-grade-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hq-grade-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-weight: 800;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .hq-grade-btn.is-active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+    }
+
+    .hq-inputs {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+    }
+
+    .hq-input {
+        width: 100%;
+        padding: 9px 11px;
+        border-radius: 9px;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--input-text);
+        font-size: 13px;
+        font-family: inherit;
+    }
+
+    .hq-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .hq-empty {
+        background: var(--card-bg);
+        border: 1px dashed var(--border-color);
+        border-radius: 14px;
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--muted-color);
+        font-size: 14px;
+    }
+
+    .hq-toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 3000;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: #111827;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        font-size: 13px;
+        display: none;
+    }
+
+    .hq-toast.is-error {
+        background: #991b1b;
+    }
+</style>
+
+<div class="hq-header">
+    <div>
+        <h1 class="page-title" style="margin-bottom: 4px;">{% trans "Очередь проверки ДЗ" %}</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">
+            {% trans "Проверяйте работы студентов без перезагрузки: выставленная оценка сразу попадает в интерактивный журнал, а перепроверка пишется в историю правок." %}
+        </p>
+    </div>
+    <a href="{% url 'frontend-interactive-journal' %}" class="btn btn-secondary btn-small">
+        &larr; {% trans "К интерактивному журналу" %}
+    </a>
+</div>
+
+<div class="hq-toolbar">
+    <div class="hq-tabs" id="hq-tabs">
+        <button type="button" class="hq-tab is-active" data-status="submitted">
+            На проверке (<span id="hq-cnt-submitted">0</span>)
+        </button>
+        <button type="button" class="hq-tab" data-status="checked">
+            Проверено (<span id="hq-cnt-checked">0</span>)
+        </button>
+        <button type="button" class="hq-tab" data-status="returned">
+            Возвращено (<span id="hq-cnt-returned">0</span>)
+        </button>
+        <button type="button" class="hq-tab" data-status="all">
+            Все (<span id="hq-cnt-all">0</span>)
+        </button>
+    </div>
+
+    <select id="hq-assignment-filter" class="hq-select" aria-label="Фильтр по назначению">
+        <option value="">Все назначения</option>
+    </select>
+</div>
+
+<div id="hq-list" class="hq-list">
+    <div class="hq-empty">Загрузка очереди проверки...</div>
+</div>
+
+<div id="hq-toast" class="hq-toast"></div>
+
+<script>
+(function () {
+    const state = {
+        status: 'submitted',
+        assignmentId: '',
+        submissions: [],
+    };
+
+    const STATUS_LABELS = {
+        submitted: 'На проверке',
+        checked: 'Проверено',
+        returned: 'Возвращено на доработку',
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function getCsrfToken() {
+        const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+        return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function safeFileUrl(value) {
+        if (typeof value !== 'string' || !value) return '';
+        if (value.startsWith('/')) return value;
+        try {
+            const u = new URL(value);
+            return ['http:', 'https:'].includes(u.protocol) ? u.href : '';
+        } catch (_) {
+            return '';
+        }
+    }
+
+    function showToast(msg, isError = false) {
+        const el = $('hq-toast');
+        el.textContent = msg;
+        el.classList.toggle('is-error', isError);
+        el.style.display = 'block';
+        clearTimeout(el._t);
+        el._t = setTimeout(() => { el.style.display = 'none'; }, 3500);
+    }
+
+    function formatDateTimeRu(iso) {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return iso;
+        return d.toLocaleString('ru-RU', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit',
+        });
+    }
+
+    function updateCounts(counts) {
+        if (!counts) return;
+        $('hq-cnt-submitted').textContent = String(counts.submitted ?? 0);
+        $('hq-cnt-checked').textContent = String(counts.checked ?? 0);
+        $('hq-cnt-returned').textContent = String(counts.returned ?? 0);
+        $('hq-cnt-all').textContent = String(counts.all ?? 0);
+    }
+
+    async function loadAssignmentsFilter() {
+        try {
+            const res = await fetch('/api/v1/journal/assignments/', { credentials: 'same-origin' });
+            if (!res.ok) return;
+            const data = await res.json();
+            const sel = $('hq-assignment-filter');
+            (data.assignments || []).forEach((a) => {
+                const opt = document.createElement('option');
+                opt.value = String(a.id);
+                opt.textContent = `${a.group_name} — ${a.subject_name}`;
+                sel.appendChild(opt);
+            });
+        } catch (_) {}
+    }
+
+    async function loadSubmissions() {
+        const list = $('hq-list');
+        list.innerHTML = '<div class="hq-empty">Загрузка работ...</div>';
+        const params = new URLSearchParams({ status: state.status });
+        if (state.assignmentId) params.set('assignment_id', state.assignmentId);
+
+        try {
+            const res = await fetch('/api/v1/homework/submissions/?' + params.toString(), {
+                credentials: 'same-origin',
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.detail || `Ошибка загрузки (${res.status})`);
+            }
+            const data = await res.json();
+            updateCounts(data.counts);
+            state.submissions = data.submissions || [];
+            renderSubmissions();
+        } catch (err) {
+            list.innerHTML = '';
+            const empty = document.createElement('div');
+            empty.className = 'hq-empty';
+            empty.textContent = err.message;
+            list.appendChild(empty);
+            showToast(err.message, true);
+        }
+    }
+
+    async function submitReview(sub, status, selectedGrade, comment, auditReason, btn) {
+        if (status === 'checked' && !selectedGrade) {
+            return showToast('Выберите оценку от 1 до 5 для подтверждения работы', true);
+        }
+        const payload = {
+            status,
+            grade_value: status === 'checked' ? selectedGrade : null,
+            teacher_comment: comment,
+        };
+        if (auditReason) payload.audit_reason = auditReason;
+
+        btn.disabled = true;
+        try {
+            const res = await fetch(`/api/v1/homework/submissions/${sub.id}/review/`, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.detail || `Ошибка сохранения (${res.status})`);
+            updateCounts(data.counts);
+            showToast(status === 'checked'
+                ? `Оценка ${selectedGrade} выставлена и записана в журнал!`
+                : 'Работа возвращена на доработку');
+            await loadSubmissions();
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function renderSubmissions() {
+        const list = $('hq-list');
+        list.innerHTML = '';
+        if (!state.submissions.length) {
+            const empty = document.createElement('div');
+            empty.className = 'hq-empty';
+            empty.textContent = 'В этой вкладке пока нет работ.';
+            list.appendChild(empty);
+            return;
+        }
+
+        state.submissions.forEach((sub) => {
+            let selectedGrade = sub.grade_value || null;
+
+            const card = document.createElement('div');
+            card.className = 'hq-card';
+
+            const top = document.createElement('div');
+            top.className = 'hq-card-top';
+
+            const left = document.createElement('div');
+            const title = document.createElement('h3');
+            title.className = 'hq-card-title';
+            title.textContent = `${sub.student_name} — ${sub.homework_title}`;
+            const meta = document.createElement('div');
+            meta.className = 'hq-card-meta';
+            meta.textContent = `${sub.group_name} • ${sub.subject_name} • Дедлайн: ${sub.deadline || '—'} • Сдано: ${formatDateTimeRu(sub.submitted_at)}`;
+            left.appendChild(title);
+            left.appendChild(meta);
+
+            const stBadge = document.createElement('span');
+            stBadge.className = `hq-status hq-status-${sub.status}`;
+            stBadge.textContent = (STATUS_LABELS[sub.status] || sub.status)
+                + (sub.grade_value ? ` (${sub.grade_value})` : '');
+
+            top.appendChild(left);
+            top.appendChild(stBadge);
+            card.appendChild(top);
+
+            if (sub.answer_text) {
+                const ans = document.createElement('div');
+                ans.className = 'hq-answer';
+                ans.textContent = sub.answer_text;
+                card.appendChild(ans);
+            }
+
+            const fileHref = safeFileUrl(sub.file_url);
+            if (fileHref) {
+                const link = document.createElement('a');
+                link.className = 'hq-file-link';
+                link.href = fileHref;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = `📎 Файл: ${sub.file_name || 'Скачать вложение'}`;
+                card.appendChild(link);
+            }
+
+            const form = document.createElement('div');
+            form.className = 'hq-review-form';
+
+            const gradeRow = document.createElement('div');
+            gradeRow.className = 'hq-grade-row';
+            const gLabel = document.createElement('span');
+            gLabel.style.fontSize = '12px';
+            gLabel.style.color = 'var(--muted-color)';
+            gLabel.textContent = 'Оценка:';
+            gradeRow.appendChild(gLabel);
+
+            const gButtons = [];
+            [5, 4, 3, 2, 1].forEach((val) => {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'hq-grade-btn' + (selectedGrade === val ? ' is-active' : '');
+                b.textContent = String(val);
+                b.addEventListener('click', () => {
+                    selectedGrade = val;
+                    gButtons.forEach((item) => item.btn.classList.toggle('is-active', item.val === val));
+                });
+                gButtons.push({ val, btn: b });
+                gradeRow.appendChild(b);
+            });
+            form.appendChild(gradeRow);
+
+            const inputs = document.createElement('div');
+            inputs.className = 'hq-inputs';
+            const inpComment = document.createElement('input');
+            inpComment.type = 'text';
+            inpComment.className = 'hq-input';
+            inpComment.placeholder = 'Комментарий преподавателя';
+            inpComment.value = sub.teacher_comment || '';
+            inputs.appendChild(inpComment);
+
+            const inpReason = document.createElement('input');
+            inpReason.type = 'text';
+            inpReason.className = 'hq-input';
+            inpReason.placeholder = 'Причина перепроверки (для аудита)';
+            if (sub.grade_id) inputs.appendChild(inpReason);
+            form.appendChild(inputs);
+
+            const actions = document.createElement('div');
+            actions.className = 'hq-actions';
+            const btnApprove = document.createElement('button');
+            btnApprove.type = 'button';
+            btnApprove.className = 'btn btn-small';
+            btnApprove.textContent = sub.grade_id ? 'Обновить оценку в журнале' : 'Проверено → в журнал';
+            btnApprove.addEventListener('click', () => {
+                submitReview(sub, 'checked', selectedGrade, inpComment.value.trim(), inpReason.value.trim(), btnApprove);
+            });
+
+            const btnReturn = document.createElement('button');
+            btnReturn.type = 'button';
+            btnReturn.className = 'btn btn-secondary btn-small';
+            btnReturn.textContent = 'Вернуть на доработку';
+            btnReturn.addEventListener('click', () => {
+                submitReview(sub, 'returned', null, inpComment.value.trim(), inpReason.value.trim(), btnReturn);
+            });
+
+            actions.appendChild(btnApprove);
+            actions.appendChild(btnReturn);
+            form.appendChild(actions);
+
+            card.appendChild(form);
+            list.appendChild(card);
+        });
+    }
+
+    document.querySelectorAll('#hq-tabs .hq-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+            state.status = tab.dataset.status;
+            document.querySelectorAll('#hq-tabs .hq-tab').forEach((t) => {
+                t.classList.toggle('is-active', t === tab);
+            });
+            loadSubmissions();
+        });
+    });
+
+    $('hq-assignment-filter').addEventListener('change', (e) => {
+        state.assignmentId = e.target.value;
+        loadSubmissions();
+    });
+
+    loadAssignmentsFilter();
+    loadSubmissions();
+})();
+</script>
+{% endblock %}
