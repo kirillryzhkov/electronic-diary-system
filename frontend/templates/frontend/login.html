@@ -4,42 +4,124 @@
 {% block title %}{% trans "Вход" %} — {% trans "Электронный дневник" %}{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 450px; margin: 60px auto;">
-    <h1 class="page-title">{% trans "Вход" %}</h1>
+<style>
+    .login-shell {
+        max-width: 440px;
+        margin: clamp(20px, 7vh, 64px) auto;
+    }
 
-    <p class="page-subtitle">
-        {% trans "Введите логин и пароль для входа в систему." %}
-    </p>
+    .login-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 18px 45px var(--shadow-lg);
+    }
 
-    {% if form.errors %}
-        <div class="error-box">
-            {% trans "Неверный логин или пароль." %}
+    .login-demo-box {
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .login-demo-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--muted-color);
+        margin-bottom: 10px;
+    }
+
+    .login-demo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .login-demo-btn {
+        padding: 9px 8px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        color: var(--text-color);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+        transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .login-demo-btn:hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+    }
+
+    .login-demo-hint {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted-color);
+        text-align: center;
+    }
+</style>
+
+<div class="login-shell">
+    <div class="login-card">
+        <h1 class="page-title" style="font-size: 26px;">{% trans "Вход в систему" %}</h1>
+        <p class="page-subtitle" style="margin-bottom: 20px;">
+            {% trans "Введите логин и пароль или выберите демо-роль ниже." %}
+        </p>
+
+        {% if form.errors %}
+            <div class="error-box">
+                {% trans "Неверный логин или пароль." %}
+            </div>
+        {% endif %}
+
+        <form method="post" id="login-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">{% trans "Логин" %}</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">{% trans "Пароль" %}</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%; padding: 12px;">
+                {% trans "Войти" %}
+            </button>
+        </form>
+
+        <div class="login-demo-box">
+            <div class="login-demo-title">{% trans "Быстрый выбор демо-аккаунта" %}</div>
+            <div class="login-demo-grid">
+                <button type="button" class="login-demo-btn" data-demo-user="admin">{% trans "Админ" %}</button>
+                <button type="button" class="login-demo-btn" data-demo-user="teacher">{% trans "Учитель" %}</button>
+                <button type="button" class="login-demo-btn" data-demo-user="student1">{% trans "Студент" %}</button>
+            </div>
+            <div class="login-demo-hint">
+                {% trans "Пароль для всех демо-аккаунтов:" %} <code>password123</code>
+            </div>
         </div>
-    {% endif %}
-
-    <form method="post">
-        {% csrf_token %}
-
-        <div class="form-group">
-            <label for="id_username">{% trans "Логин" %}</label>
-            {{ form.username }}
-        </div>
-
-        <div class="form-group">
-            <label for="id_password">{% trans "Пароль" %}</label>
-            {{ form.password }}
-        </div>
-
-        <button type="submit" class="btn" style="width: 100%;">
-            {% trans "Войти" %}
-        </button>
-    </form>
-
-    <div style="margin-top: 22px; color: var(--muted-color); font-size: 14px;">
-        <p><b>{% trans "Демо-аккаунты:" %}</b></p>
-        <p>{% trans "Администратор:" %} admin / password123</p>
-        <p>{% trans "Учитель:" %} teacher / password123</p>
-        <p>{% trans "Ученик:" %} student1 / password123</p>
     </div>
 </div>
+
+<script>
+(function () {
+    document.querySelectorAll('[data-demo-user]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const u = document.getElementById('id_username');
+            const p = document.getElementById('id_password');
+            if (u) u.value = btn.dataset.demoUser;
+            if (p) p.value = 'password123';
+            if (u) u.focus();
+        });
+    });
+})();
+</script>
 {% endblock %}
